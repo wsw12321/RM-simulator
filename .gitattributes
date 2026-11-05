@@ -1,3 +1,6 @@
 # Keep sources byte-exact on every platform: build IDs, replay identity and
 # MANIFEST.sha256 hash raw file bytes, so CRLF conversion would break them.
 * text=auto eol=lf
+
+# Binary reference documents are stored byte-exact.
+*.pdf binary
