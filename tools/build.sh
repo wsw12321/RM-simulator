@@ -106,3 +106,14 @@ done
 ./build/limits_rule_tests
 "$CXX" "${FLAGS[@]}" rules/rmuc2027_position_v1/position_rules.cpp tests/position_rule_tests.cpp -o build/position_rule_tests
 ./build/position_rule_tests
+
+# Integrated 2027 rules lab: every source-linked module in one deterministic match.
+MATCH_LAB_BUILD_ID="$(python3 match_lab/build_id.py)"
+MATCH_LAB_SOURCES=(src/sim.cpp rules/rmuc2027_buff_v1/buff_rules.cpp rules/rmuc2027_capture_v1/capture_rules.cpp
+  rules/rmuc2027_damage_v1/damage_rules.cpp rules/rmuc2027_economy_v1/economy_rules.cpp rules/rmuc2027_growth_v1/growth_rules.cpp
+  rules/rmuc2027_heat_v1/heat_rules.cpp rules/rmuc2027_lifecycle_v1/lifecycle_rules.cpp rules/rmuc2027_limits_v1/limits_rules.cpp
+  rules/rmuc2027_position_v1/position_rules.cpp rules/rmuc2027_v1/match_rules.cpp match_lab/engine.cpp)
+MATCH_LAB_FLAGS=(-std=c++20 -O2 -Wall -Wextra -Wpedantic -Werror -Isrc "-DMATCH_LAB_BUILD_ID=\"$MATCH_LAB_BUILD_ID\"")
+"$CXX" "${MATCH_LAB_FLAGS[@]}" "${MATCH_LAB_SOURCES[@]}" match_lab/cli.cpp -o build/rmuc_match_lab
+"$CXX" "${MATCH_LAB_FLAGS[@]}" "${MATCH_LAB_SOURCES[@]}" tests/match_lab_tests.cpp -o build/match_lab_tests
+./build/match_lab_tests

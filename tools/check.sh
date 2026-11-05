@@ -37,6 +37,8 @@ python3 tests/test_robot_profiles.py
 python3 tests/test_robot_profiles_review.py
 python3 -m py_compile tests/test_growth_catalog_crosscheck.py
 python3 tests/test_growth_catalog_crosscheck.py
+python3 -m py_compile match_lab/*.py tests/test_match_lab.py
+python3 tests/test_match_lab.py
 node --check web/roster-profiles.js
 node --check tests/sourced_profiles_ui_handlers.cjs
 node --check web/roster.js
