@@ -91,3 +91,8 @@ done
 ./build/roster_core_tests
 "$CXX" "${ROSTER_FLAGS[@]}" "${ROSTER_OBJECTS[@]}" tests/roster_review_tests.cpp -o build/roster_review_tests
 ./build/roster_review_tests
+
+# Source-linked 2027 robot growth module (performance tables, levels, experience).
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_growth_v1/growth_rules.cpp tests/growth_rule_tests.cpp -o build/growth_rule_tests
+./build/growth_rule_tests
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_growth_v1/growth_rules.cpp rules/rmuc2027_growth_v1/dump.cpp -o build/growth_rules_dump

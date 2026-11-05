@@ -35,6 +35,8 @@ python3 tests/test_roster_review.py
 python3 -m py_compile robot_profiles_v1/*.py tests/test_robot_profiles.py tests/test_robot_profiles_review.py tests/test_sourced_profiles_http.py
 python3 tests/test_robot_profiles.py
 python3 tests/test_robot_profiles_review.py
+python3 -m py_compile tests/test_growth_catalog_crosscheck.py
+python3 tests/test_growth_catalog_crosscheck.py
 node --check web/roster-profiles.js
 node --check tests/sourced_profiles_ui_handlers.cjs
 node --check web/roster.js

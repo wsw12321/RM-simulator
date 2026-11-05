@@ -1,0 +1,92 @@
+{
+  "module_version": "rmuc2027-growth-v1.0.0-module.1",
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "verified_scope": {
+    "infantry_chassis": {
+      "section": "§5.5.2 table 5-17",
+      "printed_pages": [
+        92,
+        93
+      ],
+      "check": "pixels inspected; crosschecked with robot_profiles_v1 catalog"
+    },
+    "infantry_launcher": {
+      "section": "§5.5.2 table 5-18",
+      "printed_pages": [
+        93,
+        94
+      ],
+      "check": "pixels inspected; crosschecked with robot_profiles_v1 catalog"
+    },
+    "heavy_stages": {
+      "section": "§5.5.2 table 5-16",
+      "printed_pages": [
+        91,
+        92
+      ]
+    },
+    "sentry_modes": {
+      "section": "§3.1.3 table 3-6",
+      "printed_pages": [
+        26
+      ]
+    },
+    "initial_allowance_and_muzzle_limit": {
+      "section": "§3.1 tables 3-3, 3-5, 3-6",
+      "printed_pages": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ]
+    },
+    "level_thresholds": {
+      "section": "§5.5.1 table 5-15",
+      "printed_pages": [
+        91
+      ]
+    },
+    "experience_gain": {
+      "section": "§5.5.1 table 5-14",
+      "printed_pages": [
+        89,
+        90
+      ],
+      "examples_recomputed": [
+        "2v6 kill = 540",
+        "unattributed avg 2625 -> 405 each",
+        "120 dmg split = 240"
+      ]
+    },
+    "level_cap_and_assembly_reward": {
+      "section": "§5.4.3 table 5-12",
+      "printed_pages": [
+        83
+      ]
+    },
+    "level_up_hp": {
+      "section": "§5.5.2",
+      "printed_pages": [
+        91
+      ]
+    }
+  },
+  "engineering_choices": {
+    "experience_unit": "integer tenths of experience",
+    "non_projectile_unattributed_killer_level": "default strict reject; EngineeringAverageLevelForNonProjectileV1 optional",
+    "average_level_cap": "average-experience level is capped by the team level cap",
+    "base_experience_rounding": "ceil(damage/2) per settled damage event"
+  },
+  "not_implemented": [
+    "assembly procedure and unlock times",
+    "sentry posture",
+    "energy mechanism experience",
+    "dart/radar rewards"
+  ]
+}
