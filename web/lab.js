@@ -73,8 +73,6 @@
       $('result').hidden = false;
       $('hash').textContent = String(data.hash);
       $('build').textContent = data.build.slice(0, 16);
-      $('outcome').textContent = OUTCOME[data.result.outcome] || data.result.outcome;
-      $('reason').textContent = REASON[data.result.reason] || data.result.reason;
       setStatus(`完成：${(data.elapsed_ms / 1000).toFixed(1)} 秒，${data.events.length} 个事件，${data.frames.length} 帧。`);
       render();
       play();
@@ -167,6 +165,10 @@
   }
 
   function panels(ms, line) {
+    // The verdict appears only once playback reaches the final frame (no spoilers).
+    const final = frame >= result.frames.length - 1;
+    $('outcome').textContent = final ? (OUTCOME[result.result.outcome] || result.result.outcome) : '对局进行中';
+    $('reason').textContent = final ? (REASON[result.result.reason] || result.result.reason) : `回放 ${Math.round((100 * frame) / Math.max(1, result.frames.length - 1))}%`;
     $('clock').textContent = `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
     $('frame-time').textContent = `${(ms / 1000).toFixed(1)} s`;
     if (line) {
