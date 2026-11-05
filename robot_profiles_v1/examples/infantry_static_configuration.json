@@ -1,0 +1,1041 @@
+{
+  "schema": "rmuc-sourced2027-roster-config.v1",
+  "official": false,
+  "complete": false,
+  "scope": "partial-parameter-projection-into-synthetic-roster-physics",
+  "selection": {
+    "schema": "rmuc-sourced2027-selection.v1",
+    "catalog": {
+      "id": "rmuc2027-robot-parameter-catalog",
+      "version": "1.0.0",
+      "sha256": "d4b8257a1c7a2dee773f28b3646d53bf2c3cf160597b920d5d1676bc30e614d3",
+      "source_audit_sha256": "1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1"
+    },
+    "strategies": {
+      "boundary_policy": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1",
+      "credit_strategy": "EXPERIMENTAL-end-of-second-v1",
+      "attack_damage_strategy": "EXPERIMENTAL-reconciled-projectile-hp-loss-v1",
+      "heat_strategy": "SYNTHETIC-per-robot-17mm-v1",
+      "heat_threshold_policy": "strict-reject-unadjudicated"
+    },
+    "robots": [
+      {
+        "id": "blue-1",
+        "team": 1,
+        "spawn": {
+          "x": 10400,
+          "y": 2900,
+          "yaw": 128
+        },
+        "eligible": true,
+        "preset_id": "infantry_power_burst_l1",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "synthetic": {
+          "id": "SYNTHETIC-src-blue-1",
+          "ammo": 120,
+          "radius_mm": 280,
+          "speed_mm_tick": 55,
+          "projectile_speed_mm_tick": 260,
+          "projectile_damage": 10,
+          "cooldown_ticks": 10,
+          "sensor_range_mm": 6000
+        }
+      },
+      {
+        "id": "blue-2",
+        "team": 1,
+        "spawn": {
+          "x": 10400,
+          "y": 4700,
+          "yaw": 128
+        },
+        "eligible": true,
+        "preset_id": "infantry_power_burst_l1",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "synthetic": {
+          "id": "SYNTHETIC-src-blue-2",
+          "ammo": 90,
+          "radius_mm": 240,
+          "speed_mm_tick": 65,
+          "projectile_speed_mm_tick": 300,
+          "projectile_damage": 8,
+          "cooldown_ticks": 9,
+          "sensor_range_mm": 5500
+        }
+      },
+      {
+        "id": "red-1",
+        "team": 0,
+        "spawn": {
+          "x": 1600,
+          "y": 2900,
+          "yaw": 0
+        },
+        "eligible": true,
+        "preset_id": "infantry_power_burst_l1",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "synthetic": {
+          "id": "SYNTHETIC-src-red-1",
+          "ammo": 120,
+          "radius_mm": 280,
+          "speed_mm_tick": 55,
+          "projectile_speed_mm_tick": 260,
+          "projectile_damage": 10,
+          "cooldown_ticks": 10,
+          "sensor_range_mm": 6000
+        }
+      },
+      {
+        "id": "red-2",
+        "team": 0,
+        "spawn": {
+          "x": 1600,
+          "y": 4700,
+          "yaw": 0
+        },
+        "eligible": true,
+        "preset_id": "infantry_power_burst_l1",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "synthetic": {
+          "id": "SYNTHETIC-src-red-2",
+          "ammo": 90,
+          "radius_mm": 240,
+          "speed_mm_tick": 65,
+          "projectile_speed_mm_tick": 300,
+          "projectile_damage": 8,
+          "cooldown_ticks": 9,
+          "sensor_range_mm": 5500
+        }
+      }
+    ]
+  },
+  "resolved_config": {
+    "boundary_policy": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1",
+    "credit_strategy": "EXPERIMENTAL-end-of-second-v1",
+    "attack_damage_strategy": "EXPERIMENTAL-reconciled-projectile-hp-loss-v1",
+    "heat_strategy": "SYNTHETIC-per-robot-17mm-v1",
+    "heat_threshold_policy": "strict-reject-unadjudicated",
+    "robots": [
+      {
+        "id": "blue-1",
+        "team": 1,
+        "spawn": {
+          "x": 10400,
+          "y": 2900,
+          "yaw": 128
+        },
+        "eligible": true,
+        "profile": {
+          "id": "SYNTHETIC-src-blue-1",
+          "ammo": 120,
+          "radius_mm": 280,
+          "speed_mm_tick": 55,
+          "projectile_speed_mm_tick": 260,
+          "projectile_damage": 10,
+          "cooldown_ticks": 10,
+          "sensor_range_mm": 6000,
+          "max_hp": 150,
+          "heat_limit_tenths": 1700,
+          "cooling_per_second": 5
+        }
+      },
+      {
+        "id": "blue-2",
+        "team": 1,
+        "spawn": {
+          "x": 10400,
+          "y": 4700,
+          "yaw": 128
+        },
+        "eligible": true,
+        "profile": {
+          "id": "SYNTHETIC-src-blue-2",
+          "ammo": 90,
+          "radius_mm": 240,
+          "speed_mm_tick": 65,
+          "projectile_speed_mm_tick": 300,
+          "projectile_damage": 8,
+          "cooldown_ticks": 9,
+          "sensor_range_mm": 5500,
+          "max_hp": 150,
+          "heat_limit_tenths": 1700,
+          "cooling_per_second": 5
+        }
+      },
+      {
+        "id": "red-1",
+        "team": 0,
+        "spawn": {
+          "x": 1600,
+          "y": 2900,
+          "yaw": 0
+        },
+        "eligible": true,
+        "profile": {
+          "id": "SYNTHETIC-src-red-1",
+          "ammo": 120,
+          "radius_mm": 280,
+          "speed_mm_tick": 55,
+          "projectile_speed_mm_tick": 260,
+          "projectile_damage": 10,
+          "cooldown_ticks": 10,
+          "sensor_range_mm": 6000,
+          "max_hp": 150,
+          "heat_limit_tenths": 1700,
+          "cooling_per_second": 5
+        }
+      },
+      {
+        "id": "red-2",
+        "team": 0,
+        "spawn": {
+          "x": 1600,
+          "y": 4700,
+          "yaw": 0
+        },
+        "eligible": true,
+        "profile": {
+          "id": "SYNTHETIC-src-red-2",
+          "ammo": 90,
+          "radius_mm": 240,
+          "speed_mm_tick": 65,
+          "projectile_speed_mm_tick": 300,
+          "projectile_damage": 8,
+          "cooldown_ticks": 9,
+          "sensor_range_mm": 5500,
+          "max_hp": 150,
+          "heat_limit_tenths": 1700,
+          "cooling_per_second": 5
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "catalog": {
+      "id": "rmuc2027-robot-parameter-catalog",
+      "version": "1.0.0",
+      "sha256": "d4b8257a1c7a2dee773f28b3646d53bf2c3cf160597b920d5d1676bc30e614d3",
+      "source_audit_sha256": "1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1"
+    },
+    "native_source_pin": "2ee07a70036b4759ea409c704f95ba2de41a02794087c634fed744c943f82f37",
+    "documents": [
+      {
+        "id": "RMUC2027_CN_V1.0.0_20261015",
+        "title": "RoboMaster 2027 机甲大师超级对抗赛比赛规则手册 V1.0.0（20261015）",
+        "version": "V1.0.0",
+        "publication_date": "2026-10-15",
+        "sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+        "hub_url": "https://bbs.robomaster.com/wiki/20204847/1969149?source=7",
+        "pdf_url": "https://bbs-web-static.robomaster.com/451e5737ba5d4463909a3013456a4e551792055647969/RoboMaster%202027%20%E6%9C%BA%E7%94%B2%E5%A4%A7%E5%B8%88%E8%B6%85%E7%BA%A7%E5%AF%B9%E6%8A%97%E8%B5%9B%E6%AF%94%E8%B5%9B%E8%A7%84%E5%88%99%E6%89%8B%E5%86%8CV1.0.0%EF%BC%8820261015%EF%BC%89.pdf",
+        "bytes": 22455861,
+        "physical_pages": 144,
+        "page_convention": "printed page N = physical PDF page N+1",
+        "authority_scope": "Pinned official manual only; latest Q&A, communications protocol, referee firmware, and construction manual not newly verified."
+      }
+    ],
+    "robots": [
+      {
+        "id": "blue-1",
+        "profile_id": "SYNTHETIC-src-blue-1",
+        "preset_id": "infantry_power_burst_l1",
+        "role": "infantry",
+        "label": "Infantry power/burst level1: sourced HP + base17mm heat only",
+        "projection_kind": "static_infantry_hp_and_base_17mm_heat",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "complete": false,
+        "official": false,
+        "fields": {
+          "max_hp": {
+            "classification": "sourced-parameter",
+            "value": 150,
+            "unit": "HP",
+            "source": {
+              "statement_id": "RP-HP-POWER-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 92,
+              "pdf_page": 93,
+              "section": "§5.5.2 表5-17 power_priority level1",
+              "source_quote_fragments": [
+                "1 150 60"
+              ],
+              "source_value": 150,
+              "source_unit": "HP",
+              "engine_unit": "HP",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "chassis": "power_priority",
+                "level": 1
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HP-HEADERS"
+              ]
+            }
+          },
+          "ammo": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 120,
+            "unit": "rounds",
+            "source": null
+          },
+          "radius_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 280,
+            "unit": "mm",
+            "source": null
+          },
+          "speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 55,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 260,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_damage": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 10,
+            "unit": "HP/impact",
+            "source": null
+          },
+          "cooldown_ticks": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 10,
+            "unit": "ticks",
+            "source": null
+          },
+          "sensor_range_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 6000,
+            "unit": "mm",
+            "source": null
+          },
+          "heat_limit_tenths": {
+            "classification": "sourced-parameter",
+            "value": 1700,
+            "unit": "tenths of heat",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 170,
+              "source_unit": "heat_units",
+              "engine_unit": "tenths_of_heat_unit",
+              "transform": "source_value * 10",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          },
+          "cooling_per_second": {
+            "classification": "sourced-parameter",
+            "value": 5,
+            "unit": "heat/second",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 5,
+              "source_unit": "heat_units_per_second",
+              "engine_unit": "heat_units_per_second",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          }
+        },
+        "excluded_fields": {
+          "ammo": "Native initial inventory is not the official allowed-shot counter. Preload and permission are separate; do not map initial allowance0 or300 to ammunition inventory.",
+          "radius_mm": "No official circular collision radius is specified by the audited rule tables. Construction bounds from a separate manual would still not define collision geometry.",
+          "speed_mm_tick": "Chassis power limits in watts do not specify translation speed. Native movement remains synthetic.",
+          "projectile_speed_mm_tick": "25m/s infantry/sentry and16.5m/s heavy are muzzle speed limits, not constant actual projectile speed; no conversion is applied.",
+          "projectile_damage": "Raw17mm damage20 requires valid armor detection and absent buffs. Circle overlap is not official armor detection; native damage remains experimental.",
+          "cooldown_ticks": "Armor minimum detection interval50ms is not firing interval. Posture/gate cooldowns are unrelated; native firing cadence remains experimental.",
+          "sensor_range_mm": "No supported constant sensor-range mapping. Radar accuracy thresholds are not range."
+        },
+        "unsupported_behaviors": [
+          "Official armor-module hit detection and orientation",
+          "Official chassis power/energy and construction geometry",
+          "Allowed-shot economy and physical loading",
+          "Attack/defense/vulnerability and cooling buffs",
+          "Experience gain, level changes, and phase transitions",
+          "Healing, death power-off, revival, and weak-state mechanics",
+          "Role eligibility, official roster counts, and control-mode compliance",
+          "Aerial,42mm,dart,radar,and composite-system behavior"
+        ],
+        "initialization_note": "Source maps max_hp only. Native current_hp=max_hp and heat0 at fixture start are experimental initialization, especially for levels2-10; no official match-start or mid-match-state claim."
+      },
+      {
+        "id": "blue-2",
+        "profile_id": "SYNTHETIC-src-blue-2",
+        "preset_id": "infantry_power_burst_l1",
+        "role": "infantry",
+        "label": "Infantry power/burst level1: sourced HP + base17mm heat only",
+        "projection_kind": "static_infantry_hp_and_base_17mm_heat",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "complete": false,
+        "official": false,
+        "fields": {
+          "max_hp": {
+            "classification": "sourced-parameter",
+            "value": 150,
+            "unit": "HP",
+            "source": {
+              "statement_id": "RP-HP-POWER-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 92,
+              "pdf_page": 93,
+              "section": "§5.5.2 表5-17 power_priority level1",
+              "source_quote_fragments": [
+                "1 150 60"
+              ],
+              "source_value": 150,
+              "source_unit": "HP",
+              "engine_unit": "HP",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "chassis": "power_priority",
+                "level": 1
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HP-HEADERS"
+              ]
+            }
+          },
+          "ammo": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 90,
+            "unit": "rounds",
+            "source": null
+          },
+          "radius_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 240,
+            "unit": "mm",
+            "source": null
+          },
+          "speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 65,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 300,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_damage": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 8,
+            "unit": "HP/impact",
+            "source": null
+          },
+          "cooldown_ticks": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 9,
+            "unit": "ticks",
+            "source": null
+          },
+          "sensor_range_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 5500,
+            "unit": "mm",
+            "source": null
+          },
+          "heat_limit_tenths": {
+            "classification": "sourced-parameter",
+            "value": 1700,
+            "unit": "tenths of heat",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 170,
+              "source_unit": "heat_units",
+              "engine_unit": "tenths_of_heat_unit",
+              "transform": "source_value * 10",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          },
+          "cooling_per_second": {
+            "classification": "sourced-parameter",
+            "value": 5,
+            "unit": "heat/second",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 5,
+              "source_unit": "heat_units_per_second",
+              "engine_unit": "heat_units_per_second",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          }
+        },
+        "excluded_fields": {
+          "ammo": "Native initial inventory is not the official allowed-shot counter. Preload and permission are separate; do not map initial allowance0 or300 to ammunition inventory.",
+          "radius_mm": "No official circular collision radius is specified by the audited rule tables. Construction bounds from a separate manual would still not define collision geometry.",
+          "speed_mm_tick": "Chassis power limits in watts do not specify translation speed. Native movement remains synthetic.",
+          "projectile_speed_mm_tick": "25m/s infantry/sentry and16.5m/s heavy are muzzle speed limits, not constant actual projectile speed; no conversion is applied.",
+          "projectile_damage": "Raw17mm damage20 requires valid armor detection and absent buffs. Circle overlap is not official armor detection; native damage remains experimental.",
+          "cooldown_ticks": "Armor minimum detection interval50ms is not firing interval. Posture/gate cooldowns are unrelated; native firing cadence remains experimental.",
+          "sensor_range_mm": "No supported constant sensor-range mapping. Radar accuracy thresholds are not range."
+        },
+        "unsupported_behaviors": [
+          "Official armor-module hit detection and orientation",
+          "Official chassis power/energy and construction geometry",
+          "Allowed-shot economy and physical loading",
+          "Attack/defense/vulnerability and cooling buffs",
+          "Experience gain, level changes, and phase transitions",
+          "Healing, death power-off, revival, and weak-state mechanics",
+          "Role eligibility, official roster counts, and control-mode compliance",
+          "Aerial,42mm,dart,radar,and composite-system behavior"
+        ],
+        "initialization_note": "Source maps max_hp only. Native current_hp=max_hp and heat0 at fixture start are experimental initialization, especially for levels2-10; no official match-start or mid-match-state claim."
+      },
+      {
+        "id": "red-1",
+        "profile_id": "SYNTHETIC-src-red-1",
+        "preset_id": "infantry_power_burst_l1",
+        "role": "infantry",
+        "label": "Infantry power/burst level1: sourced HP + base17mm heat only",
+        "projection_kind": "static_infantry_hp_and_base_17mm_heat",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "complete": false,
+        "official": false,
+        "fields": {
+          "max_hp": {
+            "classification": "sourced-parameter",
+            "value": 150,
+            "unit": "HP",
+            "source": {
+              "statement_id": "RP-HP-POWER-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 92,
+              "pdf_page": 93,
+              "section": "§5.5.2 表5-17 power_priority level1",
+              "source_quote_fragments": [
+                "1 150 60"
+              ],
+              "source_value": 150,
+              "source_unit": "HP",
+              "engine_unit": "HP",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "chassis": "power_priority",
+                "level": 1
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HP-HEADERS"
+              ]
+            }
+          },
+          "ammo": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 120,
+            "unit": "rounds",
+            "source": null
+          },
+          "radius_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 280,
+            "unit": "mm",
+            "source": null
+          },
+          "speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 55,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 260,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_damage": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 10,
+            "unit": "HP/impact",
+            "source": null
+          },
+          "cooldown_ticks": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 10,
+            "unit": "ticks",
+            "source": null
+          },
+          "sensor_range_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 6000,
+            "unit": "mm",
+            "source": null
+          },
+          "heat_limit_tenths": {
+            "classification": "sourced-parameter",
+            "value": 1700,
+            "unit": "tenths of heat",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 170,
+              "source_unit": "heat_units",
+              "engine_unit": "tenths_of_heat_unit",
+              "transform": "source_value * 10",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          },
+          "cooling_per_second": {
+            "classification": "sourced-parameter",
+            "value": 5,
+            "unit": "heat/second",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 5,
+              "source_unit": "heat_units_per_second",
+              "engine_unit": "heat_units_per_second",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          }
+        },
+        "excluded_fields": {
+          "ammo": "Native initial inventory is not the official allowed-shot counter. Preload and permission are separate; do not map initial allowance0 or300 to ammunition inventory.",
+          "radius_mm": "No official circular collision radius is specified by the audited rule tables. Construction bounds from a separate manual would still not define collision geometry.",
+          "speed_mm_tick": "Chassis power limits in watts do not specify translation speed. Native movement remains synthetic.",
+          "projectile_speed_mm_tick": "25m/s infantry/sentry and16.5m/s heavy are muzzle speed limits, not constant actual projectile speed; no conversion is applied.",
+          "projectile_damage": "Raw17mm damage20 requires valid armor detection and absent buffs. Circle overlap is not official armor detection; native damage remains experimental.",
+          "cooldown_ticks": "Armor minimum detection interval50ms is not firing interval. Posture/gate cooldowns are unrelated; native firing cadence remains experimental.",
+          "sensor_range_mm": "No supported constant sensor-range mapping. Radar accuracy thresholds are not range."
+        },
+        "unsupported_behaviors": [
+          "Official armor-module hit detection and orientation",
+          "Official chassis power/energy and construction geometry",
+          "Allowed-shot economy and physical loading",
+          "Attack/defense/vulnerability and cooling buffs",
+          "Experience gain, level changes, and phase transitions",
+          "Healing, death power-off, revival, and weak-state mechanics",
+          "Role eligibility, official roster counts, and control-mode compliance",
+          "Aerial,42mm,dart,radar,and composite-system behavior"
+        ],
+        "initialization_note": "Source maps max_hp only. Native current_hp=max_hp and heat0 at fixture start are experimental initialization, especially for levels2-10; no official match-start or mid-match-state claim."
+      },
+      {
+        "id": "red-2",
+        "profile_id": "SYNTHETIC-src-red-2",
+        "preset_id": "infantry_power_burst_l1",
+        "role": "infantry",
+        "label": "Infantry power/burst level1: sourced HP + base17mm heat only",
+        "projection_kind": "static_infantry_hp_and_base_17mm_heat",
+        "conditions": {
+          "role": "infantry",
+          "chassis": "power_priority",
+          "launcher": "burst_priority_17mm",
+          "level": 1,
+          "static_snapshot": true,
+          "external_buffs": "none",
+          "dynamic_progression": "not_simulated"
+        },
+        "complete": false,
+        "official": false,
+        "fields": {
+          "max_hp": {
+            "classification": "sourced-parameter",
+            "value": 150,
+            "unit": "HP",
+            "source": {
+              "statement_id": "RP-HP-POWER-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 92,
+              "pdf_page": 93,
+              "section": "§5.5.2 表5-17 power_priority level1",
+              "source_quote_fragments": [
+                "1 150 60"
+              ],
+              "source_value": 150,
+              "source_unit": "HP",
+              "engine_unit": "HP",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "chassis": "power_priority",
+                "level": 1
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HP-HEADERS"
+              ]
+            }
+          },
+          "ammo": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 90,
+            "unit": "rounds",
+            "source": null
+          },
+          "radius_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 240,
+            "unit": "mm",
+            "source": null
+          },
+          "speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 65,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_speed_mm_tick": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 300,
+            "unit": "mm/tick",
+            "source": null
+          },
+          "projectile_damage": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 8,
+            "unit": "HP/impact",
+            "source": null
+          },
+          "cooldown_ticks": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 9,
+            "unit": "ticks",
+            "source": null
+          },
+          "sensor_range_mm": {
+            "classification": "user-supplied-synthetic-assumption",
+            "value": 5500,
+            "unit": "mm",
+            "source": null
+          },
+          "heat_limit_tenths": {
+            "classification": "sourced-parameter",
+            "value": 1700,
+            "unit": "tenths of heat",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 170,
+              "source_unit": "heat_units",
+              "engine_unit": "tenths_of_heat_unit",
+              "transform": "source_value * 10",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          },
+          "cooling_per_second": {
+            "classification": "sourced-parameter",
+            "value": 5,
+            "unit": "heat/second",
+            "source": {
+              "statement_id": "RP-HEAT-BURST-01",
+              "source_document_id": "RMUC2027_CN_V1.0.0_20261015",
+              "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+              "printed_page": 93,
+              "pdf_page": 94,
+              "section": "§5.5.2 表5-18 burst_priority_17mm level1",
+              "source_quote_fragments": [
+                "1 170 5"
+              ],
+              "source_value": 5,
+              "source_unit": "heat_units_per_second",
+              "engine_unit": "heat_units_per_second",
+              "transform": "identity",
+              "source_applicability": {
+                "role": "infantry",
+                "launcher": "burst_priority_17mm",
+                "level": 1,
+                "external_buffs": "none"
+              },
+              "context_statement_ids": [
+                "RP-INFANTRY-SELECTION",
+                "RP-INFANTRY-HEAT-HEADERS",
+                "RP-HEAT-CORE"
+              ]
+            }
+          }
+        },
+        "excluded_fields": {
+          "ammo": "Native initial inventory is not the official allowed-shot counter. Preload and permission are separate; do not map initial allowance0 or300 to ammunition inventory.",
+          "radius_mm": "No official circular collision radius is specified by the audited rule tables. Construction bounds from a separate manual would still not define collision geometry.",
+          "speed_mm_tick": "Chassis power limits in watts do not specify translation speed. Native movement remains synthetic.",
+          "projectile_speed_mm_tick": "25m/s infantry/sentry and16.5m/s heavy are muzzle speed limits, not constant actual projectile speed; no conversion is applied.",
+          "projectile_damage": "Raw17mm damage20 requires valid armor detection and absent buffs. Circle overlap is not official armor detection; native damage remains experimental.",
+          "cooldown_ticks": "Armor minimum detection interval50ms is not firing interval. Posture/gate cooldowns are unrelated; native firing cadence remains experimental.",
+          "sensor_range_mm": "No supported constant sensor-range mapping. Radar accuracy thresholds are not range."
+        },
+        "unsupported_behaviors": [
+          "Official armor-module hit detection and orientation",
+          "Official chassis power/energy and construction geometry",
+          "Allowed-shot economy and physical loading",
+          "Attack/defense/vulnerability and cooling buffs",
+          "Experience gain, level changes, and phase transitions",
+          "Healing, death power-off, revival, and weak-state mechanics",
+          "Role eligibility, official roster counts, and control-mode compliance",
+          "Aerial,42mm,dart,radar,and composite-system behavior"
+        ],
+        "initialization_note": "Source maps max_hp only. Native current_hp=max_hp and heat0 at fixture start are experimental initialization, especially for levels2-10; no official match-start or mid-match-state claim."
+      }
+    ],
+    "synthetic_context": {
+      "strategies": {
+        "boundary_policy": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1",
+        "credit_strategy": "EXPERIMENTAL-end-of-second-v1",
+        "attack_damage_strategy": "EXPERIMENTAL-reconciled-projectile-hp-loss-v1",
+        "heat_strategy": "SYNTHETIC-per-robot-17mm-v1",
+        "heat_threshold_policy": "strict-reject-unadjudicated"
+      },
+      "robots": [
+        {
+          "id": "blue-1",
+          "team": 1,
+          "spawn": {
+            "x": 10400,
+            "y": 2900,
+            "yaw": 128
+          },
+          "eligible": true
+        },
+        {
+          "id": "blue-2",
+          "team": 1,
+          "spawn": {
+            "x": 10400,
+            "y": 4700,
+            "yaw": 128
+          },
+          "eligible": true
+        },
+        {
+          "id": "red-1",
+          "team": 0,
+          "spawn": {
+            "x": 1600,
+            "y": 2900,
+            "yaw": 0
+          },
+          "eligible": true
+        },
+        {
+          "id": "red-2",
+          "team": 0,
+          "spawn": {
+            "x": 1600,
+            "y": 4700,
+            "yaw": 0
+          },
+          "eligible": true
+        }
+      ]
+    },
+    "limitations": [
+      "Only a partial parameter projection into the unchanged synthetic roster engine. These rows are not implemented official robot classes or faithful playable roles.",
+      "Only max_hp and explicitly listed infantry base 17 mm heat parameters are sourced. Every other engine input must be an explicitly supplied synthetic assumption.",
+      "Native initial HP equals selected max_hp and heat starts at zero. This is an experimental fixture initialization, not an official full-heal, match-start or mid-match-state rule.",
+      "All movement, projectile velocity/damage/cadence, circle geometry, sensor range, ammunition, spawning, team counts and eligibility remain synthetic.",
+      "Heavy and sentry rows are HP-only inputs. They do not implement 42 mm weapons, assembly phases, resources, posture, control-mode compliance or other class behavior.",
+      "Legacy Hero and Engineer are not separate 2027 roles and are not silently aliased to Heavy. Aerial, hangar, dart and radar systems have no selectable supported projection.",
+      "Source heat values do not choose an equality policy or change the existing synthetic heat scheduler. Disabled heat leaves the parameters configured but inactive.",
+      "The catalog does not implement official armor detection, buffs, upgrades, healing, revival, allowed-shot accounting, power limits or official field dimensions.",
+      "The pinned V1.0.0 manual is the source authority for these values. Latest official Q&A, construction rules, firmware and communications behavior are not certified.",
+      "The catalog and checksums provide reproducible provenance, not cryptographic authenticity or proof of controller behavior.",
+      "max_hp is not current_hp. Higher-level/phase fixtures may deliberately initialize full HP but must call that experimental. No upgrade full heal is sourced.",
+      "Only infantry level1 is documented at match start. The40 presets are static selectable numeric snapshots; no XP or level-transition simulator.",
+      "Do not apply base30/10 as default effective cooling. Auto unbuffed movement computes10; semi-auto computes10/3 before unspecified integer policy. HP-only deliberately excludes both Q0 and cooling.",
+      "600-HP row is third assembly OR successful42mm installation, not both. Static row selection does not implement unlock or phase transition.",
+      "Q1=Q0+100 permanent lock conflicts between prose> and flowchart>=; catalog constants cannot resolve it. Preserve existing explicit heat policy and provenance.",
+      "10Hz source settlement and tentative/native scheduler phase/event order are distinct. Base cooling C heat/s converts to C heat-tenths per100ms. Do not change heat module scheduling from catalog selection.",
+      "Infantry C values are base rates. External buffs and changes are excluded; source greatest-effect selection is not additive stacking.",
+      "PinnedV1.0.0 only. No latest official Q&A/construction manual/firmware certification.",
+      "Do not edit native roster source pin/config grammar/raw replay. Resolved numeric native configs require provenance-bearing outer wrappers; exported native config alone loses catalog claims."
+    ],
+    "completeness": "partial-parameters-only; all unlisted behavior remains synthetic"
+  },
+  "configuration_sha256": "975d2d9e4bc3a4720552a33a1f1baa3ac00ac7dd989eae6abd31013e02f3371b"
+}

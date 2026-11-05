@@ -156,3 +156,22 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
   private state, strict disposable candidates and callback-free action replay.
 - Preserved all earlier mode implementations. No official roster, full RMUC,
   physical fidelity, malicious-code isolation, browser QA or WASM claim is added.
+
+## 2026-11-05 · Versioned sourced robot parameter projections
+
+- Added separately pinned partial2027 catalog and strict configuration resolver:
+  40 infantry HP/base17mm heat snapshots,4 heavy HP-only and2 sentry HP-only.
+  All other numeric inputs remain explicit synthetic assumptions. No unsupported
+  lifecycle, posture,42mm,airborne,assembly or formal roster semantics are implied.
+- Added per-field provenance, exact applicability conditions, source/exclusion
+  audit, strict selection schema,examples and read-only validation CLI.
+  Config/replay wrappers are reconstructed against trusted catalog bytes; forged
+  completeness,official labels,claims and rehashed mismatches are rejected.
+- Integrated role/condition selection, draft inspection, atomic apply, config
+  import/export and sourced replay into the existing roster browser page.
+  Version/tick transaction guards prevent stale clients acting on a different run.
+  Raw reset/import clears the source association even when values match.
+- Native physics,SDK,original roster files and raw replay format are unchanged.
+  Added per-preset boundary,adversarial provenance,transaction,HTTP and actual
+  JavaScript/mock-DOM/live-native tests,plus independent source review.
+  This is not a complete official robot implementation or a real-browser QA pass.

@@ -32,6 +32,11 @@ python3 tests/test_heat_review.py
 python3 -m py_compile roster_mode/*.py tests/test_roster_review.py tests/test_roster_http.py tests/test_roster_bridge.py
 python3 tests/test_roster_bridge.py
 python3 tests/test_roster_review.py
+python3 -m py_compile robot_profiles_v1/*.py tests/test_robot_profiles.py tests/test_robot_profiles_review.py tests/test_sourced_profiles_http.py
+python3 tests/test_robot_profiles.py
+python3 tests/test_robot_profiles_review.py
+node --check web/roster-profiles.js
+node --check tests/sourced_profiles_ui_handlers.cjs
 node --check web/roster.js
 node --check tests/roster_ui_handlers.cjs
 node --check web/tactical.js
@@ -92,3 +97,6 @@ node tests/tactical_ui_handlers.cjs "http://127.0.0.1:$PORT"
 
 python3 tests/test_roster_http.py "$PORT"
 node tests/roster_ui_handlers.cjs "http://127.0.0.1:$PORT"
+
+python3 tests/test_sourced_profiles_http.py "$PORT"
+node tests/sourced_profiles_ui_handlers.cjs "http://127.0.0.1:$PORT"

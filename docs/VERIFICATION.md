@@ -1019,3 +1019,74 @@ manifests matched afterward. Only this verification record was then finalized,
 and the final ZIP plus both manifests were reverified. The archive contains 195
 UTF-8 source/documentation files plus its manifest, with no compiled executable,
 object, test cache, credential file, manual PDF or CAD asset.
+
+## Sourced 2027 partial robot parameter profiles v1 · 2026-11-05
+
+New catalog identity: `rmuc2027-robot-parameter-catalog`,version 1.0.0.
+Catalog SHA-256:
+`d4b8257a1c7a2dee773f28b3646d53bf2c3cf160597b920d5d1676bc30e614d3`.
+Source audit SHA-256:
+`1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1`.
+The native roster source pin remains unchanged at
+`2ee07a70036b4759ea409c704f95ba2de41a02794087c634fed744c943f82f37`.
+
+The source audit inspected 24 rendered pages of the pinned official Chinese
+2027 V1.0.0 manual and validated 155 exact quote fragments across 73 statements.
+Independent review inspected relevant table pixels and separately asserted all 46
+presets,including non-linear level boundaries and the heavy 600 OR condition.
+Max HP does not imply official full healing; sentry cooling remains excluded
+because posture/buff/order/integer rounding cannot be faithfully projected.
+Source review and unsupported dependencies are recorded in
+`robot_profiles_v1/SOURCES.md` and `REVIEW.md`.
+
+Focused checks passed 19 core and 28 independent tests. They cover every preset's
+source mappings and residual field boundaries/types,required conditions,source
+and audit byte drift,rehashing forged provenance,strict structural validation,
+real native reset/step/replay transactions,failed-import atomicity,source context
+carry/clear,raw matching-value non-promotion,and stale revision/tick rejection.
+The supplied JSON Schema and CLI examples were also checked; runtime resolution
+uses the standard library and does not depend on a third-party schema validator.
+
+Six new live HTTP tests and seven original roster HTTP tests passed. The new
+integration applies sourced HP/heat,emits synthetic weapon damage,disables a
+robot,captures an objective,and replays both raw and sourced wrappers exactly.
+Actual source-panel JavaScript with a mock DOM and live native service passed
+source selection,draft/apply separation,role conditions,own thermal display,
+replay/config import/export,busy guards,stale files,resync,uncertain outcomes,
+source-context clearing and catalog failure fallback. Review caught and fixed
+a catalog excluded-field shape mismatch and an old-season heavy-role label;
+the regression checks use the final real catalog and actual option text.
+
+A separately retained,pre-feature 25,200-frame raw replay was imported without
+migration and exported exactly unchanged,including final hash 652702532. It remained
+an ordinary synthetic session with no sourced association. The bundled mixed
+partial selection was also run through the actual C++ policies for all 25,200 ticks
+and imported/exported exactly in both raw and sourced form. It reached terminal
+with final hash 1140817634; raw canonical replay SHA-256:
+`64fdcfc71e491b4a8160326292c2881af8d13428171ae7f702bbff81d0760074`;
+wrapped canonical replay SHA-256:
+`29cc4a8577c93752cb99fa70224833b429309fa01e37bd38c34383b7101d3d4d`.
+This checks a mixed HP-only/HP-plus-heat experiment,not full official class logic.
+All 113 earlier implementation files in native/rule/harness/mode directories remain
+byte-identical,including every existing `roster_mode/` file. The documented CLI
+resolve/validate roundtrip and both bundled selections passed from a clean extract.
+
+The final clean extracted source package rebuilt every native target and passed
+complete `bash tools/check.sh` with exit 0. This included all existing native/rule/
+scenario/arena/layered/combat/tactical tests,19 core and 28 independent source-profile
+tests,all original HTTP suites,six new source HTTP tests,and both full roster and
+source-panel JavaScript suites. FAST mode was not used. The tactical handler suite
+completed its multiple 420-second outcomes; the roster suite completed its whole
+25,200-tick match and replay. The optional retained pre-policy layered binary was
+also used for the historical differential check; that binary is not packaged.
+No implementation or test changed during or after this final aggregate.
+
+Only this verification record was finalized afterward. Source/extracted manifests,
+all frozen source bytes and final ZIP integrity were checked again. The archive
+contains 214 UTF-8 source/documentation files plus its manifest,with no executable,
+object,test cache,credential,manual PDF or CAD asset. All test listeners stopped.
+No external dependency installation or publication occurred. Real Chromium rendering,pointer capture,mobile layout and file
+save persistence remain unverified under the earlier socket restriction; it was
+not retried or bypassed. WASM is still unbuilt. The wrapper does not sandbox
+trusted in-process C++ or authenticate policies/replays. No official class,
+complete-match,official-geometry or current-firmware compliance claim is made.

@@ -2,6 +2,7 @@
 // Input/rendering adapter only. The native engine owns filtering, actions and physics.
 // The normal state endpoint returns ONE selected observation, never a global view.
 const $ = id => document.getElementById(id);
+const profileHook = (method,...args) => globalThis.rosterProfileIntegration?.[method]?.(...args);
 const canvas = $('roster-map'), ctx = canvas.getContext('2d');
 const PROFILE = 'experimental-roster-tactical-v1', OBSERVATION_PROFILE = 'experimental-roster-range-los-public-v1', ENGINE = 'integer-mm-roster-v1';
 const SDK_VERSION = 1, MAX_STEP_BATCH = 600, MAX_FILE_BYTES = 96 * 1024 * 1024, MAX_BACKLOG = 1200, MAX_CONFIG_BYTES = 64 * 1024;
@@ -26,6 +27,7 @@ function releaseInputs() { keys.clear(); pointers.clear(); aim = null; for (cons
 function setPlaying(value) { playing = !!value && canAdvance() && (!busy || busy === 'step'); accumulator = 0; lastTime = null; updateControls(); }
 function pauseAndRelease() { setPlaying(false); releaseInputs(); }
 function updateControls() {
+  profileHook('update');
   $('play').textContent = playing ? 'Ⅱ 暂停' : '▶ 开始';
   $('play').disabled = !canAdvance() || (!!busy && !(busy === 'step' && playing));
   for (const id of ['step','advance-1s','advance-10s']) $(id).disabled = !canAdvance() || !!busy || playing;
@@ -36,7 +38,7 @@ function updateControls() {
   $('fire').textContent = ready() && state.observation.self_heat.firing_locked ? '热锁 · 等待' : '发射';
   $('fire').setAttribute('aria-label', '按住请求发射；原生热锁会阻止出弹，临时锁冷却后可恢复');
   $('reconnect').hidden = synchronized || !!busy; $('reconnect').disabled = !!busy; $('map-veil').hidden = ready();
-  const busyNames = {connect:'连接中',perspective:'读取所选视角',step:playing?'运行中':'步进中',reset:'重置中',import:'校验回放中',export:'准备开发者导出'};
+  const busyNames = {connect:'连接中',perspective:'读取所选视角',step:playing?'运行中':'步进中',reset:'重置中',import:'校验回放中',export:'准备开发者导出',profiles:'校验来源参数'};
   $('run-status').textContent = busy ? busyNames[busy] : !ready() ? '未同步 · 已暂停' : state.terminal ? '本局已终止' : playing ? '运行中' : '已暂停';
   $('run-status').className = 'state-pill' + (playing ? ' active' : '');
   $('controller-status').textContent = !ready() ? '等待过滤观测' : !policyAvailable ? '策略不可用 · 可选人工' : `当前视角：${observer}`;
@@ -46,14 +48,16 @@ function updateControls() {
   $('drive-note').textContent = ready() && state.observation.self.hp === 0 ? '自己的机器人已失效，不能移动或发射。没有复活，比赛仍可推进至 420 秒。' : selectedManual() ? '人工输入只作用于当前视角。其他人工机器人零移动、不发射；暂停单步先捕获输入，再释放按键。' : '当前人工输入停用。原生 C++ 每 tick 根据这台机器人的过滤观测决策。';
 }
 async function api(path, data, raw = false) {
+  const originalPath = path; path = profileHook('route',path) || path;
+  [data,raw] = profileHook('request',data,raw,originalPath) || [data,raw];
   let response;
   try { response = await fetch('/api/roster/' + path, data === undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json','X-Sandbox-Client':'1'}, body:raw ? data : JSON.stringify(data)}); }
   catch (cause) { const error = new Error(`无法连接本机服务：${cause.message}`); error.uncertain = data !== undefined; throw error; }
   let value;
   try { value = await response.json(); }
   catch (_) { const error = new Error(`本机服务返回非 JSON 响应（HTTP ${response.status}）。`); error.uncertain = data !== undefined; throw error; }
-  if (!response.ok) { const error = new Error(typeof value.error === 'string' ? value.error : `请求失败（HTTP ${response.status}）。`); error.rejected = response.status < 500; error.uncertain = response.status >= 500 && data !== undefined; throw error; }
-  return value;
+  if (!response.ok) { const error = new Error(typeof value.error === 'string' ? value.error : `请求失败（HTTP ${response.status}）。`); error.rejected = response.status < 500; error.uncertain = (response.status >= 500 || value.resync_required === true) && data !== undefined; throw error; }
+  return profileHook('unwrap',value,originalPath) || value;
 }
 const ID = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$/, CONTROLLER_ID = /^[A-Za-z][A-Za-z0-9_.-]{0,63}$/;
 const BOUNDARIES = ['strict-reject-unadjudicated-v1','ENGINEERING-NOT-OFFICIAL-timer-before-input-v1'];
@@ -170,7 +174,7 @@ function syncConfigSelection() {
 }
 function selectConfig() {
   if (!ready() || busy) { $('config-json').value=stagedConfig; return; }
-  pauseAndRelease(); stagedConfig=$('config-json').value; revision++;
+  pauseAndRelease(); stagedConfig=$('config-json').value; revision++; profileHook('draftChanged');
   operation('已暂停。JSON 草稿仅在点击“应用草稿并重置”后生效，当前局配置未改变。');
 }
 function stageConfig(value) {
@@ -189,6 +193,7 @@ function verifyState(next,nextMeta,selected,expectedSources,expectedConfig) {
 }
 function commit(next,nextMeta=meta,selected=observer) {
   verifyState(next,nextMeta,selected);
+  profileHook('accept',next);
   const first=state===null;
   meta=nextMeta; state=next; observer=next.observer; synchronized=true; revision++;
   sources=new Map(state.config.robots.map(robot=>[robot.id,sources.get(robot.id)||(first&&robot.id!==observer?'policy':'manual')]));
@@ -198,6 +203,7 @@ function commit(next,nextMeta=meta,selected=observer) {
   renderMetadata(); renderState(); drawMap(); updateControls();
 }
 function blankView() {
+  profileHook('clearActive');
   facts('self-state', [['状态','等待所选视角同步']]); facts('visible-state', [['状态','当前没有同步的观测']]);
   $('objective-list').replaceChildren(node('p','等待同步的公开目标区状态','panel-note'));
   for (const id of ['score-red','score-blue']) $(id).textContent = '—';
@@ -354,7 +360,7 @@ function renderMetadata() {
   }
   $('roster-controls').replaceChildren(...choices);$('observer').replaceChildren(...options);$('observer').value=observer;
   facts('policy-metadata',policyAvailable?[['策略 ID',meta.policy.controller_id],['SDK / 决策频率',`v${meta.policy.sdk_version} / ${meta.policy.decision_hz} Hz`],['过滤协议',meta.policy.observation],['执行方式',meta.policy.execution],['策略状态',meta.policy.state_mode],['响应保护',`${meta.policy.watchdog_seconds} s；不是安全沙箱`]]:[['策略状态',POLICY_ERROR]]);
-  facts('mode-metadata',[['模式',meta.profile],['观测协议',meta.observation_profile],['源码构建',meta.build],['官方状态','非官方，全部物理 / 武器 / 热量参数为 SYNTHETIC'],['运行上限',`${meta.duration} 帧 / 420 秒`],['步进上限',`每批 ${meta.max_batch} 帧`],...meta.limitations.map(value=>['实验限制',value])]);
+  facts('mode-metadata',[['模式',meta.profile],['观测协议',meta.observation_profile],['源码构建',meta.build],['官方状态','非官方 SYNTHETIC 引擎；部分来源参数的状态见独立来源面板'],['运行上限',`${meta.duration} 帧 / 420 秒`],['步进上限',`每批 ${meta.max_batch} 帧`],...meta.limitations.map(value=>['实验限制',value])]);
 }
 function renderState(){
   const observation=state.observation,self=observation.self,profile=observation.roster.find(r=>r.id===observer).profile;
@@ -487,4 +493,5 @@ $('config-json').oninput=selectConfig; $('config-default').onclick=()=>stageConf
 $('reset').onclick = resetRun; $('reconnect').onclick = reconnect;
 $('import-replay').onclick = openPicker; $('replay-file').onchange = importFile; $('replay-file').oncancel = () => { replayPicker = null; };
 $('export-replay').onclick = exportReplay;
+profileHook('initialize');
 updateControls(); drawMap(); void reconnect(); requestAnimationFrame(loop);

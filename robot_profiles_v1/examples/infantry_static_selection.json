@@ -1,0 +1,138 @@
+{
+  "schema": "rmuc-sourced2027-selection.v1",
+  "catalog": {
+    "id": "rmuc2027-robot-parameter-catalog",
+    "version": "1.0.0",
+    "sha256": "d4b8257a1c7a2dee773f28b3646d53bf2c3cf160597b920d5d1676bc30e614d3",
+    "source_audit_sha256": "1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1"
+  },
+  "strategies": {
+    "boundary_policy": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1",
+    "credit_strategy": "EXPERIMENTAL-end-of-second-v1",
+    "attack_damage_strategy": "EXPERIMENTAL-reconciled-projectile-hp-loss-v1",
+    "heat_strategy": "SYNTHETIC-per-robot-17mm-v1",
+    "heat_threshold_policy": "strict-reject-unadjudicated"
+  },
+  "robots": [
+    {
+      "id": "blue-1",
+      "team": 1,
+      "spawn": {
+        "x": 10400,
+        "y": 2900,
+        "yaw": 128
+      },
+      "eligible": true,
+      "preset_id": "infantry_power_burst_l1",
+      "conditions": {
+        "role": "infantry",
+        "chassis": "power_priority",
+        "launcher": "burst_priority_17mm",
+        "level": 1,
+        "static_snapshot": true,
+        "external_buffs": "none",
+        "dynamic_progression": "not_simulated"
+      },
+      "synthetic": {
+        "id": "SYNTHETIC-src-blue-1",
+        "ammo": 120,
+        "radius_mm": 280,
+        "speed_mm_tick": 55,
+        "projectile_speed_mm_tick": 260,
+        "projectile_damage": 10,
+        "cooldown_ticks": 10,
+        "sensor_range_mm": 6000
+      }
+    },
+    {
+      "id": "blue-2",
+      "team": 1,
+      "spawn": {
+        "x": 10400,
+        "y": 4700,
+        "yaw": 128
+      },
+      "eligible": true,
+      "preset_id": "infantry_power_burst_l1",
+      "conditions": {
+        "role": "infantry",
+        "chassis": "power_priority",
+        "launcher": "burst_priority_17mm",
+        "level": 1,
+        "static_snapshot": true,
+        "external_buffs": "none",
+        "dynamic_progression": "not_simulated"
+      },
+      "synthetic": {
+        "id": "SYNTHETIC-src-blue-2",
+        "ammo": 90,
+        "radius_mm": 240,
+        "speed_mm_tick": 65,
+        "projectile_speed_mm_tick": 300,
+        "projectile_damage": 8,
+        "cooldown_ticks": 9,
+        "sensor_range_mm": 5500
+      }
+    },
+    {
+      "id": "red-1",
+      "team": 0,
+      "spawn": {
+        "x": 1600,
+        "y": 2900,
+        "yaw": 0
+      },
+      "eligible": true,
+      "preset_id": "infantry_power_burst_l1",
+      "conditions": {
+        "role": "infantry",
+        "chassis": "power_priority",
+        "launcher": "burst_priority_17mm",
+        "level": 1,
+        "static_snapshot": true,
+        "external_buffs": "none",
+        "dynamic_progression": "not_simulated"
+      },
+      "synthetic": {
+        "id": "SYNTHETIC-src-red-1",
+        "ammo": 120,
+        "radius_mm": 280,
+        "speed_mm_tick": 55,
+        "projectile_speed_mm_tick": 260,
+        "projectile_damage": 10,
+        "cooldown_ticks": 10,
+        "sensor_range_mm": 6000
+      }
+    },
+    {
+      "id": "red-2",
+      "team": 0,
+      "spawn": {
+        "x": 1600,
+        "y": 4700,
+        "yaw": 0
+      },
+      "eligible": true,
+      "preset_id": "infantry_power_burst_l1",
+      "conditions": {
+        "role": "infantry",
+        "chassis": "power_priority",
+        "launcher": "burst_priority_17mm",
+        "level": 1,
+        "static_snapshot": true,
+        "external_buffs": "none",
+        "dynamic_progression": "not_simulated"
+      },
+      "synthetic": {
+        "id": "SYNTHETIC-src-red-2",
+        "ammo": 90,
+        "radius_mm": 240,
+        "speed_mm_tick": 65,
+        "projectile_speed_mm_tick": 300,
+        "projectile_damage": 8,
+        "cooldown_ticks": 9,
+        "sensor_range_mm": 5500
+      }
+    }
+  ]
+}

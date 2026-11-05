@@ -307,15 +307,153 @@ def roster_observer(query):
     return values['observer'][0]
 
 
+def roster_changed(server):
+    server.roster_run_revision = getattr(server, 'roster_run_revision', 0) + 1
+
+
+def roster_context(server, state):
+    """Only return trusted public metadata bound to this committed native world.
+
+    A matching numeric config alone never promotes a raw run. Catalog problems
+    hide the badge, but do not prevent the original synthetic API from working.
+    """
+    context = getattr(server, 'roster_profile_context', None)
+    if context is None:
+        return None, 'synthetic'
+    engine = roster_engine(server)
+    if context['engine'] is not engine or context['native'] is not engine._native:
+        server.roster_profile_context = None
+        return None, 'unverified'
+    try:
+        from robot_profiles_v1.api import validate_config_envelope, NATIVE_SOURCE_PIN
+        from combat_mode.bridge import canonical
+        envelope = validate_config_envelope(context['configuration'])
+        if state['build'] != NATIVE_SOURCE_PIN or canonical(envelope['resolved_config']) != canonical(state['config']):
+            raise ValueError('Sourced context differs from the native world.')
+        return envelope, 'sourced-partial'
+    except (ValueError, OSError):
+        return None, 'unverified'
+
+
+def roster_packet(server, state):
+    envelope, status = roster_context(server, state)
+    return {'schema':'rmuc-roster-profile-session.v1',
+            'run_revision':getattr(server, 'roster_run_revision', 0),
+            'state':state, 'active_config':envelope, 'provenance_status':status}
+
+
 def roster_post(server, path, data):
     engine = roster_engine(server)
     if path == '/api/roster/reset':
-        return engine.reset(data)
+        result = engine.reset(data)
+        server.roster_profile_context = None
+        roster_changed(server)
+        return result
     if path == '/api/roster/step':
-        return engine.step(data)
+        # RosterProcess swaps its disposable native process on every successful
+        # batch. Carry metadata only from the exact prior committed process.
+        context = getattr(server, 'roster_profile_context', None)
+        carry = context is not None and context['engine'] is engine and context['native'] is engine._native
+        result = engine.step(data)
+        if carry:
+            context['native'] = engine._native
+        elif context is not None:
+            server.roster_profile_context = None
+        roster_changed(server)
+        return result
     if path == '/api/roster/import':
-        return engine.import_replay(data)
+        result = engine.import_replay(data)
+        server.roster_profile_context = None
+        roster_changed(server)
+        return result
     raise ValueError('Unknown roster endpoint.')
+
+
+class RosterStaleRequest(ValueError):
+    resync_required = True
+
+
+def roster_profiles_post(server, path, data):
+    from combat_mode.bridge import exact
+    prefix = '/api/roster/profiles/'
+    action = path[len(prefix):]
+    if action in ('session/reset','session/step','session/import','reset','import'):
+        exact(data, ('expected_revision','expected_tick','request'), 'session mutation')
+        revision = integer(data['expected_revision'],0,9007199254740991)
+        tick = integer(data['expected_tick'],0,25200)
+        engine = roster_engine(server)
+        if revision != getattr(server, 'roster_run_revision', 0) or tick != len(engine._frames):
+            raise RosterStaleRequest('Another client changed this run. Read-only resync required; no action was applied.')
+        if type(data['request']) is not dict:
+            raise ValueError('session request must be an object.')
+        data = data['request']
+    if action in ('session/reset','session/step','session/import'):
+        state = roster_post(server, '/api/roster/' + action.split('/')[1], data)
+        return roster_packet(server, state)
+    from robot_profiles_v1 import api as profiles
+    if action == 'prepare':
+        # Choice preparation is explicit, read-only and preserves raw parser
+        # rejection of duplicate keys before constructing a new selection.
+        from roster_mode.bridge import validate_config, SELECTED_CONFIG
+        exact(data, ('config','presets'), 'prepare')
+        config = validate_config(data['config'])
+        exact(data['presets'], tuple(r['id'] for r in config['robots']), 'prepare.presets')
+        catalog = profiles.catalog()
+        presets = {p['id']:p for p in catalog['presets']}
+        robots = []
+        for robot in config['robots']:
+            chosen = data['presets'][robot['id']]
+            if type(chosen) is not str or chosen not in presets:
+                raise ValueError('Unknown sourced preset.')
+            preset = presets[chosen]
+            residual = {k:v for k,v in robot['profile'].items() if k not in preset['overrides']}
+            residual['id'] = 'SYNTHETIC-src-' + str(len(robots) + 1)
+            robots.append({**{k:robot[k] for k in ('id','team','spawn','eligible')},
+                           'preset_id':chosen, 'conditions':preset['conditions'], 'synthetic':residual})
+        return profiles.resolve_config({'schema':profiles.SELECTION_SCHEMA, 'catalog':catalog['identity'],
+            'strategies':{k:config[k] for k in SELECTED_CONFIG}, 'robots':robots})
+    if action == 'resolve':
+        return profiles.resolve_config(data)
+    if action == 'validate':
+        exact(data, ('configuration',), 'validate')
+        return profiles.validate_config_envelope(data['configuration'])
+    if action == 'reset':
+        exact(data, ('observer','configuration'), 'sourced.reset')
+        envelope = profiles.validate_config_envelope(data['configuration'])
+        engine = roster_engine(server)
+        state = profiles.reset_process(engine, data['observer'], envelope)
+    elif action == 'import':
+        exact(data, ('observer','replay'), 'sourced.import')
+        wrapper = profiles.validate_replay_wrapper(data['replay'])
+        envelope = wrapper['configuration']
+        engine = roster_engine(server)
+        state = profiles.import_process(engine, data['observer'], wrapper)
+    else:
+        raise ValueError('Unknown sourced profile endpoint.')
+    # Native reset/import is transactional; do not replace context until success.
+    server.roster_profile_context = {'engine':engine, 'native':engine._native,
+                                     'configuration':envelope}
+    roster_changed(server)
+    return roster_packet(server, state)
+
+
+def roster_profiles_get(server, path, query):
+    if path == '/api/roster/profiles/session/state':
+        return roster_packet(server, roster_engine(server).state(roster_observer(query)))
+    if query:
+        raise ValueError('This profile endpoint does not accept query parameters.')
+    from robot_profiles_v1 import api as profiles
+    if path == '/api/roster/profiles/catalog':
+        return profiles.catalog()
+    if path == '/api/roster/profiles/replay':
+        engine = roster_engine(server)
+        # Export is explicit and privileged, unlike the filtered session API.
+        raw = engine.replay()
+        envelope, status = roster_context(server, {'build':raw['build'], 'config':raw['config']})
+        if status != 'sourced-partial':
+            raise ValueError('This run has no validated sourced context. Export its raw synthetic replay instead.')
+        return profiles.wrap_replay(envelope, raw)
+    raise ValueError('Unknown sourced profile endpoint.')
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -338,6 +476,14 @@ class Handler(SimpleHTTPRequestHandler):
             return self.respond({'error':'Loopback Host required.'},403)
         path=urlsplit(self.path).path
         if path=='/api/meta':return self.respond(META)
+        if path.startswith('/api/roster/profiles/'):
+            try:
+                with LOCK:
+                    result=roster_profiles_get(self.server,path,urlsplit(self.path).query)
+                return self.respond(result)
+            except ValueError as exc:return self.respond({'error':str(exc)},400)
+            except (RuntimeError,OSError) as exc:return self.respond({'error':str(exc)},500)
+
         if path in ('/api/roster/meta','/api/roster/state','/api/roster/replay'):
             try:
                 with LOCK:
@@ -432,7 +578,9 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.respond({'error':'Not found'},404)
                 return self.respond(arena_post(self.path,data))
             with LOCK:
-                if self.path.startswith('/api/roster/'):
+                if self.path.startswith('/api/roster/profiles/'):
+                    result=roster_profiles_post(self.server,self.path,data)
+                elif self.path.startswith('/api/roster/'):
                     if self.path not in ('/api/roster/reset','/api/roster/step','/api/roster/import'):
                         return self.respond({'error':'Not found'},404)
                     result=roster_post(self.server,self.path,data)
@@ -481,7 +629,11 @@ class Handler(SimpleHTTPRequestHandler):
             result={'error':str(exc)}
             if self.path.startswith('/api/layered/') and hasattr(exc,'errors'):
                 result['errors']=exc.errors
-            self.respond(result,400)
+            if getattr(exc,'resync_required',False):
+                result['resync_required']=True
+                self.respond(result,409)
+            else:
+                self.respond(result,400)
         except (RuntimeError,OSError) as exc:self.respond({'error':str(exc)},500)
 
 def main():

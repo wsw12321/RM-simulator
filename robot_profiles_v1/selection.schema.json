@@ -1,0 +1,5844 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rmuc:sourced2027:selection:v1",
+  "title": "Partial source-parameter selection into synthetic roster physics",
+  "description": "Structural schema only. api.resolve_config is authoritative: it rejects float-encoded integers, verifies release pins, reused profiles, team counts, spawn geometry and exact provenance. JSON Schema integer semantics alone are insufficient.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "catalog",
+    "strategies",
+    "robots"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rmuc-sourced2027-selection.v1"
+    },
+    "catalog": {
+      "const": {
+        "id": "rmuc2027-robot-parameter-catalog",
+        "version": "1.0.0",
+        "sha256": "d4b8257a1c7a2dee773f28b3646d53bf2c3cf160597b920d5d1676bc30e614d3",
+        "source_audit_sha256": "1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1"
+      }
+    },
+    "strategies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary_policy",
+        "credit_strategy",
+        "attack_damage_strategy",
+        "heat_strategy",
+        "heat_threshold_policy"
+      ],
+      "properties": {
+        "boundary_policy": {
+          "enum": [
+            "strict-reject-unadjudicated-v1",
+            "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1"
+          ]
+        },
+        "credit_strategy": {
+          "enum": [
+            "disabled",
+            "EXPERIMENTAL-end-of-second-v1"
+          ]
+        },
+        "attack_damage_strategy": {
+          "enum": [
+            "missing-adjudicated-attack-damage",
+            "EXPERIMENTAL-reconciled-projectile-hp-loss-v1"
+          ]
+        },
+        "heat_strategy": {
+          "enum": [
+            "disabled",
+            "SYNTHETIC-per-robot-17mm-v1"
+          ]
+        },
+        "heat_threshold_policy": {
+          "enum": [
+            "strict-reject-unadjudicated",
+            "ENGINEERING-prose-greater-temporary-at-equality-v1",
+            "ENGINEERING-flowchart-greater-equal-v1"
+          ]
+        }
+      }
+    },
+    "robots": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 8,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l1"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 1,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level1: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l2"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 2,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level2: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l3"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 3,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level3: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l4"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 4,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level4: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l5"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 5,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level5: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l6"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 6,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level6: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l7"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 7,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level7: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l8"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 8,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level8: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l9"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 9,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level9: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_burst_l10"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 10,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/burst level10: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l1"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 1,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level1: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l2"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 2,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level2: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l3"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 3,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level3: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l4"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 4,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level4: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l5"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 5,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level5: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l6"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 6,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level6: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l7"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 7,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level7: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l8"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 8,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level8: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l9"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 9,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level9: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_power_cooling_l10"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "power_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 10,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry power/cooling level10: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l1"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 1,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level1: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l2"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 2,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level2: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l3"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 3,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level3: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l4"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 4,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level4: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l5"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 5,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level5: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l6"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 6,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level6: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l7"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 7,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level7: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l8"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 8,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level8: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l9"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 9,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level9: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_burst_l10"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "burst_priority_17mm",
+                  "level": 10,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/burst level10: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l1"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 1,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level1: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l2"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 2,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level2: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l3"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 3,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level3: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l4"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 4,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level4: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l5"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 5,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level5: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l6"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 6,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level6: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l7"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 7,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level7: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l8"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 8,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level8: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l9"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 9,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level9: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "infantry_hp_cooling_l10"
+              },
+              "conditions": {
+                "const": {
+                  "role": "infantry",
+                  "chassis": "hp_priority",
+                  "launcher": "cooling_priority_17mm",
+                  "level": 10,
+                  "static_snapshot": true,
+                  "external_buffs": "none",
+                  "dynamic_progression": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  }
+                }
+              }
+            },
+            "title": "Infantry hp/cooling level10: sourced HP + base17mm heat only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "heavy_opening_hp_only"
+              },
+              "conditions": {
+                "const": {
+                  "role": "heavy",
+                  "heavy_phase": "opening_default",
+                  "static_snapshot": true,
+                  "phase_transitions": "not_simulated",
+                  "role_mechanics": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm",
+                  "heat_limit_tenths",
+                  "cooling_per_second"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "heat_limit_tenths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "cooling_per_second": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "title": "Heavy opening_default: sourced HP only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "heavy_assembly1_hp_only"
+              },
+              "conditions": {
+                "const": {
+                  "role": "heavy",
+                  "heavy_phase": "after_first_assembly",
+                  "static_snapshot": true,
+                  "phase_transitions": "not_simulated",
+                  "role_mechanics": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm",
+                  "heat_limit_tenths",
+                  "cooling_per_second"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "heat_limit_tenths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "cooling_per_second": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "title": "Heavy after_first_assembly: sourced HP only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "heavy_assembly2_hp_only"
+              },
+              "conditions": {
+                "const": {
+                  "role": "heavy",
+                  "heavy_phase": "after_second_assembly",
+                  "static_snapshot": true,
+                  "phase_transitions": "not_simulated",
+                  "role_mechanics": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm",
+                  "heat_limit_tenths",
+                  "cooling_per_second"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "heat_limit_tenths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "cooling_per_second": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "title": "Heavy after_second_assembly: sourced HP only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "heavy_assembly3_or_installed_hp_only"
+              },
+              "conditions": {
+                "const": {
+                  "role": "heavy",
+                  "heavy_phase": "third_assembly_or_successful_42mm_installation",
+                  "static_snapshot": true,
+                  "phase_transitions": "not_simulated",
+                  "role_mechanics": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm",
+                  "heat_limit_tenths",
+                  "cooling_per_second"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "heat_limit_tenths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "cooling_per_second": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "title": "Heavy third_assembly_or_successful_42mm_installation: sourced HP only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "sentry_automatic_hp_only"
+              },
+              "conditions": {
+                "const": {
+                  "role": "sentry",
+                  "control_mode": "automatic",
+                  "static_snapshot": true,
+                  "posture": "not_simulated",
+                  "role_mechanics": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm",
+                  "heat_limit_tenths",
+                  "cooling_per_second"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "heat_limit_tenths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "cooling_per_second": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "title": "Sentry automatic: sourced HP only"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "team",
+              "spawn",
+              "eligible",
+              "preset_id",
+              "conditions",
+              "synthetic"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,31}$"
+              },
+              "team": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "spawn": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "yaw"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 11900
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 7500
+                  },
+                  "yaw": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "eligible": {
+                "type": "boolean"
+              },
+              "preset_id": {
+                "const": "sentry_semi_automatic_hp_only"
+              },
+              "conditions": {
+                "const": {
+                  "role": "sentry",
+                  "control_mode": "semi_automatic",
+                  "static_snapshot": true,
+                  "posture": "not_simulated",
+                  "role_mechanics": "not_simulated"
+                }
+              },
+              "synthetic": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "ammo",
+                  "radius_mm",
+                  "speed_mm_tick",
+                  "projectile_speed_mm_tick",
+                  "projectile_damage",
+                  "cooldown_ticks",
+                  "sensor_range_mm",
+                  "heat_limit_tenths",
+                  "cooling_per_second"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SYNTHETIC-[A-Za-z0-9_.-]*$",
+                    "maxLength": 32
+                  },
+                  "ammo": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "radius_mm": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 500
+                  },
+                  "speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "projectile_speed_mm_tick": {
+                    "type": "integer",
+                    "minimum": 80,
+                    "maximum": 1000
+                  },
+                  "projectile_damage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "cooldown_ticks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "sensor_range_mm": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "heat_limit_tenths": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20000
+                  },
+                  "cooling_per_second": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              }
+            },
+            "title": "Sentry semi_automatic: sourced HP only"
+          }
+        ]
+      }
+    }
+  }
+}
