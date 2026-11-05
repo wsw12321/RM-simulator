@@ -778,7 +778,8 @@ void Engine::record(I t) {
         o << "],\"robots\":[";
         for (std::size_t i = 0; i < robots_.size(); ++i) {
             const auto& s = robots_[i].life.snapshot();
-            o << (i ? "," : "") << "[" << s.hp << ',' << s.max_hp << ',' << robots_[i].level << ',' << (s.alive() ? 1 : 0) << ']';
+            const I level = robots_[i].cls == grow::RobotClass::Infantry ? robots_[i].level : instant_level(robots_[i]);
+            o << (i ? "," : "") << "[" << s.hp << ',' << s.max_hp << ',' << level << ',' << (s.alive() ? 1 : 0) << ']';
         }
         o << "]}";
         timeline_.push_back(o.str());

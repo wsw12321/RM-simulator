@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RMUC · 规则全流程实验</title>
+  <link rel="stylesheet" href="lab.css">
+</head>
+<body>
+<main class="lab">
+  <header class="lab-header">
+    <a class="brand" href="/"><span class="brand-mark">R</span><span>TACTICS <b>LAB</b><small>RMUC 2027 规则全流程 / LOCAL ONLY</small></span></a>
+    <a class="back-link" href="/">返回战术沙盒 ↗</a>
+  </header>
+  <section class="intro">
+    <div>
+      <span class="eyebrow">RULES LAB · rmuc2027-rules-lab-v1 · official=false</span>
+      <h1>2027 规则全流程实验对局</h1>
+      <p>每方 1 重装 + 2 步兵 + 1 哨兵，内置脚本 AI 打满 7 分钟：经验升级、战亡复活、金币兑换、装配与 42mm、增益与防御、阵地控制与前哨站重建、胜负判定全部由带出处的规则模块结算。场地、机器人物理和 AI 是合成的，<b>不是完整官方比赛</b>。</p>
+    </div>
+  </section>
+
+  <form id="config" class="config" autocomplete="off">
+    <fieldset class="team red" data-team="red">
+      <legend>红方</legend>
+      <label>步兵 1 底盘<select name="red-c0"><option value="hp">血量优先</option><option value="power">功率优先</option></select></label>
+      <label>步兵 1 发射机构<select name="red-l0"><option value="cooling">冷却优先</option><option value="burst">爆发优先</option></select></label>
+      <label>步兵 2 底盘<select name="red-c1"><option value="hp">血量优先</option><option value="power" selected>功率优先</option></select></label>
+      <label>步兵 2 发射机构<select name="red-l1"><option value="cooling">冷却优先</option><option value="burst" selected>爆发优先</option></select></label>
+      <label>哨兵<select name="red-sentry"><option value="auto">自动（400 血）</option><option value="semi">半自动（200 血）</option></select></label>
+      <label>最高装配难度<select name="red-asm"><option value="3">三级</option><option value="2">二级</option><option value="1">一级</option><option value="0">不装配</option></select></label>
+      <label>保留金币<input name="red-reserve" type="number" min="0" max="5000" step="50" value="200"></label>
+    </fieldset>
+    <fieldset class="team blue" data-team="blue">
+      <legend>蓝方</legend>
+      <label>步兵 1 底盘<select name="blue-c0"><option value="hp">血量优先</option><option value="power">功率优先</option></select></label>
+      <label>步兵 1 发射机构<select name="blue-l0"><option value="cooling">冷却优先</option><option value="burst">爆发优先</option></select></label>
+      <label>步兵 2 底盘<select name="blue-c1"><option value="hp">血量优先</option><option value="power" selected>功率优先</option></select></label>
+      <label>步兵 2 发射机构<select name="blue-l1"><option value="cooling">冷却优先</option><option value="burst" selected>爆发优先</option></select></label>
+      <label>哨兵<select name="blue-sentry"><option value="auto">自动（400 血）</option><option value="semi">半自动（200 血）</option></select></label>
+      <label>最高装配难度<select name="blue-asm"><option value="3">三级</option><option value="2">二级</option><option value="1">一级</option><option value="0">不装配</option></select></label>
+      <label>保留金币<input name="blue-reserve" type="number" min="0" max="5000" step="50" value="200"></label>
+    </fieldset>
+    <div class="run-row">
+      <label>时长（秒）<input name="duration" type="number" min="10" max="420" step="10" value="420"></label>
+      <label class="check"><input name="credits" type="checkbox" checked> 实验性每秒末控制度结算</label>
+      <button id="run" class="primary" type="submit">运行对局</button>
+      <span id="status" class="status" role="status">尚未运行</span>
+    </div>
+  </form>
+
+  <section id="result" class="result" hidden>
+    <div class="scoreboard">
+      <div class="side red"><small>红方基地</small><strong id="red-base">10000</strong><span id="red-line"></span></div>
+      <div class="verdict"><span id="clock">0:00</span><b id="outcome"></b><small id="reason"></small></div>
+      <div class="side blue"><small>蓝方基地</small><strong id="blue-base">10000</strong><span id="blue-line"></span></div>
+    </div>
+    <div class="workspace">
+      <section class="field-panel">
+        <canvas id="field" width="1200" height="760" aria-label="对局回放画面"></canvas>
+        <div class="player">
+          <button id="play" type="button">▶ 播放</button>
+          <select id="speed" aria-label="回放速度"><option value="1">1×</option><option value="4" selected>4×</option><option value="16">16×</option><option value="60">60×</option></select>
+          <input id="scrub" type="range" min="0" max="0" value="0" aria-label="时间轴">
+          <span id="frame-time" class="mono">0.0 s</span>
+        </div>
+        <p class="legend"><i class="sw red"></i>红方 <i class="sw blue"></i>蓝方 · H 重装 / I 步兵 / S 哨兵 · 白圈 = 无敌 · 黄圈 = 虚弱 · 灰 = 战亡读条 · 阵地底色 = 当前控制方（虚线 = 临时控制） · 青框 = 补给区 · 紫框 = 装配区</p>
+      </section>
+      <aside>
+        <section class="card"><h3>机器人</h3><div id="robots" class="robots"></div></section>
+        <section class="card"><h3>阵地</h3><div id="positions" class="positions"></div></section>
+        <section class="card events"><h3>事件 <small id="event-count"></small></h3><ol id="events"></ol></section>
+      </aside>
+    </div>
+  </section>
+  <footer><span>结果哈希 <code id="hash">—</code></span><span>build <code id="build">—</code></span><span>详见 match_lab/README.md</span></footer>
+</main>
+<script src="lab.js"></script>
+</body>
+</html>

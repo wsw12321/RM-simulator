@@ -42,6 +42,8 @@ python3 tests/test_match_lab.py
 node --check web/roster-profiles.js
 node --check tests/sourced_profiles_ui_handlers.cjs
 node --check web/roster.js
+node --check web/lab.js
+node --check tests/lab_browser_smoke.cjs
 node --check tests/roster_ui_handlers.cjs
 node --check web/tactical.js
 node --check tests/tactical_ui_handlers.cjs
@@ -100,6 +102,7 @@ python3 tests/test_tactical_http.py "$PORT"
 node tests/tactical_ui_handlers.cjs "http://127.0.0.1:$PORT"
 
 python3 tests/test_roster_http.py "$PORT"
+python3 tests/test_lab_http.py "$PORT"
 node tests/roster_ui_handlers.cjs "http://127.0.0.1:$PORT"
 
 python3 tests/test_sourced_profiles_http.py "$PORT"

@@ -437,6 +437,25 @@ def roster_profiles_post(server, path, data):
     return roster_packet(server, state)
 
 
+LAB_MAX_BODY = 20_000
+LAB_LOCK = threading.Lock()
+
+
+def lab_post(path, data):
+    """Stateless integrated rules lab run: validated config in, native result out."""
+    from match_lab import cli as lab
+    if path != '/api/lab/run':
+        raise ValueError('Unknown rules lab endpoint.')
+    if set(data) != {'config', 'frame_every'}:
+        raise ValueError('Rules lab request needs exactly config and frame_every.')
+    frames = integer(data['frame_every'], 0, 600)
+    try:
+        with LAB_LOCK:  # one native lab run at a time
+            return lab.run(lab.validate(data['config']), frames)
+    except lab.LabError as exc:
+        raise ValueError(str(exc)) from exc
+
+
 def roster_profiles_get(server, path, query):
     if path == '/api/roster/profiles/session/state':
         return roster_packet(server, roster_engine(server).state(roster_observer(query)))
@@ -526,6 +545,9 @@ class Handler(SimpleHTTPRequestHandler):
             except ValueError as exc:return self.respond({'error':str(exc)},400)
             except (RuntimeError,OSError) as exc:return self.respond({'error':str(exc)},500)
 
+        if path=='/api/lab/example':
+            from match_lab import cli as lab
+            return self.respond(lab.DEFAULT)
         if path=='/api/arena/sample':
             try:return self.respond(arena_sample())
             except (ValueError,OSError) as exc:return self.respond({'error':str(exc)},500)
@@ -565,6 +587,7 @@ class Handler(SimpleHTTPRequestHandler):
                    COMBAT_MAX_BODY if self.path.startswith('/api/combat/') else
                    LAYERED_MAX_BODY if self.path.startswith('/api/layered/') else
                    ARENA_MAX_BODY if self.path.startswith('/api/arena/') else
+                   LAB_MAX_BODY if self.path.startswith('/api/lab/') else
                    4_000_000 if self.path.startswith('/api/objective/') else MAX_BODY)
             if not 0<length<=limit:raise ValueError('Body size is invalid.')
             self.connection.settimeout(10)
@@ -573,6 +596,10 @@ class Handler(SimpleHTTPRequestHandler):
                 options.update(parse_float=layered_json_float,parse_constant=layered_json_constant)
             data=json.loads(self.rfile.read(length),**options)
             if not isinstance(data,dict):raise ValueError('Expected JSON object.')
+            if self.path.startswith('/api/lab/'):
+                if self.path!='/api/lab/run':
+                    return self.respond({'error':'Not found'},404)
+                return self.respond(lab_post(self.path,data))
             if self.path.startswith('/api/arena/'):
                 if self.path not in ('/api/arena/validate','/api/arena/query'):
                     return self.respond({'error':'Not found'},404)
