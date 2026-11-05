@@ -1090,3 +1090,50 @@ save persistence remain unverified under the earlier socket restriction; it was
 not retried or bypassed. WASM is still unbuilt. The wrapper does not sandbox
 trusted in-process C++ or authenticate policies/replays. No official class,
 complete-match,official-geometry or current-firmware compliance claim is made.
+
+## Source-linked robot/match modules, rules lab and parallel build · 2026-11-05
+
+Environment: Linux, GCC 13.3.0, Python 3.13, Node 22, Playwright Chromium 1243, 4 CPUs.
+The official manual is now stored at `docs/rules/` and its SHA-256
+`9e2eed92…54be` was recomputed; tables 5-2, 5-7, 5-16..5-18 and 5-28 were
+checked against rendered page pixels, not only extracted text.
+
+Native module tests (all `-Wall -Wextra -Wpedantic -Werror -O2`, and again at
+`-O0` with AddressSanitizer + UndefinedBehaviorSanitizer, all passing):
+
+| Test | Assertions | Highlights |
+|---|---:|---|
+| `growth_rule_tests` | 475 | every table row, every level boundary, level caps, assembly rewards, manual examples 540 / 405 / 240 |
+| `test_growth_catalog_crosscheck.py` | 46 presets | C++ tables equal all presets of the independent `robot_profiles_v1` catalog |
+| `lifecycle_rule_tests` | 480,202 | readout example 80, λ rounding, weak/invincible card rules, remote heal void on death, 80k randomized operations |
+| `economy_rule_tests` | 660 | schedule total 1600, prices, units, caps, sentry supply example 600, split-interval stream totals |
+| `buff_rule_tests` | 186 | damage examples 360 / 460, defence max/vulnerability, cooling examples 200 / 35, terrain combo, posture example two |
+| `limits_rule_tests` | 541,068 | table 5-3 boundaries, figure 5-2 cut-off, 42 mm heat, 270,000-step differential equality with `heat_v1` |
+| `position_rule_tests` | 492,704 | all four table 5-21 conversions, regression/pause, rebuild, 120k randomized steps |
+| `match_lab_tests` | 5,538,430 | 4 configurations: byte-identical reruns and per-tick rule invariants; all 17 event kinds exercised |
+
+`match_lab` full-match output (including 10 Hz frames) is byte-identical between
+`-O2` and `-O0`+ASan/UBSan for two configurations. `tests/test_match_lab.py`
+(5 tests) and `tests/test_lab_http.py` (2 tests) pass.
+
+Build: `tools/native_build.py` produced executables byte-identical (`cmp`) to the
+previous serial `build.sh` for 10 sampled targets. Clean build + native tests:
+4m43s serial before, 47.6s now (JOBS=4); unchanged tree 10s; JOBS=1 serial mode
+and compiler-failure exit status were checked.
+
+The complete `bash tools/check.sh` passed with exit 0 in 11m59s, including every
+pre-existing native, rule, scenario, arena, layered, policy, combat, tactical,
+damage, heat, roster and sourced-profile suite and all original HTTP and
+JavaScript handler suites, plus the new tests.
+
+**Real Chromium, previously blocked, now run:** `tests/browser_smoke.cjs`
+(original sandbox page) and `tests/objective_browser_smoke.cjs` both passed with
+`CHROMIUM_PATH=/opt/pw-browsers/chromium`, as did the new optional
+`tests/lab_browser_smoke.cjs` (run, playback, scrub, iPhone 13 layout without
+horizontal scroll, no console errors). Other pages remain covered only by their
+mock-DOM handler suites. WASM is still unbuilt.
+
+Limits that remain: the rules lab field geometry, robot physics, assembly time
+and AI are synthetic; fortress, central highland, high point, terrain crossing
+points, energy mechanism activation, darts, radar, aerial system, penalties and
+module offline are not simulated; no official complete-match claim is made.
