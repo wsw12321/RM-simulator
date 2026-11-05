@@ -1,0 +1,38 @@
+{
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "module_version": "rmuc2027-position-v1.0.0-module.1",
+  "verified_scope": {
+    "positions_and_initial_control": {
+      "section": "§5.6.2 table 5-20",
+      "printed_pages": [
+        96
+      ]
+    },
+    "conversions": {
+      "section": "§5.6.2 table 5-21",
+      "printed_pages": [
+        96
+      ]
+    },
+    "outpost_rebuild_500": {
+      "section": "§5.6.1",
+      "printed_pages": [
+        94
+      ]
+    }
+  },
+  "engineering_choices": {
+    "absence_timer": "resets on any activation by the temporary controller; no regression",
+    "rebuild_on_absence_after_destruction": "treated as conversion via destruction",
+    "transition_instant": "exact millisecond the 5 s accumulate"
+  },
+  "not_implemented": [
+    "per-point activation aggregation and card detection",
+    "simultaneous-event referee ordering"
+  ]
+}

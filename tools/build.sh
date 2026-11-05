@@ -100,3 +100,9 @@ done
 ./build/lifecycle_rule_tests
 "$CXX" "${FLAGS[@]}" rules/rmuc2027_economy_v1/economy_rules.cpp tests/economy_rule_tests.cpp -o build/economy_rule_tests
 ./build/economy_rule_tests
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_buff_v1/buff_rules.cpp tests/buff_rule_tests.cpp -o build/buff_rule_tests
+./build/buff_rule_tests
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_heat_v1/heat_rules.cpp rules/rmuc2027_limits_v1/limits_rules.cpp tests/limits_rule_tests.cpp -o build/limits_rule_tests
+./build/limits_rule_tests
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_position_v1/position_rules.cpp tests/position_rule_tests.cpp -o build/position_rule_tests
+./build/position_rule_tests

@@ -1,0 +1,56 @@
+{
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "module_version": "rmuc2027-limits-v1.0.0-module.1",
+  "verified_scope": {
+    "muzzle_speed": {
+      "section": "§5.1.2 table 5-3",
+      "printed_pages": [
+        66
+      ]
+    },
+    "launcher_heat": {
+      "section": "§5.1.3 figure 5-1",
+      "printed_pages": [
+        66,
+        67
+      ],
+      "differential": "equals rmuc2027_heat_v1 for 17 mm (270000 randomized steps)"
+    },
+    "chassis_power": {
+      "section": "§5.1.4 figure 5-2",
+      "printed_pages": [
+        67,
+        68
+      ]
+    },
+    "death_resets": {
+      "section": "§5.3.2",
+      "printed_pages": [
+        74
+      ]
+    },
+    "power_limit_composition": {
+      "section": "§5.3.2, table 5-28",
+      "printed_pages": [
+        75,
+        109
+      ]
+    }
+  },
+  "engineering_choices": {
+    "speed_lock_overlap": "default strict reject; EngineeringMaxDeadlineV1 optional",
+    "cutoff_draw": "zero while cut off",
+    "units": "mW, uJ, heat tenths",
+    "heat_boundaries": "cooling before shot; shot before death reset"
+  },
+  "not_implemented": [
+    "buffer energy buff values",
+    "supercapacitor",
+    "speed module offline lock"
+  ]
+}
