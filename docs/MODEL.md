@@ -54,3 +54,13 @@ The original sandbox assumptions above describe `sandbox-v1` only. The separate
 qualified-capture and match formulas using explicitly experimental geometry,
 sampling, latched control and optional end-of-second credits. It disables combat
 and does not implement full RMUC. See [the objective contract](../objective_mode/README.md).
+
+## Separate integrated rules lab profile
+
+`rmuc2027-rules-lab-v1` (`match_lab/`) is a further separate, headless profile.
+Its robot attributes, levels, experience, revival, economy, damage multipliers,
+heat, chassis power, position lifecycle and match judgment come from the
+source-linked `rules/` modules; its field geometry, robot sizes and speeds,
+speed-from-power model, muzzle speeds, fire intervals, dispersion, sensing,
+assembly durations and scripted AI are synthetic. It shares no state or replay
+format with `sandbox-v1`. See [the lab README](../match_lab/README.md).

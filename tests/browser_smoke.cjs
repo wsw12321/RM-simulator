@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 (async()=>{
  const base = process.argv[2] || 'http://127.0.0.1:8766';
- const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+ const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1440,height:1100},deviceScaleFactor:1});
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto(base);await page.getByText('C++ 引擎在线').waitFor();

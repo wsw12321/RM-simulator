@@ -175,3 +175,29 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
   Added per-preset boundary,adversarial provenance,transaction,HTTP and actual
   JavaScript/mock-DOM/live-native tests,plus independent source review.
   This is not a complete official robot implementation or a real-browser QA pass.
+
+## 2026-11-05 · Source-linked robot/match mechanics and the integrated rules lab
+
+- Stored the pinned official manual under `docs/rules/` (SHA-256 matches every
+  module's `source_sha256`); tables used below were re-checked against page pixels.
+- Added six independent C++20 rule modules with page-cited README/provenance and
+  named engineering choices for unresolved points: `rmuc2027_growth_v1`
+  (performance tables, experience, kill experience, level caps, assembly rewards),
+  `rmuc2027_lifecycle_v1` (out-of-combat, readout/instant revival, weak/invincible,
+  regeneration, remote heal, logistics coefficient), `rmuc2027_economy_v1` (gold
+  schedule, prices, caps, remote delay, sentry supply), `rmuc2027_buff_v1` (raw
+  damage, adaptive armour, buff composition, buff points, terrain, energy, radar
+  mark, sentry posture, 42 mm shield), `rmuc2027_limits_v1` (muzzle speed lock,
+  chassis power buffer, 17/42 mm heat with profile changes) and
+  `rmuc2027_position_v1` (full table 5-21 lifecycle with outpost rebuild).
+- The growth tables are cross-checked against all 46 presets of the independently
+  audited `robot_profiles_v1` catalog; the 17 mm heat generalisation is pinned to
+  the unchanged `heat_v1` by a 270k-step randomized differential test.
+- Added `match_lab/` (`rmuc2027-rules-lab-v1`): one deterministic 60 Hz 420 s match
+  composing all modules with the 2027 roster, destructible outposts/bases and a
+  scripted AI; strict Python CLI, stateless `/api/lab/*` bridge endpoints and a
+  canvas playback page `web/lab.html`. Geometry, robot physics, assembly time and
+  AI are synthetic. No existing mode, rule module or replay format changed.
+- `tools/build.sh` now delegates to `tools/native_build.py`: each translation unit
+  is compiled once, objects are cached by source hash and work runs in parallel.
+  Same per-target flags; produced binaries are byte-identical to the serial script.
