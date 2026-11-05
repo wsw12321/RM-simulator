@@ -1,0 +1,179 @@
+{
+  "schema": "rmuc2027-adjudicated-scenario-v1",
+  "scenario_id": "terminal_immutability",
+  "description": "Explicit credits precede the early terminal snapshot and seal atomically. Later same-time and later-time attempts cannot alter it.",
+  "fact_status": "MANUALLY_SUPPLIED_ADJUDICATED_FACTS",
+  "ordering_policy": "listed_atomic_boundaries_credits_before_snapshot",
+  "timing_policy": "explicit_milliseconds_no_sampling_or_accrual",
+  "control_source": "manual_one_second_credits",
+  "events": [
+    {
+      "sequence": 1,
+      "elapsed_ms": 1000,
+      "source_note": "Synthetic manually adjudicated fixture; not a recorded official match.",
+      "credits": [
+        {
+          "sequence": 1,
+          "control": {
+            "red_outpost": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "blue_outpost": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "red_base": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "blue_base": {
+              "controller": "red",
+              "degree": "temporary"
+            }
+          }
+        }
+      ],
+      "snapshot": {
+        "red": {
+          "base_hp": 9000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "blue": {
+          "base_hp": 1000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      }
+    },
+    {
+      "sequence": 2,
+      "elapsed_ms": 2000,
+      "source_note": "Synthetic manually adjudicated fixture; not a recorded official match.",
+      "credits": [
+        {
+          "sequence": 2,
+          "control": {
+            "red_outpost": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "blue_outpost": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "red_base": {
+              "controller": "blue",
+              "degree": "temporary"
+            },
+            "blue_base": {
+              "controller": "blue",
+              "degree": "temporary"
+            }
+          }
+        }
+      ],
+      "snapshot": {
+        "red": {
+          "base_hp": 9000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "blue": {
+          "base_hp": 0,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      }
+    },
+    {
+      "sequence": 3,
+      "elapsed_ms": 2000,
+      "source_note": "Synthetic manually adjudicated fixture; not a recorded official match.",
+      "credits": [
+        {
+          "sequence": 3,
+          "control": {
+            "red_outpost": {
+              "controller": "blue",
+              "degree": "temporary"
+            },
+            "blue_outpost": {
+              "controller": "blue",
+              "degree": "temporary"
+            },
+            "red_base": {
+              "controller": "blue",
+              "degree": "temporary"
+            },
+            "blue_base": {
+              "controller": "blue",
+              "degree": "temporary"
+            }
+          }
+        }
+      ],
+      "snapshot": {
+        "red": {
+          "base_hp": 9000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "blue": {
+          "base_hp": 1000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      }
+    },
+    {
+      "sequence": 4,
+      "elapsed_ms": 420000,
+      "source_note": "Synthetic manually adjudicated fixture; not a recorded official match.",
+      "credits": [
+        {
+          "sequence": 3,
+          "control": {
+            "red_outpost": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "blue_outpost": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "red_base": {
+              "controller": "red",
+              "degree": "temporary"
+            },
+            "blue_base": {
+              "controller": "red",
+              "degree": "temporary"
+            }
+          }
+        }
+      ],
+      "snapshot": {
+        "red": {
+          "base_hp": 9000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "blue": {
+          "base_hp": 1000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 500
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      }
+    }
+  ]
+}

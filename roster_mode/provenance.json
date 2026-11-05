@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "profile": "experimental-roster-tactical-v1",
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "reused_verified_modules": ["rules/rmuc2027_capture_v1", "rules/rmuc2027_v1", "rules/rmuc2027_damage_v1", "rules/rmuc2027_heat_v1"],
+  "reused_source_audits": ["tactical_mode/ATTACK_DAMAGE_SOURCES.md", "tactical_mode/attack_damage_source_audit.json", "tactical_mode/HEAT_SOURCES.md", "tactical_mode/heat_source_audit.json"],
+  "new_synthetic_contract": "roster_mode/CONTRACT.md",
+  "qualification": "SYNTHETIC-any-individually-active-eligible-alive-teammate-v1",
+  "friendly_fire": "SYNTHETIC-own-team-projectile-transparent-v1",
+  "movement": "SYNTHETIC-swept-proposals-iterative-rejection-solid-disabled-v1",
+  "projectile_resolution": "SYNTHETIC-Q16-earliest-cover-first-canonical-target-v1",
+  "damage_resolution": "SYNTHETIC-simultaneous-victim-clamp-opposing-team-credit-v1",
+  "heat_profile": "SYNTHETIC-configurable-per-robot-17mm-v1",
+  "remaining_hp": "SYNTHETIC-all-configured-robots-connected-not-dismissed-v1",
+  "limitations": ["No official roster, class, robot profile or multi-robot qualification claim", "No official simultaneous-event order or friendly-fire attribution", "No penalties, respawn, restoration, destructible base or lifecycle", "No first-person video simulation", "Trusted stateless same-process C++ only; no malicious-code isolation", "Hashes bind deterministic state but are not authenticated or collision-resistant replay signatures"]
+}

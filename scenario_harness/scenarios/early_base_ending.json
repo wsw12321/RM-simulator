@@ -1,0 +1,33 @@
+{
+  "schema": "rmuc2027-adjudicated-scenario-v1",
+  "scenario_id": "early_base_ending",
+  "description": "One base is destroyed at an explicitly supplied 12001 ms boundary. Unknown secondary totals are irrelevant.",
+  "fact_status": "MANUALLY_SUPPLIED_ADJUDICATED_FACTS",
+  "ordering_policy": "listed_atomic_boundaries_credits_before_snapshot",
+  "timing_policy": "explicit_milliseconds_no_sampling_or_accrual",
+  "control_source": "external_totals",
+  "events": [
+    {
+      "sequence": 1,
+      "elapsed_ms": 12001,
+      "source_note": "Synthetic manually adjudicated fixture; not a recorded official match.",
+      "credits": [],
+      "snapshot": {
+        "red": {
+          "base_hp": 1,
+          "attack_damage": null,
+          "surviving_robot_hp": null,
+          "control_score": null
+        },
+        "blue": {
+          "base_hp": 0,
+          "attack_damage": null,
+          "surviving_robot_hp": null,
+          "control_score": null
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      }
+    }
+  ]
+}

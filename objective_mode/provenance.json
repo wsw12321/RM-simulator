@@ -1,0 +1,19 @@
+{
+  "integration": "objective-experimental-v1",
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "unchanged_modules": ["rmuc2027-capture-v1.0.0-module.1", "rmuc2027-match-v1.0.0-module.1"],
+  "verified_subset": ["qualified-track 2000ms deactivation delay", "full-to-temporary capture progress and contest handling", "control-rate formula", "external-credit arithmetic", "420000ms match timeout priority"],
+  "engineering_strategies": {
+    "geometry": "EXPERIMENTAL-inclusive-center-rectangle-v1",
+    "qualification": "EXPERIMENTAL-one-alive-eligible-robot-per-team-v1",
+    "clock": "EXPERIMENTAL-ceil-sampled-ms-v1",
+    "lifecycle": "EXPERIMENTAL-latched-temporary-no-lifecycle-v1",
+    "optional_credit": "EXPERIMENTAL-end-of-second-v1",
+    "phase_order": "EXPERIMENTAL-move-qualify-activate-capture-credit-judge-v1",
+    "default_boundary": "strict-reject-unadjudicated-v1",
+    "optional_boundary": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1"
+  },
+  "limitations": ["No combat, attack damage or destruction", "No temporary restoration or outpost lifecycle", "No official geometry or detector/card model", "No official credit cadence", "No referee timing or contest-to-neither adjudication", "Not full physical RMUC or a win-rate validator"]
+}

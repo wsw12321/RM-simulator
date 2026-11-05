@@ -1,0 +1,28 @@
+{
+  "adapter_version": "rmuc2027-integrated-adapter.1",
+  "complete_rule_pack": false,
+  "connected_to_browser_sandbox": false,
+  "physical_simulation": false,
+  "consumes": [
+    "rmuc2027-capture-v1.0.0-module.1",
+    "rmuc2027-match-v1.0.0-module.1"
+  ],
+  "authority": "CaptureAttempt derives four-position control; ExternalControlLedger is sole score source; MatchJudge is sole terminal authority. Inputs are manually adjudicated logical activation and complete external match facts.",
+  "engineering_policy": "ENGINEERING-NOT-OFFICIAL-capture-continuation-credit-judge-v1",
+  "external_obligations": [
+    "Whole-position logical activation, including qualification/card/robot aggregation and grace.",
+    "Exact temporary-control interval continuation with no restoration or outpost lifecycle transition.",
+    "Complete explicitly timed one-second credit history and same-time adjudication.",
+    "Complete attack damage and qualifying surviving robot HP totals when needed.",
+    "No unlisted external control transitions."
+  ],
+  "unsupported": [
+    "Physical detector/robot/card aggregation",
+    "Automatic temporary restoration",
+    "Outpost destruction/rebuild lifecycle and HP",
+    "Attack damage and HP source derivation",
+    "Referee penalties",
+    "Official credit cadence or simultaneous ordering"
+  ],
+  "checkpoint": "Portable complete attempted-prefix replay, O(prefix), with canonical state and log verification."
+}

@@ -1,0 +1,272 @@
+{
+  "module_version": "rmuc2027-capture-v1.0.0-module.1",
+  "complete_rule_pack": false,
+  "connected_to_browser_sandbox": false,
+  "connected_to_match_judge": false,
+  "connected_to_scenario_harness": false,
+  "source": {
+    "title": "RMUC 2027 V1.0.0 战术仿真规则矩阵",
+    "source_title": "RoboMaster 2027 机甲大师超级对抗赛比赛规则手册 V1.0.0（20261015）",
+    "source_hub": "https://bbs.robomaster.com/wiki/20204847/1969149?source=7",
+    "source_pdf": "https://bbs-web-static.robomaster.com/451e5737ba5d4463909a3013456a4e551792055647969/RoboMaster%202027%20%E6%9C%BA%E7%94%B2%E5%A4%A7%E5%B8%88%E8%B6%85%E7%BA%A7%E5%AF%B9%E6%8A%97%E8%B5%9B%E6%AF%94%E8%B5%9B%E8%A7%84%E5%88%99%E6%89%8B%E5%86%8CV1.0.0%EF%BC%8820261015%EF%BC%89.pdf",
+    "sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+    "bytes": 22455861,
+    "physical_pages": 144,
+    "page_convention": "All matrix page references use printed page numbers. PDF physical page=printed+1.",
+    "access_date": "2026-11-05",
+    "qa_status": "Official Qingflow Q&A page opened but dynamic contents not extracted; no third-party Q&A mirror values promoted to verified official rules. Reconcile latest official Q&A before implementation freeze.",
+    "classification": {
+      "exact": "Exact official baseline mechanic; not necessarily implemented.",
+      "configurable": "Explicit simulator modeling choice, calibrated parameter or simplification; official exact constraints remain.",
+      "unresolved": "Rule ambiguity, missing dependency, or verification not completed."
+    },
+    "matrix_revision": "r2-audit-complete",
+    "matrix_updated_utc": "2026-11-05T01:06:30Z",
+    "revision_note": "补充p19伤害记分和存活机器人HP定义；修正2秒失效宽限后的占领测试及同刻边界；限定脱战条件只作用远程弹量兑换；闸门以完全开启状态授权而非硬7秒；空中通信测试限定裁判系统多机通信。"
+  },
+  "audited_matrix_sha256": "f652d2f7c5fd9e88af660ad8fc46baa7ce8b36e4480dd6f18c43860466cecdea",
+  "primary_pdf_sha256_verified": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "primary_pages_checked": {
+    "printed": [
+      94,
+      96,
+      102
+    ],
+    "physical_pdf": [
+      95,
+      97,
+      103
+    ]
+  },
+  "implementation_scope": {
+    "control.positions": "Independent position kind/original owner/current controller/degree; validates base full control constraint.",
+    "control.capture_transitions": "Timed full-to-opponent-temporary attempt only; all four literal table mappings exposed for externally adjudicated facts. AdjudicatedCaptureThresholdReached includes shared contest/progress qualifications, not raw continuous detection. Temporary restoration timing omitted.",
+    "control.capture_progress": "Partial challenger progress grows/decays at equal rate and pauses under both-team logical activation. Direct both-to-neither rejected.",
+    "buff.activation_latency": "One already-qualified detector track, ordinary-loss 2000 ms delayed logical deactivation; no raw occupancy, unspecified detector lag, eligibility, card/robot aggregation or forced invalidation.",
+    "control.deactivation_capture_boundary": "Strict coincidence rejection; explicit nonofficial EngineeringTimerBeforeInputV1 option with versioned policy trace.",
+    "control.destroyed_outpost_gap": "No object lifecycle engine. Pure table mappings flag required external lifecycle adjudication. No HP/rebuild/second destruction generated.",
+    "MODEL-02": "Closed timestamps and preadjudicated endpoint inputs; explicit policy only for timer/input coincidence. No generic referee event scheduler."
+  },
+  "engineering_contracts": {
+    "time_representation": "Nonnegative int64 exact supplied milliseconds; not an official sensor sampling frequency.",
+    "qualified_input_scope": "One same-qualified-track detector edge, or whole-position logical team snapshot already adjudicated by upstream. No inferred card/robot switching, eligibility or physical latency.",
+    "normal_reacquisition": "Before expiry, same qualified track reacquisition cancels pending ordinary-loss deactivation. Exact expiry/reacquisition is unresolved and rejected by default.",
+    "same_time_default": "strict-reject-unadjudicated-v1; each successful call closes its timestamp.",
+    "same_time_explicit_opt_in": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1; applied resolution recorded in semantic trace.",
+    "atomicity": "Each component is atomic on errors. Multi-component orchestration must copy, validate all downstream events, then commit all components.",
+    "attempt_completion": "Stops at temporary capture, returns exact consumed endpoint and unconsumed interval. Event beyond endpoint rejected. Later timing unsupported.",
+    "trace": "In-memory source/policy-linked semantic events. No change to existing log formats; no new persisted replay schema.",
+    "source_authenticity": "Hashes identify source bytes, not official certification, compiler/binary identity or cryptographic proof of a match."
+  },
+  "unsupported_or_unresolved": [
+    "Temporary-control continuous-absence timing and how shared contest/rollback notes interact with it.",
+    "Direct both-active to neither-active exit.",
+    "Sensor lag, dead-zone geometry, field-point qualification, card switching and robot aggregation.",
+    "Death, forced buff invalidation and other activation-cancellation causes.",
+    "Outpost alive/destroyed/rebuilt lifecycle, HP assignment and whether later destruction is possible.",
+    "Generic event ordering, scoring clocks, damage, match ending, referee decisions and full official compliance."
+  ],
+  "rows": [
+    {
+      "id": "MODEL-02",
+      "section_page": "手册§5.3–5.8；未规定同仿真tick排序",
+      "summary": "并发事件顺序需工程决策并核验",
+      "values": "金币到账/购买、击杀/回血、控制变化/终局等同时间戳事件，手册未给通用执行顺序。",
+      "simulator_effect": "固定tick和稳定事件序列，保留决策注释；争议边界用官方数据/答疑校准。",
+      "classification": "unresolved",
+      "test": "同一输入重复运行状态哈希一致；瞬间终局不靠实体遍历顺序判胜。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.positions",
+      "section_page": "§5.6.2; 表5-20，p96",
+      "summary": "双方各有基地阵地和前哨阵地，控制状态分临时与完全。",
+      "values": {
+        "positions_per_side": 2,
+        "outpost_components": [
+          "前哨站增益点",
+          "中央高地增益点"
+        ],
+        "base_components": [
+          "基地增益点",
+          "堡垒增益点"
+        ],
+        "outpost_full_control": "双方均可",
+        "base_full_control": "仅初始拥有方",
+        "initial_control": "双方完全控制各自两个阵地"
+      },
+      "simulator_effect": "使用阵地原始归属与当前控制方、控制程度三个字段，不将增益点激活等同于立刻占领。",
+      "classification": "exact",
+      "test": "敌方可暂控基地阵地但不能取得完全控制；初始四处阵地状态正确。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2; 表5-20",
+        "printed_pages": [
+          96
+        ],
+        "pdf_pages": [
+          97
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.capture_transitions",
+      "section_page": "§5.6.2; 表5-21，p96",
+      "summary": "表5-21原文对应的四种控制状态转换。",
+      "values": {
+        "capture_s": 5,
+        "transitions": [
+          {
+            "from": "对方完全控制阵地",
+            "to": "己方临时控制阵地",
+            "event": "己方连续激活构成阵地的任一增益点5秒"
+          },
+          {
+            "from": "对方临时控制阵地",
+            "to": "己方完全控制阵地",
+            "event": "对方机器人连续5秒不激活构成阵地的任一增益点"
+          },
+          {
+            "from": "对方完全控制前哨阵地",
+            "to": "对方临时控制前哨阵地",
+            "event": "击毁阵地上的前哨站"
+          },
+          {
+            "from": "己方临时控制前哨阵地",
+            "to": "己方完全控制前哨阵地",
+            "event": "击毁阵地上的前哨站"
+          }
+        ]
+      },
+      "simulator_effect": "逐字保存官方转换；基地阵地需服从完全控制仅初始拥有方约束。",
+      "classification": "exact",
+      "test": "连续激活4.9秒不能占领；5秒触发临时控制；击毁前哨的转换取决于当前控制状态。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2; 表5-21",
+        "printed_pages": [
+          96
+        ],
+        "pdf_pages": [
+          97
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.capture_progress",
+      "section_page": "§5.6.2; 表5-21; 5.6.4.1，p96,102",
+      "summary": "占领以逻辑激活状态推进；未满5秒且逻辑激活失效后进度等速回退；双方同时激活时暂停。",
+      "values": {
+        "reverse_rate_equals_forward": true,
+        "simultaneous_sides": "暂停，直到仅剩一方激活",
+        "partial_progress": "均匀倒退，不归零",
+        "input_state": "上游已经应用2秒失效延迟的逻辑激活状态，不是物理接触/离开状态"
+      },
+      "simulator_effect": "场地感知层先处理检测及2秒失效延迟，再把逻辑激活/失效事件送入控制进度层。物理离开不能立即触发倒退，也不能在控制层再次叠加2秒。",
+      "classification": "exact",
+      "test": "控制层单测：已有3秒进度，在t=0收到上游逻辑失效事件，此后连续逻辑未激活2秒，进度降至1秒；此处t=0不是物理离开时刻。集成测：物理离开1.5秒后仍处2秒宽限期，无敌方竞争时进度继续增加；双方逻辑激活期间进度恒定。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2; 表5-21; 5.6.4.1",
+        "printed_pages": [
+          96,
+          102
+        ],
+        "pdf_pages": [
+          97,
+          103
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.destroyed_outpost_gap",
+      "section_page": "§5.6.1–5.6.2，p94,96",
+      "summary": "前哨先被击毁而尚未被对方临时占领时，后续重建/再次击毁路径未在本节完整闭合。",
+      "values": {
+        "literal_destroy_first_transition": "对方完全控制 -> 对方临时控制",
+        "rebuild_text": "通过前哨站被击毁的方式由一方完全控制转化为另一方完全控制时重建",
+        "missing": "先击毁后占领的死前哨生命周期；暂控方无人激活触发对方满控制与前哨归属的一致性"
+      },
+      "simulator_effect": "保留规则缺口并提供显式配置/待确认开关，勿用往年规则暗补。",
+      "classification": "unresolved",
+      "test": "回归测试覆盖先占领后击毁与先击毁后占领两条路线；后者标注未定行为。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.1–5.6.2",
+        "printed_pages": [
+          94,
+          96
+        ],
+        "pdf_pages": [
+          95,
+          97
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "buff.activation_latency",
+      "section_page": "§5.6.4.1，p102",
+      "summary": "场地交互卡可能有死区和检测延迟，激活状态失效统一延迟2秒。",
+      "values": {
+        "deactivation_delay_s": 2,
+        "detection_delay": "存在但无数值",
+        "dead_zones": "可能存在，未给几何图"
+      },
+      "simulator_effect": "场地感知/激活状态层处理2秒失效延迟；下游占领、持续增益等消费同一逻辑状态。重新检测和刚好到期的事件顺序须显式固定，官方本段未给采样时序。",
+      "classification": "exact",
+      "test": "在无其他取消激活原因的情况下，物理离开1.9秒仍逻辑激活；到2秒的失效事件由上游发出，下游不再额外增加2秒。精确同刻失效/占领达标见control.deactivation_capture_boundary。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.4.1",
+        "printed_pages": [
+          102
+        ],
+        "pdf_pages": [
+          103
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.deactivation_capture_boundary",
+      "section_page": "§5.6.2; 表5-21; 5.6.4.1，p96,102",
+      "summary": "2秒失效延迟与恰好5秒占领同刻发生时，裁判系统采样及事件顺序未明确。",
+      "values": {
+        "exact_constraints": {
+          "capture_logical_activation_s": 5,
+          "activation_deactivation_delay_s": 2,
+          "progress_reversal_rate": "与增长相同"
+        },
+        "counterexample": "物理连续激活3秒后离开2秒，不可直接断言只剩1秒进度；逻辑激活还存在2秒失效宽限。",
+        "unverified_boundary": "若忽略额外检测延迟，物理激活3秒后离开，2秒宽限到期与占领累计5秒重合；本册没有说明该精确同刻的裁判采样/结算顺序。"
+      },
+      "simulator_effect": "使用同一逻辑激活时间线；临时仿真必须声明同刻事件优先级，并以官方答疑或裁判系统行为校验。此项是实现边界未明，不是认为手册两条规则互相矛盾。",
+      "classification": "unresolved",
+      "test": "建立物理3秒激活+离开2秒的集成用例，断言不会按物理离开立刻倒退至1秒；精确是否在宽限到期同刻完成占领由显式、可回放的暂定顺序决定，并标待核验。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2; 表5-21; 5.6.4.1",
+        "printed_pages": [
+          96,
+          102
+        ],
+        "pdf_pages": [
+          97,
+          103
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    }
+  ]
+}

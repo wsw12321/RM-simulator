@@ -1,0 +1,100 @@
+{
+  "capture_policy": "strict-reject-unadjudicated-v1",
+  "description": "Unit-test-only partial credit history, not a complete scoring timeline. A contested whole-position state cannot become neither without external adjudication; rejection leaves all components untouched.",
+  "events": [
+    {
+      "continuations": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "credits": [],
+      "elapsed_ms": 1000,
+      "logical_inputs": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": {
+          "blue": false,
+          "red": false
+        }
+      },
+      "sequence": 1,
+      "snapshot": {
+        "blue": {
+          "attack_damage": 0,
+          "base_hp": 1000,
+          "surviving_robot_hp": 0
+        },
+        "red": {
+          "attack_damage": 0,
+          "base_hp": 9000,
+          "surviving_robot_hp": 0
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      },
+      "source_note": "Manually supplied whole-position logical boundary and complete match facts."
+    },
+    {
+      "continuations": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "credits": [],
+      "elapsed_ms": 2000,
+      "logical_inputs": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": {
+          "blue": true,
+          "red": false
+        }
+      },
+      "sequence": 2,
+      "snapshot": {
+        "blue": {
+          "attack_damage": 0,
+          "base_hp": 1000,
+          "surviving_robot_hp": 0
+        },
+        "red": {
+          "attack_damage": 0,
+          "base_hp": 9000,
+          "surviving_robot_hp": 0
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      },
+      "source_note": "Manually supplied whole-position logical boundary and complete match facts."
+    }
+  ],
+  "fact_status": "MANUALLY_SUPPLIED_ADJUDICATED_FACTS",
+  "initial_logical": {
+    "blue_base": {
+      "blue": false,
+      "red": false
+    },
+    "blue_outpost": {
+      "blue": false,
+      "red": false
+    },
+    "red_base": {
+      "blue": false,
+      "red": false
+    },
+    "red_outpost": {
+      "blue": true,
+      "red": true
+    }
+  },
+  "phase_policy": "ENGINEERING-NOT-OFFICIAL-capture-continuation-credit-judge-v1",
+  "scenario_id": "contested_to_none",
+  "schema": "rmuc2027-integrated-scenario-v1",
+  "timing_policy": "explicit_milliseconds_external_credits_no_sampling-v1",
+  "world_contract": "EXTERNAL_FACTS_COMPLETE_NO_UNLISTED_CONTROL_TRANSITIONS"
+}

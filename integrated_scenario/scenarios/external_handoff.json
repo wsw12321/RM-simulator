@@ -1,0 +1,188 @@
+{
+  "capture_policy": "strict-reject-unadjudicated-v1",
+  "description": "Unit-test-only partial credit history, not a complete scoring timeline. Missing residual handoff rejects capture atomically; explicit residual handoff commits; subsequent temporary interval again requires its own exact assertion.",
+  "events": [
+    {
+      "continuations": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "credits": [
+        {
+          "sequence": 1,
+          "source_note": "Externally settled one-second credit; no elapsed-time accrual inferred."
+        }
+      ],
+      "elapsed_ms": 6000,
+      "logical_inputs": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "sequence": 1,
+      "snapshot": {
+        "blue": {
+          "attack_damage": 0,
+          "base_hp": 1000,
+          "surviving_robot_hp": 0
+        },
+        "red": {
+          "attack_damage": 0,
+          "base_hp": 9000,
+          "surviving_robot_hp": 0
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      },
+      "source_note": "Manually supplied whole-position logical boundary and complete match facts."
+    },
+    {
+      "continuations": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": {
+          "assertion": "TEMPORARY_CONTROL_UNCHANGED_NO_RESTORATION_OR_OUTPOST_LIFECYCLE_TRANSITION",
+          "from_ms": 5000,
+          "source_note": "Manual interval adjudication: temporary control unchanged, no restoration or outpost lifecycle transition.",
+          "through_ms": 7000
+        }
+      },
+      "credits": [
+        {
+          "sequence": 1,
+          "source_note": "Externally settled one-second credit; no elapsed-time accrual inferred."
+        }
+      ],
+      "elapsed_ms": 7000,
+      "logical_inputs": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "sequence": 2,
+      "snapshot": {
+        "blue": {
+          "attack_damage": 0,
+          "base_hp": 1000,
+          "surviving_robot_hp": 0
+        },
+        "red": {
+          "attack_damage": 0,
+          "base_hp": 9000,
+          "surviving_robot_hp": 0
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      },
+      "source_note": "Manually supplied whole-position logical boundary and complete match facts."
+    },
+    {
+      "continuations": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "credits": [
+        {
+          "sequence": 2,
+          "source_note": "Externally settled one-second credit; no elapsed-time accrual inferred."
+        }
+      ],
+      "elapsed_ms": 8000,
+      "logical_inputs": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "sequence": 3,
+      "snapshot": {
+        "blue": {
+          "attack_damage": 0,
+          "base_hp": 1000,
+          "surviving_robot_hp": 0
+        },
+        "red": {
+          "attack_damage": 0,
+          "base_hp": 9000,
+          "surviving_robot_hp": 0
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      },
+      "source_note": "Manually supplied whole-position logical boundary and complete match facts."
+    },
+    {
+      "continuations": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": {
+          "assertion": "TEMPORARY_CONTROL_UNCHANGED_NO_RESTORATION_OR_OUTPOST_LIFECYCLE_TRANSITION",
+          "from_ms": 7000,
+          "source_note": "Manual interval adjudication: temporary control unchanged, no restoration or outpost lifecycle transition.",
+          "through_ms": 9000
+        }
+      },
+      "credits": [
+        {
+          "sequence": 2,
+          "source_note": "Externally settled one-second credit; no elapsed-time accrual inferred."
+        }
+      ],
+      "elapsed_ms": 9000,
+      "logical_inputs": {
+        "blue_base": null,
+        "blue_outpost": null,
+        "red_base": null,
+        "red_outpost": null
+      },
+      "sequence": 4,
+      "snapshot": {
+        "blue": {
+          "attack_damage": 0,
+          "base_hp": 1000,
+          "surviving_robot_hp": 0
+        },
+        "red": {
+          "attack_damage": 0,
+          "base_hp": 9000,
+          "surviving_robot_hp": 0
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      },
+      "source_note": "Manually supplied whole-position logical boundary and complete match facts."
+    }
+  ],
+  "fact_status": "MANUALLY_SUPPLIED_ADJUDICATED_FACTS",
+  "initial_logical": {
+    "blue_base": {
+      "blue": false,
+      "red": false
+    },
+    "blue_outpost": {
+      "blue": false,
+      "red": false
+    },
+    "red_base": {
+      "blue": false,
+      "red": false
+    },
+    "red_outpost": {
+      "blue": true,
+      "red": false
+    }
+  },
+  "phase_policy": "ENGINEERING-NOT-OFFICIAL-capture-continuation-credit-judge-v1",
+  "scenario_id": "external_handoff",
+  "schema": "rmuc2027-integrated-scenario-v1",
+  "timing_policy": "explicit_milliseconds_external_credits_no_sampling-v1",
+  "world_contract": "EXTERNAL_FACTS_COMPLETE_NO_UNLISTED_CONTROL_TRANSITIONS"
+}

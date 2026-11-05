@@ -1,0 +1,486 @@
+{
+  "schema": "rmuc-layered-arena.v1",
+  "metadata": {
+    "id": "synthetic_ramp_tunnel",
+    "name": "Synthetic ramp, tunnel and stacked deck",
+    "description": "Experimental movement fixture, not an RMUC battlefield. Walk east through the low tunnel, or walk north and climb the ramp to the upper deck.",
+    "official_map": false
+  },
+  "frame": {
+    "units": "mm",
+    "handedness": "right",
+    "up_axis": "+z",
+    "x_axis": "east in the synthetic plan",
+    "y_axis": "north in the synthetic plan",
+    "origin": "synthetic southwest boundary corner"
+  },
+  "calibration": {
+    "status": "synthetic",
+    "notes": [
+      "All dimensions are deliberate synthetic test data, not inferred official geometry.",
+      "Upper platform has no modeled underside slab to isolate conservative ramp portal behavior. The interior deck slab is explicit."
+    ]
+  },
+  "sources": [
+    {
+      "id": "synthetic_source",
+      "kind": "synthetic",
+      "reference": "layered_mode/examples/synthetic_ramp_tunnel.json",
+      "sha256": null,
+      "notes": "Hand-authored engineering fixture for isolated movement and replay checks."
+    }
+  ],
+  "boundary_mm": [
+    [
+      0,
+      0
+    ],
+    [
+      8000,
+      0
+    ],
+    [
+      8000,
+      6000
+    ],
+    [
+      0,
+      6000
+    ]
+  ],
+  "layers": [
+    {
+      "id": "ground_layer",
+      "name": "Ground and tunnel",
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "ramp_layer",
+      "name": "Ramp",
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "upper_layer",
+      "name": "Upper deck",
+      "source_ids": [
+        "synthetic_source"
+      ]
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "west_floor",
+      "layer_id": "ground_layer",
+      "polygon_mm": [
+        [
+          0,
+          0
+        ],
+        [
+          2000,
+          0
+        ],
+        [
+          2000,
+          6000
+        ],
+        [
+          0,
+          6000
+        ]
+      ],
+      "height": {
+        "z_mm": 0,
+        "dx": 0,
+        "dy": 0
+      },
+      "ceiling_z_mm": null,
+      "traversable": true,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "tunnel_floor",
+      "layer_id": "ground_layer",
+      "polygon_mm": [
+        [
+          2000,
+          0
+        ],
+        [
+          6000,
+          0
+        ],
+        [
+          6000,
+          3000
+        ],
+        [
+          2000,
+          3000
+        ]
+      ],
+      "height": {
+        "z_mm": 0,
+        "dx": 0,
+        "dy": 0
+      },
+      "ceiling_z_mm": 700,
+      "traversable": true,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "east_floor",
+      "layer_id": "ground_layer",
+      "polygon_mm": [
+        [
+          6000,
+          0
+        ],
+        [
+          8000,
+          0
+        ],
+        [
+          8000,
+          6000
+        ],
+        [
+          6000,
+          6000
+        ]
+      ],
+      "height": {
+        "z_mm": 0,
+        "dx": 0,
+        "dy": 0
+      },
+      "ceiling_z_mm": null,
+      "traversable": true,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "ramp",
+      "layer_id": "ramp_layer",
+      "polygon_mm": [
+        [
+          2000,
+          3500
+        ],
+        [
+          6000,
+          3500
+        ],
+        [
+          6000,
+          5500
+        ],
+        [
+          2000,
+          5500
+        ]
+      ],
+      "height": {
+        "z_mm": -500,
+        "dx": 0.25,
+        "dy": 0
+      },
+      "ceiling_z_mm": null,
+      "traversable": true,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "upper_platform",
+      "layer_id": "upper_layer",
+      "polygon_mm": [
+        [
+          6000,
+          0
+        ],
+        [
+          8000,
+          0
+        ],
+        [
+          8000,
+          5500
+        ],
+        [
+          6000,
+          5500
+        ]
+      ],
+      "height": {
+        "z_mm": 1000,
+        "dx": 0,
+        "dy": 0
+      },
+      "ceiling_z_mm": null,
+      "traversable": true,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "upper_deck",
+      "layer_id": "upper_layer",
+      "polygon_mm": [
+        [
+          2000,
+          0
+        ],
+        [
+          6000,
+          0
+        ],
+        [
+          6000,
+          3000
+        ],
+        [
+          2000,
+          3000
+        ]
+      ],
+      "height": {
+        "z_mm": 1000,
+        "dx": 0,
+        "dy": 0
+      },
+      "ceiling_z_mm": null,
+      "traversable": true,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    }
+  ],
+  "collision_volumes": [
+    {
+      "id": "deck_slab",
+      "polygon_mm": [
+        [
+          2500,
+          300
+        ],
+        [
+          5500,
+          300
+        ],
+        [
+          5500,
+          2700
+        ],
+        [
+          2500,
+          2700
+        ]
+      ],
+      "z_min_mm": 700,
+      "z_max_mm": 1000,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "tunnel_pillar",
+      "polygon_mm": [
+        [
+          3900,
+          2200
+        ],
+        [
+          4200,
+          2200
+        ],
+        [
+          4200,
+          2500
+        ],
+        [
+          3900,
+          2500
+        ]
+      ],
+      "z_min_mm": 0,
+      "z_max_mm": 700,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    }
+  ],
+  "trigger_volumes": [
+    {
+      "id": "tunnel_annotation",
+      "polygon_mm": [
+        [
+          3000,
+          900
+        ],
+        [
+          4500,
+          900
+        ],
+        [
+          4500,
+          1800
+        ],
+        [
+          3000,
+          1800
+        ]
+      ],
+      "z_min_mm": 0,
+      "z_max_mm": 650,
+      "source_ids": [
+        "synthetic_source"
+      ],
+      "surface_ids": [
+        "tunnel_floor"
+      ],
+      "rule_tag": "annotation-only-lower"
+    },
+    {
+      "id": "deck_annotation",
+      "polygon_mm": [
+        [
+          3000,
+          900
+        ],
+        [
+          4500,
+          900
+        ],
+        [
+          4500,
+          1800
+        ],
+        [
+          3000,
+          1800
+        ]
+      ],
+      "z_min_mm": 1000,
+      "z_max_mm": 1600,
+      "source_ids": [
+        "synthetic_source"
+      ],
+      "surface_ids": [
+        "upper_deck"
+      ],
+      "rule_tag": "annotation-only-upper"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "west_to_tunnel",
+      "from_surface": "west_floor",
+      "to_surface": "tunnel_floor",
+      "portal_mm": [
+        [
+          2000,
+          0
+        ],
+        [
+          2000,
+          3000
+        ]
+      ],
+      "bidirectional": true,
+      "max_step_mm": 0,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "tunnel_to_east",
+      "from_surface": "tunnel_floor",
+      "to_surface": "east_floor",
+      "portal_mm": [
+        [
+          6000,
+          0
+        ],
+        [
+          6000,
+          3000
+        ]
+      ],
+      "bidirectional": true,
+      "max_step_mm": 0,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "west_to_ramp",
+      "from_surface": "west_floor",
+      "to_surface": "ramp",
+      "portal_mm": [
+        [
+          2000,
+          3500
+        ],
+        [
+          2000,
+          5500
+        ]
+      ],
+      "bidirectional": true,
+      "max_step_mm": 0,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "ramp_to_platform",
+      "from_surface": "ramp",
+      "to_surface": "upper_platform",
+      "portal_mm": [
+        [
+          6000,
+          3500
+        ],
+        [
+          6000,
+          5500
+        ]
+      ],
+      "bidirectional": true,
+      "max_step_mm": 0,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    },
+    {
+      "id": "platform_to_deck",
+      "from_surface": "upper_platform",
+      "to_surface": "upper_deck",
+      "portal_mm": [
+        [
+          6000,
+          0
+        ],
+        [
+          6000,
+          3000
+        ]
+      ],
+      "bidirectional": true,
+      "max_step_mm": 0,
+      "source_ids": [
+        "synthetic_source"
+      ]
+    }
+  ]
+}

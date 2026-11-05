@@ -1,0 +1,101 @@
+{
+  "boundary_policy": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1",
+  "credit_strategy": "EXPERIMENTAL-end-of-second-v1",
+  "attack_damage_strategy": "EXPERIMENTAL-reconciled-projectile-hp-loss-v1",
+  "heat_strategy": "SYNTHETIC-per-robot-17mm-v1",
+  "heat_threshold_policy": "strict-reject-unadjudicated",
+  "robots": [
+    {
+      "id": "blue-1",
+      "team": 1,
+      "profile": {
+        "id": "SYNTHETIC-standard",
+        "max_hp": 100,
+        "ammo": 120,
+        "radius_mm": 280,
+        "speed_mm_tick": 55,
+        "projectile_speed_mm_tick": 260,
+        "projectile_damage": 10,
+        "cooldown_ticks": 10,
+        "sensor_range_mm": 6000,
+        "heat_limit_tenths": 400,
+        "cooling_per_second": 12
+      },
+      "spawn": {
+        "x": 10400,
+        "y": 2900,
+        "yaw": 128
+      },
+      "eligible": true
+    },
+    {
+      "id": "blue-2",
+      "team": 1,
+      "profile": {
+        "id": "SYNTHETIC-scout",
+        "max_hp": 80,
+        "ammo": 90,
+        "radius_mm": 240,
+        "speed_mm_tick": 65,
+        "projectile_speed_mm_tick": 300,
+        "projectile_damage": 8,
+        "cooldown_ticks": 9,
+        "sensor_range_mm": 5500,
+        "heat_limit_tenths": 400,
+        "cooling_per_second": 12
+      },
+      "spawn": {
+        "x": 10400,
+        "y": 4700,
+        "yaw": 128
+      },
+      "eligible": true
+    },
+    {
+      "id": "red-1",
+      "team": 0,
+      "profile": {
+        "id": "SYNTHETIC-standard",
+        "max_hp": 100,
+        "ammo": 120,
+        "radius_mm": 280,
+        "speed_mm_tick": 55,
+        "projectile_speed_mm_tick": 260,
+        "projectile_damage": 10,
+        "cooldown_ticks": 10,
+        "sensor_range_mm": 6000,
+        "heat_limit_tenths": 400,
+        "cooling_per_second": 12
+      },
+      "spawn": {
+        "x": 1600,
+        "y": 2900,
+        "yaw": 0
+      },
+      "eligible": true
+    },
+    {
+      "id": "red-2",
+      "team": 0,
+      "profile": {
+        "id": "SYNTHETIC-scout",
+        "max_hp": 80,
+        "ammo": 90,
+        "radius_mm": 240,
+        "speed_mm_tick": 65,
+        "projectile_speed_mm_tick": 300,
+        "projectile_damage": 8,
+        "cooldown_ticks": 9,
+        "sensor_range_mm": 5500,
+        "heat_limit_tenths": 400,
+        "cooling_per_second": 12
+      },
+      "spawn": {
+        "x": 1600,
+        "y": 4700,
+        "yaw": 0
+      },
+      "eligible": true
+    }
+  ]
+}

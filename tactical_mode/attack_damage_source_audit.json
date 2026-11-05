@@ -1,0 +1,422 @@
+{
+  "schema": "rmuc2027-attack-damage-source-audit-v1",
+  "audited_utc": "2026-11-05T05:16:00Z",
+  "source_id": "RMUC2027_CN_V1.0.0_20261015",
+  "source_pdf_url": "https://bbs-web-static.robomaster.com/451e5737ba5d4463909a3013456a4e551792055647969/RoboMaster%202027%20%E6%9C%BA%E7%94%B2%E5%A4%A7%E5%B8%88%E8%B6%85%E7%BA%A7%E5%AF%B9%E6%8A%97%E8%B5%9B%E6%AF%94%E8%B5%9B%E8%A7%84%E5%88%99%E6%89%8B%E5%86%8CV1.0.0%EF%BC%8820261015%EF%BC%89.pdf",
+  "source_hub": "https://bbs.robomaster.com/wiki/20204847/1969149?source=7",
+  "source_pdf_local": "/workspace/shared/rmuc2027/rmuc_2027_cn_v1_0_0.pdf",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "matrix_sha256": "f652d2f7c5fd9e88af660ad8fc46baa7ce8b36e4480dd6f18c43860466cecdea",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "source_scope": "Local pinned official V1.0.0 PDF and derived matrix. No latest official Q&A or communications implementation re-verification.",
+  "visually_reviewed_printed_pages": [
+    19,
+    89,
+    111,
+    114,
+    124
+  ],
+  "records": [
+    {
+      "id": "AD-01",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-01"
+      ],
+      "quote": "一方机器人或基地、前哨站受到弹丸、飞镖打击和空中机器人冲击产生的血量扣除。",
+      "finding": "Attack damage is qualifying HP deduction, not projectile count or unbounded nominal hit damage. The ledger may consume already-settled actual loss; this does not establish the upstream overkill/event-order algorithm.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_019.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-02",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-01"
+      ],
+      "quote": "一方机器人、基地、前哨站因违规判罚导致的扣血计入对方攻击伤害。",
+      "finding": "Violation-penalty HP deductions are credited to the victim team's opponent. Keep this separate from automatic module-offline deductions explicitly excluded by AD-03.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_019.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-03",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-01"
+      ],
+      "quote": "一方机器人因装甲模块受撞击、裁判系统模块离线等导致的血量扣除。",
+      "finding": "The non-attack-damage definition explicitly includes ordinary armor collision and referee-system module-offline deductions.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_019.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-04",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-02"
+      ],
+      "quote": "每局比赛结束，己方所有存活机器人剩余血量的总值。",
+      "finding": "Remaining HP tie-break sums current HP of surviving robots only, not bases/outposts/max HP.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_019.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-05",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-02"
+      ],
+      "quote": "存活：机器人裁判系统主控模块正常连入裁判系统服务器且血量不为 0 的状态。",
+      "finding": "Normally connected main controller and nonzero HP define survival. Abnormally offline robots do not count merely because HP remains positive.",
+      "printed_pages": [
+        16
+      ],
+      "pdf_pages": [
+        17
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_016.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-06",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [],
+      "quote": "裁判系统在结算血量时进行四舍五入，保留整数。",
+      "finding": "HP settlement rounds to an integer. Do not use binary floating point rounding defaults without matching the stated rounding.",
+      "printed_pages": [
+        17
+      ],
+      "pdf_pages": [
+        18
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_017.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-07",
+      "status": "verified_definition",
+      "section": "§5.6.4.1",
+      "matrix_ids": [
+        "buff.stacking_rounding"
+      ],
+      "quote": "经过增益计算后的最终伤害值或回血值若非整数，则四舍五入。",
+      "finding": "Round the final damage/heal value after buffs. The damage ledger should not repeat rounding or apply buffs again to settled loss.",
+      "printed_pages": [
+        105
+      ],
+      "pdf_pages": [
+        106
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_105.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-08",
+      "status": "verified_xp_only_score_attribution_unresolved",
+      "section": "§5.5.1 表5-14",
+      "matrix_ids": [
+        "EXP_DAMAGE_REDISTRIBUTION"
+      ],
+      "quote": "当一方机器人、基地或前哨站受到攻击伤害，但裁判系统未检测到伤害具体来源，伤害来源不能获取经验或伤害来源为判罚/己方机器人：若为弹丸伤害，经验将平均分给另一方的能够正常造成该类型弹丸伤害且能够获得经验的所有存活机器人；若为非弹丸伤害，经验将平均分给另一方此时所有存活的步兵机器人。",
+      "finding": "Friendly/unknown-source attacks exist in this text and redistribute XP. This paragraph does not expressly define the attack-score team recipient for those cases; do not silently reuse XP attribution as attack-score attribution.",
+      "printed_pages": [
+        89
+      ],
+      "pdf_pages": [
+        90
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_089.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-09",
+      "status": "verified_detection_caveat",
+      "section": "§5.1.1",
+      "matrix_ids": [
+        "DAMAGE_PROHIBITED_COLLISION"
+      ],
+      "quote": "地面机器人、基地、前哨站的装甲模块受到撞击时有概率被判定为弹丸伤害。除空中机器人冲击外，不允许通过撞击（包括与机器人冲撞，抛掷物体等）的方式对对方造成伤害。",
+      "finding": "Physical contact, reported/adjudicated damage category, and a separate rule-violation decision must not be collapsed into one category. Aerial impact is a distinct permitted attack class.",
+      "printed_pages": [
+        65
+      ],
+      "pdf_pages": [
+        66
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_065.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-10",
+      "status": "verified_warning_floor",
+      "section": "§7.1.2 表7-2 黄牌警告",
+      "matrix_ids": [
+        "PEN-02"
+      ],
+      "quote": "若机器人剩余血量小于等于判罚需扣除的血量，则机器人血量降为 1。",
+      "finding": "Yellow-warning deduction cannot be credited at its nominal percentage when it stops at 1 HP. The remaining-1 note belongs to yellow warnings, not every penalty.",
+      "printed_pages": [
+        124
+      ],
+      "pdf_pages": [
+        125
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_124.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-11",
+      "status": "verified_red_card_effect",
+      "section": "§7.1.2 表7-2 红牌警告",
+      "matrix_ids": [
+        "PEN-06"
+      ],
+      "quote": "若在比赛中罚下地面机器人，机器人血量立即变为 0，图传画面断开、多机通信断开、无法复活。",
+      "finding": "An in-match ground-robot red-card deduction is its settled remaining loss to zero, and the robot is dismissed. Do not give red cards the yellow-card 1 HP floor.",
+      "printed_pages": [
+        125
+      ],
+      "pdf_pages": [
+        126
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_125.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-12",
+      "status": "verified_timeout_order",
+      "section": "§5.8",
+      "matrix_ids": [
+        "victory.conditions"
+      ],
+      "quote": "一局比赛时间耗尽时，若双方基地均未被击毁且累计控制度一致，全队攻击伤害高的一方获胜。",
+      "finding": "Attack damage is the timeout tie-break after equal control with both bases alive.",
+      "printed_pages": [
+        114
+      ],
+      "pdf_pages": [
+        115
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_114.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-13",
+      "status": "verified_timeout_order",
+      "section": "§5.8",
+      "matrix_ids": [
+        "victory.conditions"
+      ],
+      "quote": "一局比赛时间耗尽时，若双方基地均未被击毁且累计控制度一致，全队攻击伤害一致，全队总剩余血量高的一方获胜。",
+      "finding": "Surviving robot HP is used only after control and attack damage tie.",
+      "printed_pages": [
+        114
+      ],
+      "pdf_pages": [
+        115
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_114.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-14",
+      "status": "verified_timeout_fallback",
+      "section": "§5.8",
+      "matrix_ids": [
+        "victory.conditions"
+      ],
+      "quote": "若上述条件无法判定胜负，该局比赛视为平局。",
+      "finding": "Equal resolved criteria produce a draw. Missing/unresolved facts are not equal facts and must not be converted to a draw.",
+      "printed_pages": [
+        115
+      ],
+      "pdf_pages": [
+        116
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_115.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-15",
+      "status": "unresolved_score_attribution",
+      "section": "§5.7.3 飞镖命中收益",
+      "matrix_ids": [
+        "dart.damage_score_wording_gap"
+      ],
+      "quote": "若选择“随机移动目标”、“末端移动目标”后命中基地飞镖检测模块，对方全部存活的地面机器人分别立即扣除各自当前上限血量 20%（随机移动目标）、50%（末端移动目标）的血量（计入对方全队总伤害，但该扣血本身以及导致的机器人战亡不会产生经验）。",
+      "finding": "Literal group-damage wording says credited to the opposing team's total damage. The team referent and equivalence of total damage versus attack damage remain unresolved. Do not correct this wording silently.",
+      "printed_pages": [
+        111
+      ],
+      "pdf_pages": [
+        112
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_111.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-16",
+      "status": "verified_end_condition",
+      "section": "§6.7",
+      "matrix_ids": [
+        "PHASE-04"
+      ],
+      "quote": "当一局比赛时间耗尽或一方队伍提前触发获胜条件时，一局比赛结束。",
+      "finding": "Freeze the resolved terminal boundary. This does not prescribe the ordering of events sharing its timestamp.",
+      "printed_pages": [
+        121
+      ],
+      "pdf_pages": [
+        122
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_121.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-17",
+      "status": "verified_detection_caveat",
+      "section": "§5.1.1",
+      "matrix_ids": [
+        "DAMAGE_HEAVY_GATE"
+      ],
+      "quote": "为确保检测精度、减少误检，部分情况下，裁判系统需等待 42mm 弹丸的发射信息匹配，因此装甲模块在检测到 42mm 弹丸打击后，伤害结算可能会略有延迟。",
+      "finding": "Physical impact time and official damage-settlement time may differ. A same-tick sandbox hit cannot establish an official timeout-boundary settlement.",
+      "printed_pages": [
+        65
+      ],
+      "pdf_pages": [
+        66
+      ],
+      "source_text_paths": [
+        "/workspace/shared/rmuc2027/pages/printed_065.txt"
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "AD-U01",
+      "subject": "Overkill",
+      "boundary": "No explicit standalone overkill algorithm was located. Actual HP deduction is the score basis. Per-hit allocation when several sources exceed remaining HP, kill ownership, XP overkill policy, and detector settlement must not be invented.",
+      "matrix_ids": [
+        "EXP_UNKNOWN_KILL_AMBIGUITIES",
+        "MODEL-02"
+      ]
+    },
+    {
+      "id": "AD-U02",
+      "subject": "Simultaneous events",
+      "boundary": "No universal order for damage/heal/capture/credit/timeout or bilateral base destruction is specified in reviewed text. Engineering deterministic order must be labeled and versioned.",
+      "matrix_ids": [
+        "MODEL-02"
+      ]
+    },
+    {
+      "id": "AD-U03",
+      "subject": "Yellow to red escalation",
+      "boundary": "The p124 phrase 所有机器人累计收到3次黄牌警告时，将同时收到红牌警告 has unresolved subject/scope. The ledger can account for externally adjudicated red-card loss without deciding that trigger.",
+      "matrix_ids": [
+        "PEN-05"
+      ]
+    }
+  ],
+  "entity_scope_limits": [
+    {
+      "causes": [
+        "ordinary_armor_collision",
+        "module_offline"
+      ],
+      "verified_scope": "ground robot; p19 nonattack definition says robot and mechanism sections constrain deduction to ground robots",
+      "unsupported_scope": [
+        "base",
+        "outpost"
+      ],
+      "sources": [
+        {
+          "section": "§2 表2-1",
+          "printed_page": 19,
+          "pdf_page": 20
+        },
+        {
+          "section": "§5.1.1 表5-2",
+          "printed_page": 65,
+          "pdf_page": 66
+        },
+        {
+          "section": "§5.1.5.1 表5-4",
+          "printed_page": 69,
+          "pdf_page": 70
+        },
+        {
+          "section": "§5.1.5.2",
+          "printed_page": 70,
+          "pdf_page": 71
+        }
+      ],
+      "limitation": "Generic Robot kind does not independently establish eligible ground-robot subtype; upstream must resolve subtype. Collision physically detected as projectile is a distinct adjudicated category."
+    }
+  ]
+}

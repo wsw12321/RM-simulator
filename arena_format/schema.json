@@ -1,0 +1,459 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Experimental layered arena v1",
+  "description": "Structural schema only. The bundled Python validator additionally enforces duplicate-key rejection, finite numbers, bounded resources, global unique identifiers, references, convexity, containment, ceiling separation and portal consistency. This is not an official map or physics schema.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rmuc-layered-arena.v1"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "official_map": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "official_map"
+      ],
+      "additionalProperties": false
+    },
+    "frame": {
+      "type": "object",
+      "properties": {
+        "units": {
+          "const": "mm"
+        },
+        "handedness": {
+          "const": "right"
+        },
+        "up_axis": {
+          "const": "+z"
+        },
+        "x_axis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "y_axis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "origin": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "units",
+        "handedness",
+        "up_axis",
+        "x_axis",
+        "y_axis",
+        "origin"
+      ],
+      "additionalProperties": false
+    },
+    "calibration": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "synthetic",
+            "unverified",
+            "partial",
+            "calibrated"
+          ]
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "status",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "minItems": 1,
+      "maxItems": 256
+    },
+    "boundary_mm": {
+      "$ref": "#/$defs/polygon"
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/layer"
+      },
+      "minItems": 1,
+      "maxItems": 256
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/surface"
+      },
+      "minItems": 1,
+      "maxItems": 256
+    },
+    "collision_volumes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/collision_volume"
+      },
+      "minItems": 0,
+      "maxItems": 256
+    },
+    "trigger_volumes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/trigger_volume"
+      },
+      "minItems": 0,
+      "maxItems": 256
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/transition"
+      },
+      "minItems": 0,
+      "maxItems": 256
+    }
+  },
+  "required": [
+    "schema",
+    "metadata",
+    "frame",
+    "calibration",
+    "sources",
+    "boundary_mm",
+    "layers",
+    "surfaces",
+    "collision_volumes",
+    "trigger_volumes",
+    "transitions"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_.-]{0,63}$"
+    },
+    "point": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "minimum": -1000000,
+        "maximum": 1000000
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "polygon": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/point"
+      },
+      "minItems": 3,
+      "maxItems": 64,
+      "description": "Additional semantic validation: simple, strictly convex, CCW; no repeated/collinear vertices. Numerical tolerance 1e-7 mm."
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "synthetic",
+            "manual",
+            "cad",
+            "survey"
+          ]
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "reference",
+        "sha256",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "layer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_refs"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "source_ids"
+      ],
+      "additionalProperties": false
+    },
+    "height": {
+      "type": "object",
+      "properties": {
+        "z_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "dx": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 10
+        },
+        "dy": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 10
+        }
+      },
+      "required": [
+        "z_mm",
+        "dx",
+        "dy"
+      ],
+      "additionalProperties": false
+    },
+    "surface": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "layer_id": {
+          "$ref": "#/$defs/id"
+        },
+        "polygon_mm": {
+          "$ref": "#/$defs/polygon"
+        },
+        "height": {
+          "$ref": "#/$defs/height"
+        },
+        "ceiling_z_mm": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number",
+              "minimum": -1000000,
+              "maximum": 1000000
+            }
+          ]
+        },
+        "traversable": {
+          "type": "boolean"
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_refs"
+        }
+      },
+      "required": [
+        "id",
+        "layer_id",
+        "polygon_mm",
+        "height",
+        "ceiling_z_mm",
+        "traversable",
+        "source_ids"
+      ],
+      "additionalProperties": false
+    },
+    "transition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "from_surface": {
+          "$ref": "#/$defs/id"
+        },
+        "to_surface": {
+          "$ref": "#/$defs/id"
+        },
+        "portal_mm": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/point"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "bidirectional": {
+          "type": "boolean"
+        },
+        "max_step_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_refs"
+        }
+      },
+      "required": [
+        "id",
+        "from_surface",
+        "to_surface",
+        "portal_mm",
+        "bidirectional",
+        "max_step_mm",
+        "source_ids"
+      ],
+      "additionalProperties": false
+    },
+    "collision_volume": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "polygon_mm": {
+          "$ref": "#/$defs/polygon"
+        },
+        "z_min_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "z_max_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_refs"
+        }
+      },
+      "required": [
+        "id",
+        "polygon_mm",
+        "z_min_mm",
+        "z_max_mm",
+        "source_ids"
+      ],
+      "additionalProperties": false
+    },
+    "trigger_volume": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "polygon_mm": {
+          "$ref": "#/$defs/polygon"
+        },
+        "z_min_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "z_max_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_refs"
+        },
+        "surface_ids": {
+          "$ref": "#/$defs/source_refs"
+        },
+        "rule_tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "id",
+        "polygon_mm",
+        "z_min_mm",
+        "z_max_mm",
+        "source_ids",
+        "surface_ids",
+        "rule_tag"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

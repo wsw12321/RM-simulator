@@ -1,0 +1,127 @@
+{
+  "module": "rmuc2027-heat-v1.0.0-module.1",
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_pdf_url": "https://bbs-web-static.robomaster.com/451e5737ba5d4463909a3013456a4e551792055647969/RoboMaster%202027%20%E6%9C%BA%E7%94%B2%E5%A4%A7%E5%B8%88%E8%B6%85%E7%BA%A7%E5%AF%B9%E6%8A%97%E8%B5%9B%E6%AF%94%E8%B5%9B%E8%A7%84%E5%88%99%E6%89%8B%E5%86%8CV1.0.0%EF%BC%8820261015%EF%BC%89.pdf",
+  "source_hub": "https://bbs.robomaster.com/wiki/20204847/1969149?source=7",
+  "official_full_simulation": false,
+  "audit": "../../tactical_mode/heat_source_audit.json",
+  "audit_narrative": "../../tactical_mode/HEAT_SOURCES.md",
+  "verified_subset": [
+    {
+      "ids": [
+        "H-01",
+        "H-02",
+        "H-03"
+      ],
+      "section": "§5.1.3",
+      "printed_pages": [
+        66,
+        67
+      ],
+      "facts": "Detected17mm +10;100ms cooling C/10; clamp0; not requested fire or subsequent hit."
+    },
+    {
+      "ids": [
+        "H-04",
+        "H-05",
+        "H-06",
+        "H-08"
+      ],
+      "section": "§5.1.3",
+      "printed_pages": [
+        66,
+        67
+      ],
+      "facts": "Independent temporary heat lock until0; Q2=Q0+100; permanent rest-of-round lock aboveQ2 remains after cooling."
+    },
+    {
+      "ids": [
+        "H-33"
+      ],
+      "section": "§5.3.2",
+      "printed_pages": [
+        74
+      ],
+      "facts": "Death resets heat0; no authority to cancel permanent latch or independent other causes."
+    },
+    {
+      "ids": [
+        "H-11",
+        "H-12"
+      ],
+      "printed_pages": [
+        66,
+        67,
+        19
+      ],
+      "facts": "Heat-lock mechanism has no HP deduction or attack credit."
+    },
+    {
+      "ids": [
+        "H-19"
+      ],
+      "section": "§5.5.2 table5-18",
+      "printed_pages": [
+        94
+      ],
+      "facts": "Borrowed cooling-priority infantry level1 heat limit40, cooling12/s."
+    }
+  ],
+  "unresolved": [
+    {
+      "ids": [
+        "H-06",
+        "H-07"
+      ],
+      "issue": "Prose excludes equality from both temporary/permanent intervals; diagram uses>=Q2."
+    },
+    {
+      "ids": [
+        "H-10"
+      ],
+      "issue": "Coincident shot/cooling/death, multiple detections and clock epoch not ordered by pinned source."
+    },
+    {
+      "ids": [
+        "H-37"
+      ],
+      "issue": "Permanent-only first-person video consequence unspecified; no video simulation or telemetry implemented."
+    }
+  ],
+  "engineering_contract": [
+    "Nonnegative int64 tenths with integer cooling-per-second; epoch0 cooling ticks at100ms multiples. First event0 allowed; one batch per strictly increasing timestamp.",
+    "Default strict threshold rejects exactQ2 at any +10 increment within a batch; all rejection is atomic.",
+    "ENGINEERING-prose-greater-temporary-at-equality-v1 invents an explicit temporary-at-equality fallback; prose does not resolve equality.",
+    "ENGINEERING-flowchart-greater-equal-v1 explicitly chooses permanent-at-equality.",
+    "Default strict shot/cooling and shot/death coincidences reject. Named ordering alternatives are not official.",
+    "Same-time detected batch is sequential +10 without intervening cooling; intermediate latch/equality effects preserved with constant-time arithmetic.",
+    "Detected facts may arrive despite existing lock; upstream emitter owns gating. No speed/death/offline lock is cleared by heat."
+  ],
+  "integration": {
+    "strategy": "EXPERIMENTAL-fixed-level1-cooling-priority-17mm-v1",
+    "heat_values_only": {
+      "limit_tenths": 400,
+      "cooling_per_second": 12
+    },
+    "boundary": "EXPERIMENTAL-cooling-before-fire-gate-and-shot-v1",
+    "death": "EXPERIMENTAL-observed-shot-before-death-reset-v1",
+    "default_threshold": "strict-reject-unadjudicated",
+    "legacy": "src/sim.* and older modes unchanged; synthetic100HP and damage settlement semantics unchanged.",
+    "privacy": "self_heat only in observation revision2; action SDK1 unchanged; enemy heat and shot/block counts administrative.",
+    "replay": "Requested fire is recorded; effective native fire is gated. Actual shot events add heat. Heat/config/counts in state hash and source identity.",
+    "video": "Unsupported; no video_locked field, tactical-map blackout or sensor suppression."
+  },
+  "unsupported": [
+    "42mm",
+    "Full official robot identity/profile",
+    "Level changes and cooling buffs",
+    "General fractional cooling/rounding",
+    "Official event/epoch timing",
+    "Video simulation",
+    "Other launcher lock reasons",
+    "Official full death/revival",
+    "Untrusted-controller isolation",
+    "Tactical WASM"
+  ]
+}

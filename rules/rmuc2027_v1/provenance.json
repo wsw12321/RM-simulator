@@ -1,0 +1,384 @@
+{
+  "module_version": "rmuc2027-match-v1.0.0-module.1",
+  "complete_rule_pack": false,
+  "connected_to_browser_sandbox": false,
+  "source": {
+    "title": "RMUC 2027 V1.0.0 战术仿真规则矩阵",
+    "source_title": "RoboMaster 2027 机甲大师超级对抗赛比赛规则手册 V1.0.0（20261015）",
+    "source_hub": "https://bbs.robomaster.com/wiki/20204847/1969149?source=7",
+    "source_pdf": "https://bbs-web-static.robomaster.com/451e5737ba5d4463909a3013456a4e551792055647969/RoboMaster%202027%20%E6%9C%BA%E7%94%B2%E5%A4%A7%E5%B8%88%E8%B6%85%E7%BA%A7%E5%AF%B9%E6%8A%97%E8%B5%9B%E6%AF%94%E8%B5%9B%E8%A7%84%E5%88%99%E6%89%8B%E5%86%8CV1.0.0%EF%BC%8820261015%EF%BC%89.pdf",
+    "sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+    "bytes": 22455861,
+    "physical_pages": 144,
+    "page_convention": "All matrix page references use printed page numbers. PDF physical page=printed+1.",
+    "access_date": "2026-11-05",
+    "qa_status": "Official Qingflow Q&A page opened but dynamic contents not extracted; no third-party Q&A mirror values promoted to verified official rules. Reconcile latest official Q&A before implementation freeze.",
+    "classification": {
+      "exact": "Exact official baseline mechanic; not necessarily implemented.",
+      "configurable": "Explicit simulator modeling choice, calibrated parameter or simplification; official exact constraints remain.",
+      "unresolved": "Rule ambiguity, missing dependency, or verification not completed."
+    },
+    "matrix_revision": "r2-audit-complete",
+    "matrix_updated_utc": "2026-11-05T01:06:30Z",
+    "revision_note": "补充p19伤害记分和存活机器人HP定义；修正2秒失效宽限后的占领测试及同刻边界；限定脱战条件只作用远程弹量兑换；闸门以完全开启状态授权而非硬7秒；空中通信测试限定裁判系统多机通信。"
+  },
+  "audited_matrix_sha256": "f652d2f7c5fd9e88af660ad8fc46baa7ce8b36e4480dd6f18c43860466cecdea",
+  "implementation_scope": {
+    "control.positions": "initial ownership and valid control degree only; no capture transitions",
+    "control.scoring": "exact rate formula and externally resolved credit arithmetic; no timing scheduler",
+    "victory.conditions": "ordered formula with explicit missing-input and simultaneity errors",
+    "SCORE-02": "current-HP aggregation over supplied qualified entity facts",
+    "PHASE-01": "420-second duration only; no preparation/self-check phases",
+    "PHASE-04": "terminal latch only",
+    "SCORE-01": "upstream dependency only; no damage ledger implemented",
+    "PEN-08": "unsupported; fails closed for explicit referee rulings",
+    "victory.series": "unsupported; no series manager"
+  },
+  "rows": [
+    {
+      "id": "PHASE-01",
+      "section_page": "§6.3–6.6，p118–121",
+      "summary": "标准单局阶段",
+      "values": "3分钟准备→15秒裁判自检→5秒倒计时→7分钟比赛；自检重置满HP；5秒倒计时不响应选手端控制含自定义终端。",
+      "simulator_effect": "准备/自检/倒计时/比赛/结束为显式状态；训练快捷开局只是跳过展示。",
+      "classification": "exact",
+      "test": "倒计时输入不得跨阶段污染首tick；比赛权威计时420秒。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "PHASE-04",
+      "section_page": "§6.7–6.8，p121–122",
+      "summary": "终局与记录",
+      "values": "时间用尽或提前获胜即结束；成绩表记录关键结算、判罚、胜负及暂停；场次结束后5分钟内确认或申诉。",
+      "simulator_effect": "终局只结算一次，冻结后动作不得影响比赛结果；回放保留判罚记录。",
+      "classification": "exact",
+      "test": "同时事件终局后不能再加控制度或金币；成绩快照可重算。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "PEN-08",
+      "section_page": "§7.1.2，p125",
+      "summary": "判负结算",
+      "values": "赛前判负：败方基地HP/控制0、其余满血；胜方基地/机器人满血、控制1680；双方伤害0，局时420秒。比赛中判负立即结束，败方基地0，其余HP和控制按当时。",
+      "simulator_effect": "裁判终局覆盖普通胜负比较，并保存官方结算字段。",
+      "classification": "exact",
+      "test": "赛前判负固定1680胜方控制；赛中判负不回填1680。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "MODEL-02",
+      "section_page": "手册§5.3–5.8；未规定同仿真tick排序",
+      "summary": "并发事件顺序需工程决策并核验",
+      "values": "金币到账/购买、击杀/回血、控制变化/终局等同时间戳事件，手册未给通用执行顺序。",
+      "simulator_effect": "固定tick和稳定事件序列，保留决策注释；争议边界用官方数据/答疑校准。",
+      "classification": "unresolved",
+      "test": "同一输入重复运行状态哈希一致；瞬间终局不靠实体遍历顺序判胜。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "SCORE-01",
+      "section_page": "§2，p19；§7.1.2，p124",
+      "summary": "攻击伤害与非攻击伤害的记分边界",
+      "values": {
+        "attack_damage": "机器人、基地、前哨站因弹丸、飞镖或空中机器人冲击而产生的血量扣除",
+        "penalty_damage": "机器人、基地、前哨站因违规判罚产生的扣血计入对方攻击伤害",
+        "non_attack_damage": [
+          "装甲模块受撞击导致的扣血",
+          "裁判系统模块离线等导致的扣血"
+        ],
+        "aerial_impact_vs_collision": "规则认可的空中冲击是攻击伤害，不等同普通装甲撞击"
+      },
+      "simulator_effect": "统一伤害事件必须同时携带伤害类型、实际扣血、记分归属和经验处理；不能把所有HP减少算为攻击伤害，也不能因没有发射者而漏掉判罚得分。专项飞镖群体扣血归属争议另见dart.damage_score_wording_gap。",
+      "classification": "exact",
+      "test": "红方机器人黄牌实际扣血30，则蓝方攻击伤害+30；红方装甲撞击扣2和模块离线扣4均不增加蓝方攻击伤害；蓝方有效空中冲击红前哨200则蓝方攻击伤害+200。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "SCORE-02",
+      "section_page": "§2，p19；§5.8，p115",
+      "summary": "总剩余血量只统计己方存活机器人",
+      "values": {
+        "included": "终局时己方所有存活机器人的当前剩余HP之和",
+        "excluded": [
+          "基地HP",
+          "前哨站HP",
+          "战亡机器人",
+          "被罚下机器人",
+          "不满足存活定义的异常离线机器人"
+        ],
+        "not_used": "最大HP、基地HP、前哨HP不得混入该合计"
+      },
+      "simulator_effect": "胜负第四顺位使用独立surviving_robot_hp_sum字段，而不是遍历队伍全部有HP实体求和。存活资格采用§2 p16定义。",
+      "classification": "exact",
+      "test": "控制度和攻击伤害相等；红存活机器人合计500、蓝600，即使红基地9000/前哨1000而蓝基地1000/前哨500，仍由蓝获胜。红方一台异常离线且HP100不得加入500的存活合计。",
+      "domain": "场地经济复活流程判罚",
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.positions",
+      "section_page": "§5.6.2; 表5-20，p96",
+      "summary": "双方各有基地阵地和前哨阵地，控制状态分临时与完全。",
+      "values": {
+        "positions_per_side": 2,
+        "outpost_components": [
+          "前哨站增益点",
+          "中央高地增益点"
+        ],
+        "base_components": [
+          "基地增益点",
+          "堡垒增益点"
+        ],
+        "outpost_full_control": "双方均可",
+        "base_full_control": "仅初始拥有方",
+        "initial_control": "双方完全控制各自两个阵地"
+      },
+      "simulator_effect": "使用阵地原始归属与当前控制方、控制程度三个字段，不将增益点激活等同于立刻占领。",
+      "classification": "exact",
+      "test": "敌方可暂控基地阵地但不能取得完全控制；初始四处阵地状态正确。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2; 表5-20",
+        "printed_pages": [
+          96
+        ],
+        "pdf_pages": [
+          97
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.destroyed_outpost_gap",
+      "section_page": "§5.6.1–5.6.2，p94,96",
+      "summary": "前哨先被击毁而尚未被对方临时占领时，后续重建/再次击毁路径未在本节完整闭合。",
+      "values": {
+        "literal_destroy_first_transition": "对方完全控制 -> 对方临时控制",
+        "rebuild_text": "通过前哨站被击毁的方式由一方完全控制转化为另一方完全控制时重建",
+        "missing": "先击毁后占领的死前哨生命周期；暂控方无人激活触发对方满控制与前哨归属的一致性"
+      },
+      "simulator_effect": "保留规则缺口并提供显式配置/待确认开关，勿用往年规则暗补。",
+      "classification": "unresolved",
+      "test": "回归测试覆盖先占领后击毁与先击毁后占领两条路线；后者标注未定行为。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.1–5.6.2",
+        "printed_pages": [
+          94,
+          96
+        ],
+        "pdf_pages": [
+          95,
+          97
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.scoring",
+      "section_page": "§5.6.2，p97",
+      "summary": "一方控制全部两个同类阵地时持续累计控制度。",
+      "values": {
+        "both_outposts_score_per_s": 1,
+        "both_bases_score_per_s": 3,
+        "control_wording": "控制，未限定完全控制"
+      },
+      "simulator_effect": "按临时或完全控制方计算控制度；可同时满足两条件时分别累计；精确离散取整时序另行配置。",
+      "classification": "exact",
+      "test": "同时控制两前哨10秒得10控制度；同时控制两基地10秒得30；基地敌方只能暂控也可计入。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2",
+        "printed_pages": [
+          97
+        ],
+        "pdf_pages": [
+          98
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.tick_granularity",
+      "section_page": "§5.6.2，p97",
+      "summary": "每秒加分的首个计分时刻、亚秒占领如何累计未明示。",
+      "values": {
+        "official_rate_hz": 1,
+        "unspecified": [
+          "全局整秒还是获得控制后满1秒",
+          "失去控制时亚秒余量是否保留"
+        ]
+      },
+      "simulator_effect": "模拟配置计分采样方案并写入回放元数据，不能当官方既定细则。",
+      "classification": "configurable",
+      "test": "在0.4秒取得控制、1.1秒失去控制的边界用所选规则得到稳定结果。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2",
+        "printed_pages": [
+          97
+        ],
+        "pdf_pages": [
+          98
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "dart.damage_score_wording_gap",
+      "section_page": "§5.7.3，p111",
+      "summary": "移动目标群体扣血的记分归属原文写计入对方全队总伤害，可能与直觉/攻击伤害定义冲突。",
+      "values": {
+        "verbatim": "计入对方全队总伤害",
+        "needs_clarification": [
+          "记入发射方还是受击方",
+          "此全队总伤害与5.8全队攻击伤害是否同一统计"
+        ]
+      },
+      "simulator_effect": "不要未经说明把该文字改成发射方攻击分；提供明确规则备注和可配置归属。",
+      "classification": "unresolved",
+      "test": "移动目标群体扣血导致超时第三判据变化的案例必须记录采用的归属。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.7.3",
+        "printed_pages": [
+          111
+        ],
+        "pdf_pages": [
+          112
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "victory.conditions",
+      "section_page": "§5.8，p114,115",
+      "summary": "单局胜负按顺序：基地被毁时比基地剩余HP；否则超时比控制度、攻击伤害、全队剩余HP；仍相同平局。",
+      "values": {
+        "ordered_conditions": [
+          {
+            "priority": 1,
+            "when": "一方基地被击毁",
+            "compare": "基地剩余血量高者胜"
+          },
+          {
+            "priority": 2,
+            "when": "时间耗尽且双方基地均未毁",
+            "compare": "累计控制度高者胜"
+          },
+          {
+            "priority": 3,
+            "when": "时间耗尽、基地均未毁、控制度相同",
+            "compare": "全队攻击伤害高者胜"
+          },
+          {
+            "priority": 4,
+            "when": "上述且攻击伤害相同",
+            "compare": "全队总剩余血量高者胜"
+          },
+          {
+            "priority": 5,
+            "when": "上述仍不能判胜",
+            "result": "平局"
+          }
+        ],
+        "total_remaining_hp_scope": "仅己方所有存活机器人当前HP之和，排除基地与前哨站；参阅§2 p19与SCORE-02。",
+        "attack_damage_scope": "含对方因违规判罚扣血；普通撞击及模块离线等扣血不计攻击伤害；参阅§2 p19与SCORE-01。"
+      },
+      "simulator_effect": "超时首要比较控制度，不比较基地剩余HP；攻击伤害和存活机器人HP必须使用§2 p19定义的独立账本；终局条件由规则内核统一判定。",
+      "classification": "exact",
+      "test": "时间到红基地HP9000蓝1000但蓝控制度更高，蓝胜；控制度平才比正确归属的攻击伤害；前两项相同只比较存活机器人HP，基地/前哨不得参与；基地被毁则立即走第一顺位。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.8",
+        "printed_pages": [
+          114,
+          115
+        ],
+        "pdf_pages": [
+          115,
+          116
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "victory.series",
+      "section_page": "§5.8，p114,115",
+      "summary": "小组赛BO2/BO3，淘汰赛BO3/BO5；BO3与BO5出现平局立即加赛直到分胜负。",
+      "values": {
+        "group_series": [
+          "BO2",
+          "BO3"
+        ],
+        "elimination_series": [
+          "BO3",
+          "BO5"
+        ],
+        "draw_replay_in": [
+          "BO3",
+          "BO5"
+        ],
+        "draw_replay": "立即加赛直到分出胜负"
+      },
+      "simulator_effect": "单局引擎与系列赛管理器分离；BO2平局不套用BO3/5立即加赛规定。",
+      "classification": "exact",
+      "test": "BO3平局不计作一方胜利，继续加赛；BO2按对应赛制另行处理。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.8",
+        "printed_pages": [
+          114,
+          115
+        ],
+        "pdf_pages": [
+          115,
+          116
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    },
+    {
+      "id": "control.deactivation_capture_boundary",
+      "section_page": "§5.6.2; 表5-21; 5.6.4.1，p96,102",
+      "summary": "2秒失效延迟与恰好5秒占领同刻发生时，裁判系统采样及事件顺序未明确。",
+      "values": {
+        "exact_constraints": {
+          "capture_logical_activation_s": 5,
+          "activation_deactivation_delay_s": 2,
+          "progress_reversal_rate": "与增长相同"
+        },
+        "counterexample": "物理连续激活3秒后离开2秒，不可直接断言只剩1秒进度；逻辑激活还存在2秒失效宽限。",
+        "unverified_boundary": "若忽略额外检测延迟，物理激活3秒后离开，2秒宽限到期与占领累计5秒重合；本册没有说明该精确同刻的裁判采样/结算顺序。"
+      },
+      "simulator_effect": "使用同一逻辑激活时间线；临时仿真必须声明同刻事件优先级，并以官方答疑或裁判系统行为校验。此项是实现边界未明，不是认为手册两条规则互相矛盾。",
+      "classification": "unresolved",
+      "test": "建立物理3秒激活+离开2秒的集成用例，断言不会按物理离开立刻倒退至1秒；精确是否在宽限到期同刻完成占领由显式、可回放的暂定顺序决定，并标待核验。",
+      "domain": "目标增益特殊系统与胜负",
+      "source_locator": {
+        "section": "5.6.2; 表5-21; 5.6.4.1",
+        "printed_pages": [
+          96,
+          102
+        ],
+        "pdf_pages": [
+          97,
+          103
+        ],
+        "source_version": "RMUC 2027 V1.0.0"
+      },
+      "source_id": "RMUC2027_CN_V1.0.0_20261015"
+    }
+  ]
+}

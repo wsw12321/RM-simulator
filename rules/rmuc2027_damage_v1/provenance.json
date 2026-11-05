@@ -1,0 +1,154 @@
+{
+  "module_version": "rmuc2027-damage-v1.0.0-module.1",
+  "complete_rule_pack": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_hub": "https://bbs.robomaster.com/wiki/20204847/1969149?source=7",
+  "source_pdf": "https://bbs-web-static.robomaster.com/451e5737ba5d4463909a3013456a4e551792055647969/RoboMaster%202027%20%E6%9C%BA%E7%94%B2%E5%A4%A7%E5%B8%88%E8%B6%85%E7%BA%A7%E5%AF%B9%E6%8A%97%E8%B5%9B%E6%AF%94%E8%B5%9B%E8%A7%84%E5%88%99%E6%89%8B%E5%86%8CV1.0.0%EF%BC%8820261015%EF%BC%89.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "audit": "../../tactical_mode/ATTACK_DAMAGE_SOURCES.md",
+  "machine_readable_audit": "../../tactical_mode/attack_damage_source_audit.json",
+  "verified_scope": {
+    "AD-01": "Settled actual HP loss from projectile, direct dart and aerial impact is attack damage; explicit externally adjudicated recipient is required.",
+    "AD-02": "Settled violation-penalty HP loss on robot, base or outpost credits victim team opponent.",
+    "AD-03": "Adjudicated ordinary armor collision and module offline loss on eligible robots is excluded from attack damage. Base/outpost versions are unsupported.",
+    "AD-06/AD-07": "Inputs are already rounded settled integers; ledger does not reapply damage formulas, buffs, rounding or clamps.",
+    "AD-10/AD-11": "Yellow-warning floor and red-card zero HP are upstream settlement responsibilities, not inferred from a generic penalty event."
+  },
+  "quotes": [
+    {
+      "id": "AD-01",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-01"
+      ],
+      "quote": "一方机器人或基地、前哨站受到弹丸、飞镖打击和空中机器人冲击产生的血量扣除。",
+      "finding": "Attack damage is qualifying HP deduction, not projectile count or unbounded nominal hit damage. The ledger may consume already-settled actual loss; this does not establish the upstream overkill/event-order algorithm.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-02",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-01"
+      ],
+      "quote": "一方机器人、基地、前哨站因违规判罚导致的扣血计入对方攻击伤害。",
+      "finding": "Violation-penalty HP deductions are credited to the victim team's opponent. Keep this separate from automatic module-offline deductions explicitly excluded by AD-03.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-03",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [
+        "SCORE-01"
+      ],
+      "quote": "一方机器人因装甲模块受撞击、裁判系统模块离线等导致的血量扣除。",
+      "finding": "The non-attack-damage definition explicitly includes ordinary armor collision and referee-system module-offline deductions.",
+      "printed_pages": [
+        19
+      ],
+      "pdf_pages": [
+        20
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-06",
+      "status": "verified_definition",
+      "section": "§2 表2-1",
+      "matrix_ids": [],
+      "quote": "裁判系统在结算血量时进行四舍五入，保留整数。",
+      "finding": "HP settlement rounds to an integer. Do not use binary floating point rounding defaults without matching the stated rounding.",
+      "printed_pages": [
+        17
+      ],
+      "pdf_pages": [
+        18
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-07",
+      "status": "verified_definition",
+      "section": "§5.6.4.1",
+      "matrix_ids": [
+        "buff.stacking_rounding"
+      ],
+      "quote": "经过增益计算后的最终伤害值或回血值若非整数，则四舍五入。",
+      "finding": "Round the final damage/heal value after buffs. The damage ledger should not repeat rounding or apply buffs again to settled loss.",
+      "printed_pages": [
+        105
+      ],
+      "pdf_pages": [
+        106
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-10",
+      "status": "verified_warning_floor",
+      "section": "§7.1.2 表7-2 黄牌警告",
+      "matrix_ids": [
+        "PEN-02"
+      ],
+      "quote": "若机器人剩余血量小于等于判罚需扣除的血量，则机器人血量降为 1。",
+      "finding": "Yellow-warning deduction cannot be credited at its nominal percentage when it stops at 1 HP. The remaining-1 note belongs to yellow warnings, not every penalty.",
+      "printed_pages": [
+        124
+      ],
+      "pdf_pages": [
+        125
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    },
+    {
+      "id": "AD-11",
+      "status": "verified_red_card_effect",
+      "section": "§7.1.2 表7-2 红牌警告",
+      "matrix_ids": [
+        "PEN-06"
+      ],
+      "quote": "若在比赛中罚下地面机器人，机器人血量立即变为 0，图传画面断开、多机通信断开、无法复活。",
+      "finding": "An in-match ground-robot red-card deduction is its settled remaining loss to zero, and the robot is dismissed. Do not give red cards the yellow-card 1 HP floor.",
+      "printed_pages": [
+        125
+      ],
+      "pdf_pages": [
+        126
+      ],
+      "quote_verification": "Source substring verified after whitespace normalization and removal of intruding table row labels 攻击伤害/造成攻击伤害; original punctuation preserved."
+    }
+  ],
+  "engineering_contract": [
+    "Nonnegative int64 time/HP/totals and consecutive uint64 sequence are interface choices, not official timing or sequence formats.",
+    "Ledger consumes one externally ordered/classified deduction, not gross HP movement with healing or several unresolved causes.",
+    "Every attack recipient is an explicit upstream adjudication. The ledger has no attacker field and does not infer friendly/unknown-source or moving-dart group credit.",
+    "Robot for armor collision/module offline additionally asserts upstream ground-robot applicability where the source requires it.",
+    "Batch application is atomic; same-time deductions are permitted only as externally settled facts. Repeated/gapped sequences and post-seal credits are rejected.",
+    "External settlement owns identity/HP continuity, trigger validity, rate limits, deduplication beyond sequence, official cutoff, and completeness. A valid fact is not proof of an official legal match.",
+    "No pre-match forfeit override, referee penalty generation, automatic damage classifier, healing, revival, multi-source overkill allocation or official event ordering is implemented."
+  ],
+  "integration": {
+    "scope": "Only tactical_mode uses an EXPERIMENTAL-reconciled-projectile-hp-loss-v1 adapter; older modes and formal match/capture modules are unchanged.",
+    "native_gap": "Native hit event amounts are nominal, carry no bullet ID and have no official referee cause or settlement validity metadata.",
+    "adapter": "Group opposing hits per victim per native tick, compare aggregate nominal damage and pre/post HP against the unchanged native zero clamp, then feed one explicitly experimental settled projectile fact. Never allocate overkill among individual hits.",
+    "unknown": "Any unsupported event/cause, HP-baseline drift or failed reconciliation permanently makes attack totals unavailable; partial observed totals cannot resolve an attack tiebreak.",
+    "cutoff": "The named experimental combat-damage-qualify-activate-capture-credit-judge-v2 order includes native damage on tick25200 before the420000ms judgment; this is not official referee settlement timing.",
+    "privacy": "Damage totals and surviving enemy HP stay administrative; no policy observation additions."
+  }
+}

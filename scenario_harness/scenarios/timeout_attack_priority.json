@@ -1,0 +1,33 @@
+{
+  "schema": "rmuc2027-adjudicated-scenario-v1",
+  "scenario_id": "timeout_attack_priority",
+  "description": "Equal control: attack damage precedes surviving robot HP.",
+  "fact_status": "MANUALLY_SUPPLIED_ADJUDICATED_FACTS",
+  "ordering_policy": "listed_atomic_boundaries_credits_before_snapshot",
+  "timing_policy": "explicit_milliseconds_no_sampling_or_accrual",
+  "control_source": "external_totals",
+  "events": [
+    {
+      "sequence": 1,
+      "elapsed_ms": 420000,
+      "source_note": "Synthetic manually adjudicated fixture; not a recorded official match.",
+      "credits": [],
+      "snapshot": {
+        "red": {
+          "base_hp": 9000,
+          "attack_damage": 101,
+          "surviving_robot_hp": 1,
+          "control_score": 10
+        },
+        "blue": {
+          "base_hp": 1000,
+          "attack_damage": 100,
+          "surviving_robot_hp": 900,
+          "control_score": 10
+        },
+        "referee_ruling": "none",
+        "simultaneous_destruction_resolved": false
+      }
+    }
+  ]
+}

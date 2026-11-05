@@ -1,0 +1,15 @@
+{
+  "profile": "layered-native-v1",
+  "official": false,
+  "geometry": "User-authored rmuc-layered-arena.v1 data, constrained to the exact native fixed-point profile",
+  "sample": "Deliberately synthetic ramp, tunnel and stacked deck; no official geometry inferred",
+  "clock": "60 fixed ticks per second; configured tick limit is not match judgement",
+  "rule_behavior": "No official scoring, combat, capture, winning or referee decisions",
+  "identity": "SHA-256 of named source files; separate canonical SHA-256 for full authored map and configuration",
+  "policy_sdk": "Version 1; bounded owning immutable pre-step snapshots and shared native action validation",
+  "policy_execution": "Trusted local C++ linked into the native process, not a sandbox; stateless snapshot-only controller contract",
+  "policy_observation": "Full authored geometry, one current robot pose, fixed tick, movement configuration, previous-tick contacts/events and active triggers; no provenance text or paths, source hashes, replay/history, or plugin data",
+  "replay": "rmuc-layered-replay.v2 verifies resolved actions without invoking controller callbacks; source labels are unauthenticated declarations, not proof of policy determinism",
+  "identity_limits": "Only explicitly named files are hashed; not compiler flags, compiler/standard-library versions, arbitrary transitive includes, external code or a cryptographic digest of the executable",
+  "limitations": ["Conservative upright-cylinder movement", "Continuous-height explicit portals only", "No jump, gravity, dynamics or automatic adjacency", "Trigger annotations never apply rules", "20-second command watchdog is not a per-tick CPU quota or an overall restore-request deadline", "Discarding a candidate cannot roll back external I/O, global process effects, or descendant processes", "Trusted code can access its process and machine beyond the supplied observation"]
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark">
+  <title>RMUC · 分层移动实验</title><link rel="stylesheet" href="layered.css">
+</head>
+<body>
+<main class="workbench">
+  <header class="page-header"><a class="brand" href="/"><span class="brand-mark">R</span><span>TACTICS <b>LAB</b><small>NATIVE MOVEMENT / LOCAL ONLY</small></span></a><nav><a href="/arena.html">场地校准工具 ↗</a><a href="/">战术沙盒 ↗</a></nav></header>
+  <section class="intro"><div><span class="eyebrow">LAYERED MOVEMENT · EXPERIMENTAL</span><h1>桥上，还是桥下？</h1><p>同一平面位置，不同承载面。由原生 C++ 逐帧确定移动、高度与碰撞。</p></div><span class="scope-tag">2.5D 几何移动 · 60 Hz</span></section>
+  <section class="notice"><strong>合成场地 · 非官方物理</strong><p>这是独立的分层移动实验。样例不是 RMUC 官方地图，不实现完整动力学、武器、裁判检测或占领计分。重叠的 XY 不会自动换层，只能通过数据中明确连接的转换口。</p></section>
+  <section class="panel controller-panel" aria-labelledby="controller-heading">
+    <div class="panel-heading"><div><span class="section-number">C++</span><h2 id="controller-heading">下一批动作的控制源</h2></div><span id="controller-status" class="mini-tag" role="status">等待原生元数据</span></div>
+    <div class="controller-content"><div class="controller-choice"><label for="control-source">控制方式</label><select id="control-source" aria-describedby="control-note policy-status" disabled><option value="manual">人工 · 键盘 / 触控方向键</option><option value="policy">内置 C++ 策略 · 等待验证</option></select><p id="control-note" class="panel-note">切换会暂停并释放按键，不重置机器人位置或回放。正在步进、校验或读文件时不能切换。</p></div><dl id="policy-metadata" class="facts"><dt>策略身份</dt><dd>等待本机 C++ 元数据</dd></dl></div>
+    <p id="policy-status" class="panel-note" aria-live="polite">浏览器只发送推进请求，不运行或模仿 C++ 策略。</p>
+    <details><summary>写自己的 C++ 策略 · 本机编辑与构建</summary><p class="panel-note">在本机源码目录编辑 <span class="mono">layered_mode/example_policy.cpp</span>，接口见 <span class="mono">layered_mode/policy_sdk.hpp</span>。停止服务，执行 <span class="mono">bash tools/build.sh</span>，再执行 <span class="mono">python3 server.py</span> 并重新连接本页。策略源码变更会改变构建身份，旧回放需要原构建。</p><p class="panel-note"><strong>仅运行你信任的本机代码。</strong> 策略与原生引擎同进程，没有安全沙箱、CPU / 内存隔离或网页编译器。本页不能上传、编译或执行任意代码；超时 / 无效策略会使实验无效，不判游戏输赢。</p></details>
+  </section>
+  <section class="transport" aria-label="仿真控制"><button id="play" class="primary" disabled>▶ 开始</button><button id="step" disabled>单步 · 1 / 60 s</button><button id="reset" disabled>↺ 重置当前配置</button><button id="reconnect" hidden>重新连接</button><span id="run-status" class="state-pill" role="status">正在连接</span><span id="tick-status" class="mono">TICK —</span></section>
+  <p id="operation-status" class="operation-status" aria-live="polite">正在读取原生模式元数据与状态…</p>
+  <div class="workspace">
+    <section class="panel map-panel" aria-labelledby="map-heading"><div class="panel-heading"><div><span class="section-number">01</span><h2 id="map-heading">分层俯视图</h2></div><span id="map-identity" class="mono">—</span></div>
+      <div class="view-controls"><label>显示层<select id="view-layer" disabled><option value="">全部层</option></select></label><label><input id="show-solids" type="checkbox" checked> 实体碰撞体</label><label><input id="show-triggers" type="checkbox" checked> 逻辑触发体</label><label><input id="show-portals" type="checkbox" checked> 显式转换口</label></div>
+      <div class="canvas-wrap"><canvas id="movement-map" width="1120" height="700" tabindex="0" aria-label="分层地图。WASD 或方向键移动机器人；开始后连续移动，暂停时按住方向再点单步。显示层不会改变物理。"></canvas><div id="map-veil" class="map-veil"><strong>等待原生模式</strong><span>没有服务器状态时，不模拟或猜测机器人位置。</span></div></div>
+      <div class="map-footer"><span><i class="legend robot"></i> 机器人 / 当前承载面</span><span><i class="legend solid"></i> 实体阻挡</span><span><i class="legend trigger"></i> 逻辑触发，不阻挡</span><span><i class="legend portal"></i> 显式连接</span></div>
+      <p id="view-status" class="panel-note">显示层只影响绘图，不参与物理判断。机器人始终显示；隐藏其承载面时仍标明真实层。</p>
+      <div class="drive-strip"><div><strong id="drive-title">W A S D / ↑ ← ↓ →</strong><p id="drive-note">人工模式先开始，再按住移动；暂停时按住方向并点单步。失焦、切后台或导入时自动停下。</p></div><div class="direction-pad" aria-label="触控方向键"><button id="drive-up" aria-label="向正 y 移动">↑</button><button id="drive-left" aria-label="向负 x 移动">←</button><button id="drive-down" aria-label="向负 y 移动">↓</button><button id="drive-right" aria-label="向正 x 移动">→</button></div></div>
+    </section>
+    <aside class="sidebar">
+      <section class="panel"><div class="panel-heading"><div><span class="section-number">02</span><h2>原生机器人状态</h2></div><span class="mini-tag">权威状态</span></div><dl id="robot-state" class="facts"><dt>状态</dt><dd>等待连接</dd></dl><div class="height-block"><span class="height-caption">原生保守占位 / mm</span><div id="height-diagram" class="height-diagram" role="img" aria-label="尚未读取高度"></div><p id="clearance-note" class="panel-note">净空来自当前承载面及实体判定，不由显示层推断。</p></div></section>
+      <section class="panel"><div class="panel-heading"><div><span class="section-number">03</span><h2>转换与触发事件</h2></div><span id="event-count" class="mini-tag">0</span></div><p class="panel-note">时间为原生 tick / 60。本页记录已收到的事件，最多显示 80 条；重新连接或导入只带回末帧事件，不重建完整历史。末帧阻挡另见机器人状态。触发不等于官方检测或占领。</p><ol id="events" class="events"><li class="empty">尚无事件。</li></ol></section>
+    </aside>
+    <section class="panel config-panel"><div class="panel-heading"><div><span class="section-number">04</span><h2>场地与运行配置</h2></div><span id="config-status" class="mini-tag">等待连接</span></div>
+      <p class="panel-note">地图和机器人尺寸在一局内固定。更改 JSON 后点击“验证并新建运行”；服务完成严格验证与原生检查后才替换当前局。校准工具可接受的几何，不一定属于本模式支持的子集；不支持的数值不会自动取整。</p>
+      <div class="action-row"><button id="load-sample" disabled>载入合成样例草稿</button><button id="import-config" disabled>导入运行配置 JSON ↑</button><input id="config-file" type="file" accept="application/json,.json" hidden><button id="apply-config" class="primary" disabled>验证并新建运行</button></div>
+      <label class="visually-hidden" for="config-json">分层移动配置 JSON</label><textarea id="config-json" spellcheck="false" autocomplete="off" placeholder="正在读取当前配置…" disabled></textarea>
+      <ul id="config-errors" class="errors" aria-live="polite"></ul><p id="config-note" class="panel-note">配置必须包含 map 和 config；校准工具导出的单独地图不能直接运行。原始 JSON 交由本机服务校验，不会预先消除重复键。文件上限 12 MiB。</p>
+    </section>
+    <section class="panel replay-panel"><div class="panel-heading"><div><span class="section-number">05</span><h2>确定性回放</h2></div><span class="mini-tag">重新计算，不是视频</span></div><p class="panel-note">导出当前运行的地图、配置、逐帧已解析动作、控制源和哈希。导入按已记录动作从头重算验证，不重新执行策略；通过后停在最后一帧，失败保留原运行。控制源标签不提供认证或策略重执行证明。继续时使用上方所选控制源。导入不提供时间轴播放或跳转。</p><div class="action-row"><button id="export-replay" disabled>导出回放 JSON ↓</button><button id="import-replay" disabled>校验并导入回放 ↑</button><input id="replay-file" type="file" accept="application/json,.json" hidden></div><p id="replay-status" class="panel-note" role="status">尚未导入回放。</p><details><summary>构建与实验边界</summary><dl id="mode-metadata" class="facts"></dl></details></section>
+  </div>
+  <footer><span>独立本机实验 · 没有官方场地 / 完整物理声明</span><span>未导出的运行和草稿可能在服务重启 / 页面刷新后丢失</span></footer>
+</main>
+<script src="layered.js"></script>
+</body>
+</html>

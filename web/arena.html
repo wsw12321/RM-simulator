@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RMUC · 分层场地校准</title>
+  <link rel="stylesheet" href="arena.css">
+</head>
+<body>
+<main class="workbench">
+  <header class="page-header">
+    <a class="brand" href="/"><span class="brand-mark">R</span><span>TACTICS <b>LAB</b><small>独立几何工具 / LOCAL ONLY</small></span></a>
+    <a class="back-link" href="/">返回战术沙盒 ↗</a>
+  </header>
+  <section class="intro">
+    <div><span class="eyebrow">LAYERED ARENA · EXPERIMENTAL</span><h1>分层场地校准台</h1><p>把地面、桥面与桥下空间分开检查。先验证数据，再观察每一个几何判断。</p></div>
+    <span class="scope-tag">独立工具 · 不接入仿真物理</span>
+  </section>
+  <section class="official-notice" aria-label="官方数据限制"><strong>官方几何仍待核验</strong><p>当前样例是合成的桥面 / 桥下测试场，不是 RMUC 官方场地。没有已核验的官方 CAD、尺寸与标定证据时，不生成或宣称正式赛几何。</p></section>
+  <section class="action-bar" aria-label="数据操作">
+    <button id="load-sample">载入合成样例</button>
+    <button id="import-arena">导入 JSON ↑</button><input id="arena-file" type="file" accept="application/json,.json" hidden>
+    <button id="validate-arena" class="primary">验证并更新预览</button>
+    <button id="export-arena" disabled>导出已验证 JSON ↓</button>
+    <span id="document-status" class="state-pill" role="status">等待载入</span>
+  </section>
+  <p id="operation-status" class="operation-status" aria-live="polite">文件仅在本机读取与查询；不会上传到外部服务，也不会自动保存。</p>
+  <div class="workspace">
+    <section class="panel map-panel" aria-labelledby="map-heading">
+      <div class="panel-heading"><div><span class="section-number">01</span><h2 id="map-heading">分层俯视图</h2></div><span id="map-identity" class="mono">—</span></div>
+      <div class="view-controls">
+        <label>显示层<select id="layer-select" disabled><option value="">全部层</option></select></label>
+        <label>检查承载面<select id="surface-select" disabled><option value="">比较全部候选面（不自动选层）</option></select></label>
+        <label>高度切片 z / mm<input id="slice-height" type="number" value="100" step="1" disabled></label>
+      </div>
+      <div class="overlay-controls"><label><input id="show-surfaces" type="checkbox" checked>承载面</label><label class="collision-label"><input id="show-collisions" type="checkbox" checked>实体碰撞</label><label class="trigger-label"><input id="show-triggers" type="checkbox" checked>逻辑触发</label><span>切片只筛选实体 / 触发体；承载面保留层结构</span></div>
+      <div class="canvas-wrap"><canvas id="arena-map" width="1120" height="700" aria-label="分层场地俯视图。点击位置设置探针 x、y；也可使用右侧数值输入。"></canvas><div id="preview-veil" class="preview-veil"><strong>先验证场地 JSON</strong><span>预览、查询和导出始终对应同一份已验证数据。</span></div></div>
+      <div class="map-footer"><span><i class="legend surface"></i> 承载面</span><span><i class="legend solid"></i> 实体 / 红色实线</span><span><i class="legend dashed"></i> 触发 / 紫色虚线</span><span><i class="legend probe"></i> 探针圆柱</span></div>
+      <p id="view-status" class="panel-note">点击图面定位，输入数值也可操作。所有坐标单位为毫米。</p><p class="panel-note">切片着色是截面投影，不代表圆柱实际碰撞。碰撞以查询证据为准，触发体不会实体阻挡。</p>
+    </section>
+    <aside class="probe-column">
+      <section class="panel probe-panel" aria-labelledby="probe-heading">
+        <div class="panel-heading"><div><span class="section-number">02</span><h2 id="probe-heading">圆柱探针</h2></div><span class="mini-tag">静态查询</span></div>
+        <div class="probe-fields">
+          <label>x / mm<input id="probe-x" type="number" value="3000" step="1" disabled></label>
+          <label>y / mm<input id="probe-y" type="number" value="2000" step="1" disabled></label>
+          <label>半径 / mm<input id="probe-radius" type="number" value="200" min="0" step="1" disabled></label>
+          <label>高度 / mm<input id="probe-height" type="number" value="600" min="0" step="1" disabled></label>
+          <label>最大坡度 / °<input id="probe-slope" type="number" value="30" min="0" max="90" step="1" disabled></label>
+        </div>
+        <button id="query-arena" class="primary full-width" disabled>检查当前位置</button>
+        <p class="panel-note">底部高度由候选承载面确定，不自动选择桥上或桥下。显示层只控制绘图，不排除碰撞体。静态竖直圆柱不代表真实机器人外形。</p>
+        <p id="query-status" class="query-status" role="status">等待已验证的场地。</p>
+        <div id="query-summary" class="query-summary" hidden></div>
+        <div id="query-evidence" class="query-evidence"></div>
+        <details id="query-details" class="raw-details" hidden><summary>完整查询证据 JSON</summary><pre id="query-raw"></pre></details>
+      </section>
+      <section class="panel calibration-panel" aria-labelledby="calibration-heading"><div class="panel-heading"><div><span class="section-number">03</span><h2 id="calibration-heading">标定与来源</h2></div><span id="calibration-version" class="mono">未验证</span></div><div id="calibration-info" class="metadata"><p>验证后显示坐标约定、标定状态与来源记录。</p></div><p class="panel-note">“验证通过”只表示符合实验格式与几何约束，不证明来源真实、尺寸正确或官方认可。</p></section>
+    </aside>
+    <section class="panel editor-panel" aria-labelledby="editor-heading">
+      <div class="panel-heading"><div><span class="section-number">04</span><h2 id="editor-heading">场地 JSON</h2></div><span id="draft-version" class="mono">草稿 #0</span></div>
+      <div class="editor-description"><p>可直接编辑坐标、承载面、碰撞体、触发区与标定记录。修改后请重新验证；旧预览不会冒充新草稿。</p><button id="format-json" disabled>格式化草稿</button></div>
+      <label class="visually-hidden" for="arena-json">场地 JSON 编辑器</label><textarea id="arena-json" spellcheck="false" autocomplete="off" aria-describedby="validation-status" placeholder="载入样例或导入场地 JSON…"></textarea>
+      <div class="validation-block"><p id="validation-status" role="status">尚未验证。</p><ul id="validation-errors" aria-live="polite"></ul><ul id="validation-warnings"></ul></div>
+    </section>
+  </div>
+  <footer><span>实验分层格式 · 静态点 / 圆柱检查 · 无动力学、导航或赛事裁定</span><span>JSON 留在本机；刷新会丢失未导出修改</span></footer>
+</main>
+<script src="arena.js"></script>
+</body>
+</html>

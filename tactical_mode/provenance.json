@@ -1,0 +1,92 @@
+{
+  "integration": "experimental-tactical-v1",
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "unchanged_modules": [
+    "rmuc2027-capture-v1.0.0-module.1",
+    "rmuc2027-match-v1.0.0-module.1",
+    "sandbox integer-mm physics",
+    "filtered-combat-v1 observation/validator"
+  ],
+  "verified_subset": [
+    "qualified-track ordinary2000ms deactivation delay",
+    "full-to-temporary5000ms capture progress and contest handling",
+    "control-rate formula",
+    "external-credit arithmetic",
+    "420000ms timeout and control-score priority",
+    "settled actual-HP deduction attack/non-attack classification",
+    "opposing attribution for violation-penalty deductions",
+    "ordered timeout attack-damage and qualified-surviving-robot-HP comparisons",
+    "detected17mm shot +10 heat and100ms cooling formula",
+    "temporary thermal firing lock until heat0; strict unresolved Q2 equality",
+    "permanent thermal firing latch and death heat reset, without heat HP deduction"
+  ],
+  "engineering_strategies": {
+    "default_preset": "EXPERIMENTAL-playable-engineering-v3",
+    "boundary": "ENGINEERING-NOT-OFFICIAL-timer-before-input-v1",
+    "geometry": "EXPERIMENTAL-inclusive-center-rectangle-v1",
+    "eligibility": "EXPERIMENTAL-one-alive-eligible-robot-per-team-v1",
+    "death": "EXPERIMENTAL-immediate-death-deactivation-v1",
+    "clock": "EXPERIMENTAL-ceil-sampled-ms-v1",
+    "lifecycle": "EXPERIMENTAL-latched-temporary-no-lifecycle-v1",
+    "credit": "EXPERIMENTAL-end-of-second-v1",
+    "phase_order": "EXPERIMENTAL-cooling-gate-combat-shot-heat-death-damage-capture-credit-judge-v3",
+    "public_objective_broadcast": "experimental-tactical-public-control-v2",
+    "nested_combat_observation": "experimental-range-los-v1",
+    "attack_damage": "EXPERIMENTAL-reconciled-projectile-hp-loss-v1",
+    "remaining_hp": "EXPERIMENTAL-one-robot-per-team-connected-not-dismissed-v1",
+    "heat_boundary": "EXPERIMENTAL-cooling-before-fire-gate-and-shot-v1",
+    "heat_death": "EXPERIMENTAL-observed-shot-before-death-reset-v1",
+    "heat_profile": "EXPERIMENTAL-fixed-level1-cooling-priority-17mm-v1",
+    "heat_threshold_default": "strict-reject-unadjudicated",
+    "own_heat_observation": "Action SDK1 unchanged; observation layout revision2 adds own thermal values only"
+  },
+  "timeout": {
+    "base_hp": "Non-destructible positive sentinel1, not official base HP",
+    "attack_damage": "Explicit experimental opposing-projectile producer; aggregate per-victim per-tick evidence reconciled against actual HP deduction, never nominal event sum",
+    "unequal_control": "Verified control-score comparison takes priority even if attack ledger unavailable",
+    "equal_control": "Complete selected experimental ledger permits attack comparison, then qualified remaining-robot HP, then draw; missing/unreconciled ledger remains unresolved",
+    "last_tick": "Combat and deduction reconciliation precede capture, credit and judge under named engineering order; not an official simultaneous-event ruling",
+    "remaining_hp": "One connected non-dismissed synthetic robot per team; no official connection/dismissal lifecycle"
+  },
+  "limitations": [
+    "Not full official RMUC, referee simulation, tactics ranking or win-rate validation",
+    "No official geometry, interaction cards or multi-robot eligibility",
+    "No official death/revival, temporary restoration, outpost rebuild or base destruction",
+    "Synthetic unchanged combat parameters",
+    "No official credit cadence or contested-to-neither ruling",
+    "Disabled robots remain disabled and may retain collision bodies",
+    "Trusted stateless same-process native controllers only; no process isolation",
+    "No tactical WASM implementation or rendered browser verification claimed",
+    "No official armor/effectiveness/buff/healing model; projectile amount and hit producer remain synthetic",
+    "No automatic penalty issuance, friendly-fire team-score attribution, mixed-cause settlement or dart splash adjudication",
+    "Live damage ledger stays private; terminal result basis is host reporting outside policy sensing",
+    "Equal-start/no-healing/only-opposing-attack current play cannot naturally reach unequal remaining HP after equal attack totals",
+    "Module consumes externally detected facts despite lock; permanent boundary tests are injected facts rather than ordinary gated tactical play",
+    "No complete robot performance/XP/upgrades, cooling buffs, speed/offline locks or physical shot detector",
+    "Q2 equality remains source-conflicted; explicit engineering alternatives are not official clarification",
+    "No first-person-video implementation; permanent-branch video consequence remains unspecified",
+    "No42mm heat or officially adjudicated cooling epoch"
+  ],
+  "engine": "integer-mm-tactical-v3",
+  "attack_damage_sources": "ATTACK_DAMAGE_SOURCES.md",
+  "heat_sources": "HEAT_SOURCES.md",
+  "heat_limits": {
+    "module": "rmuc2027-heat-v1.0.0-module.1",
+    "observation_version": 2,
+    "action_sdk_version": 1,
+    "borrowed_values": {
+      "limit": 40,
+      "cooling_per_second": 12,
+      "heat_per_detected_17mm_shot": 10
+    },
+    "not_robot_identity": "Only fixed heat parameters borrowed from infantry cooling-priority level1; synthetic HP100 and other physics remain unchanged",
+    "detector": "Native shot event treated as detected17mm round; hardware detection not modeled",
+    "phase": "First cooling at100ms from epoch0, before fire gate, exact tenths; not official same-timestamp adjudication",
+    "death": "Observed same-tick shots before heat reset; permanent latch remains",
+    "score": "No heat HP deduction and no heat attack credit",
+    "video": "First-person video not simulated; top-down map is not that feed",
+    "permanent_reachability": "Immediate single-shot firing gate prevents normal play from reachingQ0+100; boundary tests use supplied detections or injected state"
+  }
+}
