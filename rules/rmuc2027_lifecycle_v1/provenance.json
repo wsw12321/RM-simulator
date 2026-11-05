@@ -1,0 +1,77 @@
+{
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "module_version": "rmuc2027-lifecycle-v1.0.0-module.1",
+  "verified_scope": {
+    "out_of_combat": {
+      "section": "§2 table 2-1",
+      "printed_pages": [
+        16
+      ]
+    },
+    "invincible_scope": {
+      "section": "§2 table 2-1",
+      "printed_pages": [
+        17
+      ]
+    },
+    "regeneration": {
+      "section": "§5.3.1",
+      "printed_pages": [
+        73
+      ]
+    },
+    "remote_heal": {
+      "section": "§5.3.1",
+      "printed_pages": [
+        73
+      ]
+    },
+    "revival_readout": {
+      "section": "§5.3.2",
+      "printed_pages": [
+        74
+      ],
+      "examples_recomputed": [
+        "remaining 120 s, 2 instant revivals -> 80"
+      ]
+    },
+    "revival_outcomes_weak_invincible": {
+      "section": "§5.3.2",
+      "printed_pages": [
+        75
+      ]
+    },
+    "logistics_coefficient": {
+      "section": "§5.6.1 table 5-19",
+      "printed_pages": [
+        94,
+        95
+      ]
+    },
+    "buff_rounding_and_max": {
+      "section": "§5.6.4.1",
+      "printed_pages": [
+        105
+      ]
+    }
+  },
+  "engineering_choices": {
+    "readout_lambda_rounding": "round formula half-up, divide by lambda, round half-up again",
+    "elapsed_time": "exact milliseconds",
+    "regen_instant": "whole match seconds; out-of-combat evaluated at that instant; exactly 6 s counts",
+    "remote_heal_basis": "max HP and lambda at the effective instant",
+    "settle_contract": "advance(t) before facts at t, else UnsettledTime"
+  },
+  "not_implemented": [
+    "abnormal offline",
+    "red card dismissal",
+    "module offline loss",
+    "temporary activation driving",
+    "numeric power-boost application"
+  ]
+}

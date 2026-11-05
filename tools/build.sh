@@ -96,3 +96,7 @@ done
 "$CXX" "${FLAGS[@]}" rules/rmuc2027_growth_v1/growth_rules.cpp tests/growth_rule_tests.cpp -o build/growth_rule_tests
 ./build/growth_rule_tests
 "$CXX" "${FLAGS[@]}" rules/rmuc2027_growth_v1/growth_rules.cpp rules/rmuc2027_growth_v1/dump.cpp -o build/growth_rules_dump
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_lifecycle_v1/lifecycle_rules.cpp tests/lifecycle_rule_tests.cpp -o build/lifecycle_rule_tests
+./build/lifecycle_rule_tests
+"$CXX" "${FLAGS[@]}" rules/rmuc2027_economy_v1/economy_rules.cpp tests/economy_rule_tests.cpp -o build/economy_rule_tests
+./build/economy_rule_tests

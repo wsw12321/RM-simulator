@@ -1,0 +1,67 @@
+{
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "module_version": "rmuc2027-economy-v1.0.0-module.1",
+  "verified_scope": {
+    "gold_schedule": {
+      "section": "§5.4.1 table 5-6",
+      "printed_pages": [
+        75,
+        76
+      ]
+    },
+    "prices_and_caps": {
+      "section": "§5.4.1 table 5-7",
+      "printed_pages": [
+        76
+      ],
+      "check": "pixels inspected"
+    },
+    "minimum_units_and_remote_delay": {
+      "section": "§5.4.2 tables 5-8/5-9",
+      "printed_pages": [
+        77
+      ]
+    },
+    "allowance_consumption_overfire": {
+      "section": "§5.4.2",
+      "printed_pages": [
+        76
+      ]
+    },
+    "sentry_supply": {
+      "section": "§5.4.2",
+      "printed_pages": [
+        77
+      ],
+      "examples_recomputed": [
+        "never claimed, remaining 30 s -> 600"
+      ]
+    },
+    "auto_sentry_command_cost": {
+      "section": "§5.7.2",
+      "printed_pages": [
+        108
+      ]
+    },
+    "assembly_gold_streams": {
+      "section": "§5.4.3 table 5-12",
+      "printed_pages": [
+        83
+      ]
+    }
+  },
+  "engineering_choices": {
+    "price_time_basis": "exact milliseconds, any fraction rounds up",
+    "periodic_stream_origin": "completion instant, first payment +10 s"
+  },
+  "not_implemented": [
+    "energy unit assembly procedure",
+    "radar/dart economy",
+    "referee serial command format"
+  ]
+}
