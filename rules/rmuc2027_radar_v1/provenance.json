@@ -1,0 +1,73 @@
+{
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "module_version": "rmuc2027-radar-v1.0.0-module.1",
+  "verified_scope": {
+    "error_classes": {
+      "section": "§5.7.4",
+      "printed_pages": [
+        112
+      ],
+      "checked_against_page_pixels": true
+    },
+    "marked_progress_update": {
+      "section": "table 5-29",
+      "printed_pages": [
+        112
+      ],
+      "checked_against_page_pixels": true
+    },
+    "worked_example": {
+      "section": "§5.7.4 example",
+      "printed_pages": [
+        113
+      ],
+      "checked_against_page_pixels": true
+    },
+    "vulnerability_thresholds": {
+      "section": "table 5-30",
+      "printed_pages": [
+        113
+      ],
+      "checked_against_page_pixels": true
+    },
+    "revival_keeps_p_resets_x": {
+      "section": "§5.7.4",
+      "printed_pages": [
+        113
+      ],
+      "checked_against_page_pixels": true
+    },
+    "double_vulnerability": {
+      "section": "§5.7.4",
+      "printed_pages": [
+        113
+      ],
+      "checked_against_page_pixels": true
+    },
+    "jammer_levels": {
+      "section": "§5.7.4",
+      "printed_pages": [
+        114
+      ],
+      "checked_against_page_pixels": false
+    }
+  },
+  "engineering_choices": {
+    "same_millisecond_order": "a due interruption verdict precedes a report of the same millisecond",
+    "double_vulnerability_cap": "chances held plus triggers used never exceed two",
+    "double_vulnerability_overlap": "a second trigger inside a running 30 s period is rejected",
+    "jammer_comparison": "level(team) is the jammer on that team's radar base; marks are effective iff level(marked side) <= level(marker)",
+    "jammer_saturation": "a decode at level 3 changes nothing"
+  },
+  "not_implemented": [
+    "radar recognition and coordinate transmission",
+    "positioning drift",
+    "minimap display effects",
+    "information wave contents and key generation"
+  ]
+}

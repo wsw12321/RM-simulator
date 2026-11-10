@@ -1,0 +1,92 @@
+{
+  "complete_rule_pack": false,
+  "official": false,
+  "source_version": "RMUC2027_CN_V1.0.0_20261015",
+  "source_sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "source_file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "page_convention": "printed p -> PDF physical page p+1",
+  "module_version": "rmuc2027-energy-v1.0.0-module.1",
+  "verified_scope": {
+    "phases_and_chances": {
+      "section": "§5.6.3",
+      "printed_pages": [
+        97
+      ],
+      "checked_against_page_pixels": true
+    },
+    "activating_window_20s_and_small_buff_45s": {
+      "section": "§5.6.3",
+      "printed_pages": [
+        97
+      ],
+      "checked_against_page_pixels": true
+    },
+    "small_buff_extra_experience_cap_1200": {
+      "section": "§5.6.3",
+      "printed_pages": [
+        97
+      ],
+      "checked_against_page_pixels": true
+    },
+    "big_activation_750_experience": {
+      "section": "§5.6.3",
+      "printed_pages": [
+        98
+      ],
+      "checked_against_page_pixels": true
+    },
+    "ring_geometry": {
+      "section": "figure 5-17",
+      "printed_pages": [
+        98
+      ],
+      "checked_against_page_pixels": true
+    },
+    "lit_arms_to_duration": {
+      "section": "table 5-23",
+      "printed_pages": [
+        98,
+        99
+      ],
+      "checked_against_page_pixels": true
+    },
+    "valid_rings_after_activations": {
+      "section": "table 5-24",
+      "printed_pages": [
+        99
+      ],
+      "checked_against_page_pixels": true
+    },
+    "activating_sequence_and_failure": {
+      "section": "§5.6.3.1",
+      "printed_pages": [
+        100,
+        101
+      ],
+      "checked_against_page_pixels": false
+    },
+    "buff_voided_by_dart": {
+      "section": "§5.7.3",
+      "printed_pages": [
+        111
+      ],
+      "checked_against_page_pixels": true
+    }
+  },
+  "engineering_choices": {
+    "chance_consumption": "named policies EngineeringConsumeOnTriggerV1 (default) and EngineeringConsumeOnActivationV1",
+    "same_millisecond_order": "timers before inputs",
+    "random_selection": "caller-seeded SplitMix64, uniform over unlit arms (small) or the ten pairs (big)",
+    "fifth_group_second_module": "20 s window no longer applies once the fifth group's first module is hit; buff starts when that group closes",
+    "repeated_hit_on_hit_module": "ignored",
+    "phase_change": "unused small chances lapse; a running small attempt is aborted; a running small buff completes",
+    "third_and_later_big_activation": "rings 7-10 as after the second",
+    "ring_boundary": "outer ring; radius >= 150 mm is off the module"
+  },
+  "not_implemented": [
+    "mechanism rotation and its speed function",
+    "up to 200 ms dark gap before the next group is lit",
+    "17 mm detection speed threshold of the mechanism armour",
+    "who may strike the mechanism"
+  ]
+}

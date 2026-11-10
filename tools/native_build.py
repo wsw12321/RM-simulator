@@ -101,6 +101,13 @@ def plan():
           ('buff_rule_tests', True, flags, ['rules/rmuc2027_buff_v1/buff_rules.cpp', 'tests/buff_rule_tests.cpp']),
           ('limits_rule_tests', True, flags, [heat, 'rules/rmuc2027_limits_v1/limits_rules.cpp', 'tests/limits_rule_tests.cpp']),
           ('position_rule_tests', True, flags, ['rules/rmuc2027_position_v1/position_rules.cpp', 'tests/position_rule_tests.cpp'])]
+    buffs = 'rules/rmuc2027_buff_v1/buff_rules.cpp'
+    energy, radar, dart = ('rules/rmuc2027_energy_v1/energy_rules.cpp', 'rules/rmuc2027_radar_v1/radar_rules.cpp',
+                           'rules/rmuc2027_dart_v1/dart_rules.cpp')
+    # The three suites also cross-check their tables against the buff_v1 copies.
+    T += [('energy_rule_tests', True, flags, [buffs, energy, 'tests/energy_rule_tests.cpp']),
+          ('radar_rule_tests', True, flags, [buffs, radar, 'tests/radar_rule_tests.cpp']),
+          ('dart_rule_tests', True, flags, [buffs, dart, 'tests/dart_rule_tests.cpp'])]
     lab = ['-std=c++20', '-O2', '-Wall', '-Wextra', '-Wpedantic', '-Werror', '-Isrc', f'-DMATCH_LAB_BUILD_ID="{py("match_lab/build_id.py")}"']
     lsrc = ['src/sim.cpp', 'rules/rmuc2027_buff_v1/buff_rules.cpp', capture, damage, 'rules/rmuc2027_economy_v1/economy_rules.cpp', growth, heat,
             'rules/rmuc2027_lifecycle_v1/lifecycle_rules.cpp', 'rules/rmuc2027_limits_v1/limits_rules.cpp',
