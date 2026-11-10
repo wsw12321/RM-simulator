@@ -10,6 +10,7 @@ on:
     branches: ['**']
     tags: ['v*']
     paths:  # not evaluated for tag pushes
+      - native_pipe.py  # the cross-platform transport is only exercised on Windows here
       - tools/package_release.py
       - tools/native_build.py
       - tools/release/**
