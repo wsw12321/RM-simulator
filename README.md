@@ -40,6 +40,7 @@ bash start.sh
 Linux 下静态链接，生成可复现的 `dist/*.tar.gz` 与 `.sha256`，再解压成品实际启动服务、逐个模式和命令行工具做冒烟测试。
 未提交的修改不会进包。推送 `v*` 标签后，[`.github/workflows/release.yml`](.github/workflows/release.yml)
 在 Linux 与 macOS 上执行同一脚本（以 Python 3.10 运行冒烟测试）并发布 GitHub Release。
+也可以在 GitHub 网页的 Releases → Draft a new release 里新建 `v*` 标签并发布，工作流会把两个包附加到这个 Release 上。
 
 ## 新增：2027 规则全流程实验对局与 9 个规则模块
 

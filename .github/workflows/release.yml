@@ -60,10 +60,15 @@ jobs:
         with:
           path: dist
           merge-multiple: true
+      # The tag may come from `git push` (no release yet) or from "Draft a new release" on
+      # github.com, which creates the release first and the tag with it: then only attach.
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create "$GITHUB_REF_NAME" dist/*
-          --repo "$GITHUB_REPOSITORY" --verify-tag
-          --title "RMUC Tactics Lab $GITHUB_REF_NAME" --generate-notes
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --verify-tag \
+              --title "RMUC Tactics Lab $GITHUB_REF_NAME" --generate-notes
+          fi
