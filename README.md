@@ -13,7 +13,8 @@ bash tools/build.sh
 python3 server.py
 ```
 
-然后在这台电脑的浏览器打开 `http://127.0.0.1:8765`。修改端口可用 `python3 server.py --port 8766`。Ctrl+C 停止。修改源码或重新构建前，先停止正在运行的服务，构建完成后再启动，避免替换运行中的可执行文件。首次下载后，macOS 或 Linux 若提示执行权限，请使用 `bash tools/build.sh`。Windows 可通过 WSL 运行；原生 Windows 未验证。
+然后在这台电脑的浏览器打开 `http://127.0.0.1:8765`。修改端口可用 `python3 server.py --port 8766`。Ctrl+C 停止。修改源码或重新构建前，先停止正在运行的服务，构建完成后再启动，避免替换运行中的可执行文件。首次下载后，macOS 或 Linux 若提示执行权限，请使用 `bash tools/build.sh`。
+原生 Windows：把 MinGW-w64 GCC（例如 MSYS2 UCRT64 的 `mingw-w64-ucrt-x86_64-gcc`）放进 PATH，运行 `py tools/native_build.py` 构建（产物为 `build/*.exe`），再运行 `py server.py`；也可以在 WSL 中按 Linux 方式运行。
 
 当前浏览器路径是 **原生 C++ 进程 + 本机 Python HTTP 桥接**，不是纯静态网页，也不是已经编译好的 WebAssembly。服务只绑定 127.0.0.1，不发布到公网。不应把 Python 演示服务器暴露为生产服务。
 
@@ -23,8 +24,9 @@ GitHub Releases 提供带预编译程序的包，只需 **Python 3.10+**（只�
 
 | 包 | 适用系统 |
 |---|---|
-| `rmuc-tactics-lab-<版本>-linux-x86_64.tar.gz` | 64 位 x86 Linux，完全静态链接，不挑发行版；Windows 请在 WSL 中使用 |
+| `rmuc-tactics-lab-<版本>-linux-x86_64.tar.gz` | 64 位 x86 Linux，完全静态链接，不挑发行版；也可在 WSL 中使用 |
 | `rmuc-tactics-lab-<版本>-macos-universal.tar.gz` | macOS 11+，Apple Silicon 与 Intel |
+| `rmuc-tactics-lab-<版本>-windows-x86_64.zip` | 64 位 Windows 10 / 11，MinGW-w64 完全静态链接，不需要安装运行库 |
 
 ```bash
 tar -xzf rmuc-tactics-lab-*.tar.gz
@@ -32,15 +34,16 @@ cd rmuc-tactics-lab-*/
 bash start.sh
 ```
 
-`start.sh` 检查 Python 版本和平台后启动服务并打开浏览器，包内 `QUICKSTART.md` 有完整说明。
+Windows：解压 zip 后双击 `start.bat`。两个启动脚本都只负责找到 Python，随后由同一个
+[`tools/release/launch.py`](tools/release/launch.py) 检查 Python 版本和平台、启动服务并打开浏览器；包内 `QUICKSTART.md` 有完整说明。
 包里同时带有对应提交的全部源码：各模式运行时会核对源码哈希与二进制构建 ID，修改源码后需按上文重新构建。
-为控制体积，包内不含规则手册 PDF。原生 Windows 不受支持（服务端在管道上使用 `select`）。
+为控制体积，包内不含规则手册 PDF。
 
 自己打包：`python3 tools/package_release.py`。它从已提交的 HEAD 导出源码，在临时目录完整构建并运行全部原生测试，
-Linux 下静态链接，生成可复现的 `dist/*.tar.gz` 与 `.sha256`，再解压成品实际启动服务、逐个模式和命令行工具做冒烟测试。
+Linux 与 Windows 下静态链接，生成可复现的 `dist/*.tar.gz`（Windows 为 `.zip`）与 `.sha256`，再解压成品实际启动服务、逐个模式和命令行工具做冒烟测试。
 未提交的修改不会进包。推送 `v*` 标签后，[`.github/workflows/release.yml`](.github/workflows/release.yml)
-在 Linux 与 macOS 上执行同一脚本（以 Python 3.10 运行冒烟测试）并发布 GitHub Release。
-也可以在 GitHub 网页的 Releases → Draft a new release 里新建 `v*` 标签并发布，工作流会把两个包附加到这个 Release 上。
+在 Linux、macOS 与 Windows 上执行同一脚本（以 Python 3.10 运行冒烟测试）并发布 GitHub Release。
+也可以在 GitHub 网页的 Releases → Draft a new release 里新建 `v*` 标签并发布，工作流会把三个包附加到这个 Release 上。
 
 ## 新增：2027 规则全流程实验对局与 9 个规则模块
 

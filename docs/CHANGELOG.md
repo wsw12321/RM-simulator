@@ -266,3 +266,35 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
   targets now pass `-Wno-misleading-indentation`; the source is left as is because
   re-laying it out would change the roster build ID and orphan existing roster
   replays. GCC binaries are byte-identical with and without the flag.
+
+## Native Windows support · 2026-11-10
+
+- New `native_pipe.py`: the line transport between the Python bridges and the native
+  engines, used by the legacy sandbox, combat (and tactical through it), layered and
+  roster. It replaces `select()` on pipes and non-blocking writes, which Windows does not
+  support for pipes: a reader thread hands complete lines through a one-slot queue, each
+  write runs in a short-lived thread and one deadline bounds both. Timeouts (5 s legacy,
+  20 s others), size bounds, error messages and which failures discard a process are
+  unchanged. It removes the carriage return of Windows text-mode output and starts
+  `build/<name>.exe` on Windows. `tests/test_native_pipe.py` (12 tests, in `check.sh`)
+  uses scripted Python children and so also runs in the Windows release job.
+- **Identity change.** `native_pipe.py` is part of the source identity of combat,
+  layered, roster and tactical, and their bridges changed, so these four build IDs change.
+  Replays exported by earlier builds of these modes need the earlier source, as for every
+  identity change. `robot_profiles_v1` is re-pinned to the new roster identity
+  (`2328a342…`; catalog SHA-256 `990ba7d8…`, the catalog differing only in
+  `native_source_pin`); the configuration example is regenerated with
+  `python -m robot_profiles_v1 resolve` from the unchanged selection example. Objective,
+  match_lab, scenario harness and integrated scenario identities are unchanged.
+- Windows build: `py tools/native_build.py` with MinGW-w64 GCC writes `build/*.exe` and
+  decodes compiler and test output as UTF-8. `server.py` serves fixed MIME types for
+  `web/` (the Windows registry can map `.js` to `text/plain`, which `nosniff` and the CSP
+  would block) and checks for the `.exe` sandbox; `match_lab/cli.py` finds its `.exe`.
+  The scenario harness and integrated scenario CLIs are unchanged, so their identities
+  and logs stay valid; Windows starts their extensionless driver paths as `.exe`.
+- Release packages: `tools/release/launch.py` now does the version and platform checks,
+  the macOS quarantine clean-up and the browser opening for both launchers; `start.sh`
+  only finds Python, and the new `start.bat` (CRLF, kept by `.gitattributes`) does the same
+  on Windows with `py -3` or `python` and UTF-8 mode. `package_release.py` builds a static
+  `windows-x86_64` zip and smoke-tests it through `start.bat`; the release workflow adds a
+  `windows-latest` job with MSYS2 UCRT64 GCC.
