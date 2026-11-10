@@ -1201,3 +1201,27 @@ describe this synthetic model, not real win rates. WASM is still unbuilt.
 `MANIFEST.sha256` was regenerated over all 280 tracked files other than itself
 and verified with `sha256sum -c`; the previous manifest was one commit behind
 for `web/lab.js`.
+
+## Release packages · 2026-11-10
+
+`python3 tools/package_release.py` was run on Ubuntu 24.04 x86_64 (GCC 13.3) with
+Python 3.13 and again with Python 3.10.20: both runs built 100 translation units,
+passed all 30 native test binaries in the staging tree and produced byte-identical
+archives (10.3 MB, 337 entries). The 12 packaged binaries are statically linked and
+stripped (`ldd`: not a dynamic executable). The archive contains no `__pycache__`,
+test binaries, object cache, `.github`, `MANIFEST.sha256` or rules manual PDF, and
+`sha256sum -c SHA256SUMS` passes inside it.
+
+The built-in smoke test of the extracted archive passed under both Python versions:
+`start.sh --no-browser`, seven pages, the state endpoint of every native mode
+(sandbox, objective, layered, combat, tactical, roster, sourced profiles), a rules
+lab match over HTTP, and `match_lab`, `scenario_harness` and `integrated_scenario`
+command-line runs. `start.sh` was also checked by hand: `--help`, an unknown option
+(exit 2), a missing interpreter and a Python 3.9 interpreter (exit 1 with install
+hints), a package labelled for another platform (exit 1), and the browser opener
+(it called `$BROWSER` with the server address only after `/api/meta` answered).
+The default `bash tools/build.sh` still links dynamically and passes.
+
+Not verified here: the macOS universal package (built only by the release
+workflow on a macOS runner), the macOS quarantine handling, bash 3.2, and running
+the Linux package on an older distribution.

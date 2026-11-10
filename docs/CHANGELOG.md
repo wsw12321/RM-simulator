@@ -235,3 +235,28 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
 - Still not simulated: fortress, central highland, high point and terrain crossing
   points, aerial system, jammer decoding, mechanism rotation, dart flight and
   operator occlusion, penalties and module offline. No official complete-match claim.
+
+## Download-and-run release packages · 2026-11-10
+
+- Added `tools/package_release.py`: exports the committed tree (`git archive HEAD`),
+  runs the full native build and every native test in a fresh directory, keeps only
+  the 12 runtime binaries, and writes a reproducible
+  `dist/rmuc-tactics-lab-<version>-<platform>.tar.gz` (fixed order, root owner,
+  commit mtime) plus `.sha256`. Sources stay in the package because every bridge
+  re-hashes them at runtime against the compiled build ID. The rules manual PDF is
+  left out unless `--include-manual`; `MANIFEST.sha256` is replaced in the package
+  by `SHA256SUMS`, which also covers the binaries.
+- Linux release binaries are linked fully static (`LDFLAGS="-static -s"`), so they
+  no longer need the build machine's glibc 2.34+ / GCC 13 libstdc++.
+  `tools/native_build.py` gained an `LDFLAGS` variable for this; it is link-only and
+  empty by default, so ordinary builds, objects and build IDs are unchanged.
+- The package adds `start.sh` (bash 3.2 compatible: checks Python 3.10+ and the
+  platform, clears the macOS download quarantine on its own `build/` only, starts the
+  server and opens the browser when it answers), `QUICKSTART.md` and `BUILD_INFO.json`.
+- Every packaging run extracts the finished archive again and smoke-tests it: the
+  launcher, seven pages, the native engine of every mode (build ID check), a rules
+  lab match and three command-line tools.
+- `.github/workflows/release.yml` packages `linux-x86_64` and `macos-universal`
+  (arm64 + x86_64, deployment target 11.0) with Python 3.10, and publishes a GitHub
+  Release for `v*` tags. Native Windows stays unsupported (`select` on pipes); WSL
+  uses the Linux package.

@@ -12,7 +12,9 @@ binaries and pinned build IDs are unchanged. What changes:
 * objects are cached under build/obj keyed by a hash of all C/C++ sources, so
   an unchanged tree only re-links.
 
-Environment: CXX (default g++), JOBS (default CPU count; JOBS=1 = serial).
+Environment: CXX (default g++), JOBS (default CPU count; JOBS=1 = serial),
+LDFLAGS (extra link-only flags, default none; tools/package_release.py uses it
+for static release binaries, objects and build IDs are unaffected).
 """
 import concurrent.futures as futures
 import hashlib
@@ -27,6 +29,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 BUILD = ROOT / 'build'
 OBJ = BUILD / 'obj'
 CXX = shlex.split(os.environ.get('CXX', 'g++'))
+LDFLAGS = shlex.split(os.environ.get('LDFLAGS', ''))
 JOBS = max(1, int(os.environ.get('JOBS', os.cpu_count() or 2)))
 
 
@@ -164,7 +167,7 @@ def main():
             return 1
         def link_one(item):
             out, _, flags, objs = item
-            return out, run([*CXX, *flags, *map(str, objs), '-o', str(BUILD / out)])
+            return out, run([*CXX, *flags, *map(str, objs), *LDFLAGS, '-o', str(BUILD / out)])
         for out, r in pool.map(link_one, links):
             if r.returncode:
                 failures.append(f'link {out}:\n{r.stderr}')

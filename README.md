@@ -17,6 +17,30 @@ python3 server.py
 
 当前浏览器路径是 **原生 C++ 进程 + 本机 Python HTTP 桥接**，不是纯静态网页，也不是已经编译好的 WebAssembly。服务只绑定 127.0.0.1，不发布到公网。不应把 Python 演示服务器暴露为生产服务。
 
+### 下载即用的发布包（不需要编译器）
+
+GitHub Releases 提供带预编译程序的包，只需 **Python 3.10+**（只用标准库）和浏览器：
+
+| 包 | 适用系统 |
+|---|---|
+| `rmuc-tactics-lab-<版本>-linux-x86_64.tar.gz` | 64 位 x86 Linux，完全静态链接，不挑发行版；Windows 请在 WSL 中使用 |
+| `rmuc-tactics-lab-<版本>-macos-universal.tar.gz` | macOS 11+，Apple Silicon 与 Intel |
+
+```bash
+tar -xzf rmuc-tactics-lab-*.tar.gz
+cd rmuc-tactics-lab-*/
+bash start.sh
+```
+
+`start.sh` 检查 Python 版本和平台后启动服务并打开浏览器，包内 `QUICKSTART.md` 有完整说明。
+包里同时带有对应提交的全部源码：各模式运行时会核对源码哈希与二进制构建 ID，修改源码后需按上文重新构建。
+为控制体积，包内不含规则手册 PDF。原生 Windows 不受支持（服务端在管道上使用 `select`）。
+
+自己打包：`python3 tools/package_release.py`。它从已提交的 HEAD 导出源码，在临时目录完整构建并运行全部原生测试，
+Linux 下静态链接，生成可复现的 `dist/*.tar.gz` 与 `.sha256`，再解压成品实际启动服务、逐个模式和命令行工具做冒烟测试。
+未提交的修改不会进包。推送 `v*` 标签后，[`.github/workflows/release.yml`](.github/workflows/release.yml)
+在 Linux 与 macOS 上执行同一脚本（以 Python 3.10 运行冒烟测试）并发布 GitHub Release。
+
 ## 新增：2027 规则全流程实验对局与 9 个规则模块
 
 规则手册原件放在 [`docs/rules/`](docs/rules/README.md)（SHA-256 与各模块 `provenance.json` 记录一致）。
