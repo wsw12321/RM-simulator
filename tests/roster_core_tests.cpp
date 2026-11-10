@@ -53,9 +53,12 @@ void controllers_and_rollback(){
     assert(calls_a==1&&calls_b==1);assert(e.state.robots[e.index("red-1")].x==1655);assert(e.state.robots[e.index("red-2")].x==1535);
     assert(e.frames[0].inputs[2].controller_id=="first");assert(e.frames[0].inputs[3].controller_id=="second");
     Engine bad;r=requests(bad);r[2].kind="policy";const auto before=bad.replay_json();
-    assert(bad.advance(5,r,{{"red-1",{1,"throw-later"},throw_later}}));assert(before==bad.replay_json());
-    assert(bad.advance(1,r,{{"blue-1",{1,"wrong-id"},throw_later}}));assert(before==bad.replay_json());
-    assert(bad.advance(1,r,{{"red-1",{1,"one"},throw_later},{"red-1",{1,"two"},throw_later}}));assert(before==bad.replay_json());
+    // Named controller lists: GCC 16 -Wdangling-pointer cannot see that advance() keeps no pointer into a temporary list.
+    const std::vector<Controller> late{{"red-1",{1,"throw-later"},throw_later}},wrong_id{{"blue-1",{1,"wrong-id"},throw_later}},
+        twice{{"red-1",{1,"one"},throw_later},{"red-1",{1,"two"},throw_later}};
+    assert(bad.advance(5,r,late));assert(before==bad.replay_json());
+    assert(bad.advance(1,r,wrong_id));assert(before==bad.replay_json());
+    assert(bad.advance(1,r,twice));assert(before==bad.replay_json());
     Engine replay;auto f=e.frames[0];std::reverse(f.inputs.begin(),f.inputs.end());assert(!replay.replay_frame(f));assert(replay.hash()==e.hash());assert(calls_a==1&&calls_b==1);
     Engine fresh;f=e.frames[0];f.inputs[2].observation_hash^=1;assert(fresh.replay_frame(f));assert(fresh.state.tick==0);f=e.frames[0];f.hash^=1;assert(fresh.replay_frame(f));assert(fresh.state.tick==0);
 }
