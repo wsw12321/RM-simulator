@@ -145,9 +145,9 @@ Reviewed source-audit byte SHA-256:
 The identities above are the reviewed ones. For native Windows support the
 roster bridge's pipe transport moved to the shared `native_pipe.py`, which is
 now part of the roster source identity. Only the pins changed: native source
-identity `2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428`,
+identity `11ea10bb3434847fa9793ac856f7d01a63043ddd81782345aa0d519d081e6af5`,
 catalog byte SHA-256
-`990ba7d8032eff4178e4884386ae3cfc219a94885c46b0b0152a87daf4abb2b2` (the
+`54bc39785183892a979b3c96fd922229c34ebee96f3f5dde7ca0fe9f31456da6` (the
 catalog differs from the reviewed bytes only in `native_source_pin`). The
 configuration example was regenerated with `python -m robot_profiles_v1 resolve`
 from the unchanged selection example; it differs only in these pins and its

@@ -282,7 +282,7 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
   layered, roster and tactical, and their bridges changed, so these four build IDs change.
   Replays exported by earlier builds of these modes need the earlier source, as for every
   identity change. `robot_profiles_v1` is re-pinned to the new roster identity
-  (`2328a342…`; catalog SHA-256 `990ba7d8…`, the catalog differing only in
+  (`11ea10bb…`; catalog SHA-256 `54bc3978…`, the catalog differing only in
   `native_source_pin`); the configuration example is regenerated with
   `python -m robot_profiles_v1 resolve` from the unchanged selection example. Objective,
   match_lab, scenario harness and integrated scenario identities are unchanged.

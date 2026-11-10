@@ -84,6 +84,18 @@ class NativePipeTests(unittest.TestCase):
                          max_bytes=100000)
         self.assertEqual(len(pipe.exchange(b'x\n', 5, **MESSAGES)), 100000)
 
+    def test_bound_excludes_the_windows_carriage_return(self):
+        # Windows text mode turns "\n" into "\r\n": the bound is the same as on POSIX.
+        for body, ending, accepted in ((100000, b'\r\n', True), (100001, b'\r\n', False), (100001, b'\n', False)):
+            with self.subTest(body=body, ending=ending):
+                pipe = self.open(f'import sys\nsys.stdin.readline()\nsys.stdout.buffer.write(b"y" * {body} + {ending!r}); '
+                                 'sys.stdout.flush()\nimport time; time.sleep(30)', max_bytes=100000)
+                if accepted:
+                    self.assertEqual(pipe.exchange(b'x\n', 5, **MESSAGES), b'y' * body)
+                else:
+                    with self.assertRaisesRegex(RuntimeError, '^oversize$'):
+                        pipe.exchange(b'x\n', 5, **MESSAGES)
+
     def test_extra_output_does_not_grow_without_bound(self):
         # A child that prints endless lines: the reader holds one unconsumed line and then stops reading.
         pipe = self.open('import sys\nwhile True: sys.stdout.write("z" * 1000 + "\\n")', max_bytes=4096)

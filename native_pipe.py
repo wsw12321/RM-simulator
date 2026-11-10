@@ -53,6 +53,9 @@ class NativePipe:
                     return False
 
     def _read(self):
+        # One byte of room for the carriage return of Windows text mode: the bound applies to the
+        # line without it, and exchange() checks that exactly once the line is complete.
+        limit = self._max + 1
         partial = bytearray()
         try:
             while True:
@@ -61,7 +64,7 @@ class NativePipe:
                     break
                 start = 0
                 while (end := chunk.find(b'\n', start)) >= 0:
-                    if len(partial) + end - start > self._max:
+                    if len(partial) + end - start > limit:
                         self._put(_OVERFLOW)
                         return
                     partial += chunk[start:end]
@@ -71,7 +74,7 @@ class NativePipe:
                         return
                     start = end + 1
                 partial += chunk[start:]
-                if len(partial) > self._max:
+                if len(partial) > limit:
                     self._put(_OVERFLOW)
                     return
         except (OSError, ValueError):  # stdout closed or broken while shutting down
@@ -111,7 +114,11 @@ class NativePipe:
         if line is _EOF or line is _OVERFLOW:
             self._lines.put(line)  # the reader has stopped; later calls fail the same way at once
             raise RuntimeError(stopped if line is _EOF else oversize)
-        return line[:-1] if line.endswith(b'\r') else line
+        if line.endswith(b'\r'):
+            line = line[:-1]
+        if len(line) > self._max:
+            raise RuntimeError(oversize)
+        return line
 
     def close(self):
         self._closed = True

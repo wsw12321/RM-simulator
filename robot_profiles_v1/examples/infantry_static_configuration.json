@@ -8,7 +8,7 @@
     "catalog": {
       "id": "rmuc2027-robot-parameter-catalog",
       "version": "1.0.0",
-      "sha256": "990ba7d8032eff4178e4884386ae3cfc219a94885c46b0b0152a87daf4abb2b2",
+      "sha256": "54bc39785183892a979b3c96fd922229c34ebee96f3f5dde7ca0fe9f31456da6",
       "source_audit_sha256": "1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1"
     },
     "strategies": {
@@ -246,10 +246,10 @@
     "catalog": {
       "id": "rmuc2027-robot-parameter-catalog",
       "version": "1.0.0",
-      "sha256": "990ba7d8032eff4178e4884386ae3cfc219a94885c46b0b0152a87daf4abb2b2",
+      "sha256": "54bc39785183892a979b3c96fd922229c34ebee96f3f5dde7ca0fe9f31456da6",
       "source_audit_sha256": "1e6a40af79a5a9124716ff375be2786291a96eb214cd13a22fea0e2c5e8ebbb1"
     },
-    "native_source_pin": "2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428",
+    "native_source_pin": "11ea10bb3434847fa9793ac856f7d01a63043ddd81782345aa0d519d081e6af5",
     "documents": [
       {
         "id": "RMUC2027_CN_V1.0.0_20261015",
@@ -1037,5 +1037,5 @@
     ],
     "completeness": "partial-parameters-only; all unlisted behavior remains synthetic"
   },
-  "configuration_sha256": "a962bf9568429980c21edca7f9862d18e3719ec9b7854611f5f93eea07242b2e"
+  "configuration_sha256": "60250d1b3b8e02730f9e742007907bbfd10f3610330919ed46ac1cd94c3b89a8"
 }

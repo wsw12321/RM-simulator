@@ -21,7 +21,7 @@ from robot_profiles_v1 import api
 from roster_mode import bridge as native
 from roster_mode.build_id import build_id
 
-NATIVE_PIN = '2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428'
+NATIVE_PIN = '11ea10bb3434847fa9793ac856f7d01a63043ddd81782345aa0d519d081e6af5'
 PDF_PIN = '9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be'
 HP = {
     'power_priority': [150,175,200,225,250,275,300,325,350,400],

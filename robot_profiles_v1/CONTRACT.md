@@ -9,7 +9,7 @@ row only. Unsupported class behavior is not added by choosing a row.
 
 No file in `roster_mode/`, any native physics/SDK source, or any existing rule
 module is changed by this feature. The pinned native source identity is
-`2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428`.
+`11ea10bb3434847fa9793ac856f7d01a63043ddd81782345aa0d519d081e6af5`.
 (It was `2ee07a70036b4759ea409c704f95ba2de41a02794087c634fed744c943f82f37` until
 2026-11-10, when the roster transport moved to the shared, Windows-capable
 `native_pipe.py`; roster physics, SDK and rule sources did not change, and the
