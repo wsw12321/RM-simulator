@@ -35,10 +35,10 @@ jobs:
       CXX: ${{ matrix.cxx }}
       MACOSX_DEPLOYMENT_TARGET: '11.0'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0  # git describe needs the tags
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.10'  # the documented minimum; the smoke test runs the package with it
       - name: Build, package and smoke-test

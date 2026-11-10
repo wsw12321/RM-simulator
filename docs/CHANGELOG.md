@@ -260,3 +260,9 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
   (arm64 + x86_64, deployment target 11.0) with Python 3.10, and publishes a GitHub
   Release for `v*` tags. Native Windows stays unsupported (`select` on pipes); WSL
   uses the Linux package.
+- Current Apple clang puts `-Wmisleading-indentation` in `-Wall` and, with `-Werror`,
+  rejected two `}return {};` lines after one-line nested loops in
+  `roster_mode/core.cpp`, so the tree did not build on up-to-date macOS. The roster
+  targets now pass `-Wno-misleading-indentation`; the source is left as is because
+  re-laying it out would change the roster build ID and orphan existing roster
+  replays. GCC binaries are byte-identical with and without the flag.

@@ -1222,6 +1222,16 @@ hints), a package labelled for another platform (exit 1), and the browser opener
 (it called `$BROWSER` with the server address only after `/api/meta` answered).
 The default `bash tools/build.sh` still links dynamically and passes.
 
+The first macOS runs of the workflow failed to compile `roster_mode/core.cpp`:
+current Apple clang reports `-Wmisleading-indentation` (part of its `-Wall`) at
+lines 86 and 129, `}return {};` after one-line nested loops. Clang 18 here
+reproduces exactly those two errors when the warning is enabled and none with
+`-Wno-misleading-indentation` after `-Wall`. With the flag added to the roster
+targets: all 43 files in `build/` from GCC are byte-identical with and without it;
+a full Clang 18 build with `-Wmisleading-indentation` forced on every translation
+unit compiles all 100 and passes all 30 native test binaries, so no other source
+trips the warning.
+
 Not verified here: the macOS universal package (built only by the release
 workflow on a macOS runner), the macOS quarantine handling, bash 3.2, and running
 the Linux package on an older distribution.

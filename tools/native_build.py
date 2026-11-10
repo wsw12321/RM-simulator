@@ -3,7 +3,9 @@
 compile one after another.
 
 Each target keeps exactly the compiler flags of the original serial script, so
-binaries and pinned build IDs are unchanged. What changes:
+binaries and pinned build IDs are unchanged. (One later addition: the roster
+targets also pass -Wno-misleading-indentation for newer Clang; warning flags do
+not change generated code.) What changes:
 
 * every unique (compiler, flags, source) translation unit is compiled once and
   shared by all targets that need it (sim.cpp alone used to compile 20+ times);
@@ -90,8 +92,12 @@ def plan():
           ('heat_rule_tests', True, flags, [heat, 'tests/heat_rule_tests.cpp']),
           ('tactical_heat_tests', True, tf, tsrc + ['tests/tactical_heat_tests.cpp']),
           ('heat_review_tests', True, tf, tsrc + ['tests/heat_review_tests.cpp'])]
+    # Newer Clang (current Apple clang) puts -Wmisleading-indentation in -Wall and rejects the
+    # `}return {};` after one-line nested loops in roster_mode/core.cpp. Re-laying out that file
+    # would change the roster build ID and orphan existing roster replays; a warning flag changes
+    # no generated code, so it is switched off for these targets instead.
     rf = ['-std=c++20', '-O2', '-Wall', '-Wextra', '-Wpedantic', '-Werror', f'-DROSTER_BUILD_ID="{py("roster_mode/build_id.py")}"',
-          '-Isrc', '-Irules/rmuc2027_capture_v1', '-Irules/rmuc2027_v1']
+          '-Isrc', '-Irules/rmuc2027_capture_v1', '-Irules/rmuc2027_v1', '-Wno-misleading-indentation']
     rsrc = ['src/sim.cpp', capture, match, damage, heat, 'roster_mode/core.cpp', 'roster_mode/example_policy.cpp']
     T += [('rmuc_roster', False, rf, rsrc + ['roster_mode/cli.cpp']),
           ('roster_core_tests', True, rf, rsrc + ['tests/roster_core_tests.cpp']),
