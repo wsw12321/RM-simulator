@@ -57,10 +57,14 @@ and does not implement full RMUC. See [the objective contract](../objective_mode
 
 ## Separate integrated rules lab profile
 
-`rmuc2027-rules-lab-v1` (`match_lab/`) is a further separate, headless profile.
+`rmuc2027-rules-lab-v2` (`match_lab/`) is a further separate, headless profile.
 Its robot attributes, levels, experience, revival, economy, damage multipliers,
-heat, chassis power, position lifecycle and match judgment come from the
-source-linked `rules/` modules; its field geometry, robot sizes and speeds,
-speed-from-power model, muzzle speeds, fire intervals, dispersion, sensing,
-assembly durations and scripted AI are synthetic. It shares no state or replay
-format with `sandbox-v1`. See [the lab README](../match_lab/README.md).
+heat, chassis power, position lifecycle, energy mechanism activation and buffs,
+dart gate timing and hit benefits, radar marked progress and vulnerability, and
+match judgment come from the source-linked `rules/` modules; its field geometry,
+robot sizes and speeds, speed-from-power model, muzzle speeds, fire intervals,
+dispersion, sensing, assembly durations, energy mechanism placement and aim
+model, dart flight time and accuracy, radar report rate and accuracy, navigation
+and scripted AI are synthetic. A `seed` drives every synthetic roll; there is no
+other randomness. It shares no state or replay format with `sandbox-v1`. See
+[the lab README](../match_lab/README.md).

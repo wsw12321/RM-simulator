@@ -201,3 +201,37 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
 - `tools/build.sh` now delegates to `tools/native_build.py`: each translation unit
   is compiled once, objects are cached by source hash and work runs in parallel.
   Same per-target flags; produced binaries are byte-identical to the serial script.
+
+## 2026-11-10 · Energy mechanism, radar and dart modules; rules lab v2
+
+- Added three more independent, source-linked C++20 rule modules with page-cited
+  README/provenance, named engineering choices and tests: `rmuc2027_energy_v1`
+  (§5.6.3 activation state machine: chances, trigger, lit groups, 2.5 s / 1 s hit
+  windows, restarts, 20 s window, tables 5-23/5-24, figure 5-17 rings, small-buff
+  experience bonus), `rmuc2027_radar_v1` (table 5-29 marked progress with the
+  manual's worked example, interruption verdicts, table 5-30, double vulnerability,
+  jammer level comparison) and `rmuc2027_dart_v1` (§5.7.3 gate chances and timing,
+  target selection with the single outpost-to-base switch, detection window and every
+  hit benefit). Their tables are cross-checked against the `buff_v1` copies.
+- `match_lab` is now `rmuc2027-rules-lab-v2` (result schema v2, twelve modules):
+  energy mechanisms with attack/defence/cooling buffs and experience awards, a dart
+  station per team, 5 Hz radar marking with vulnerability and double vulnerability,
+  dart-disabled buff points, and a `seed` for every synthetic roll. New per-team
+  synthetic skill settings: `energy_accuracy`, `dart_target`, `dart_accuracy`,
+  `radar_accuracy`. Configurations and results of v1 are not compatible.
+- Navigation and ordering: blocked robots now plan a personal detour around the
+  other robots before giving way to their right; equal-cost waypoints are chosen
+  as point reflections for the two teams; the team that moves and decides first
+  alternates every tick with a fixed order of roles. The v1 fixed scan order made
+  blue win most symmetric matches, and its side-step could not dissolve the
+  head-on queue at the supply zone that the new energy duty makes common
+  (measurements in `docs/VERIFICATION.md`).
+- Added `python3 match_lab/cli.py sweep` and the stateless `POST /api/lab/sweep`:
+  the same setup over consecutive seeds, tallies only (`rmuc2027-rules-lab-sweep.v1`).
+  They describe the synthetic model, not real win rates.
+- `web/lab.html`: inputs for the new settings and the seed, energy mechanisms and
+  firing points on the field, a marker for radar-marked robots, a systems card and
+  a "20 matches" sweep summary.
+- Still not simulated: fortress, central highland, high point and terrain crossing
+  points, aerial system, jammer decoding, mechanism rotation, dart flight and
+  operator occlusion, penalties and module offline. No official complete-match claim.

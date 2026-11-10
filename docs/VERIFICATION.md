@@ -1137,3 +1137,67 @@ Limits that remain: the rules lab field geometry, robot physics, assembly time
 and AI are synthetic; fortress, central highland, high point, terrain crossing
 points, energy mechanism activation, darts, radar, aerial system, penalties and
 module offline are not simulated; no official complete-match claim is made.
+
+## Energy, radar and dart modules; rules lab v2 · 2026-11-10
+
+Environment: Linux, GCC 13.3.0, Clang 18.1.3, Python 3.13, Node 22, Playwright Chromium, 4 CPUs.
+
+Source reading. Besides the extracted text, these printed pages of the pinned
+manual were rendered and read as pixels: 97, 98, 99 (§5.6.3, figure 5-17,
+tables 5-22 to 5-24), 110, 111 (§5.7.3) and 112, 113 (§5.7.4 parameters, table
+5-29, the worked example, table 5-30, double vulnerability). Pages 100-101
+(§5.6.3.1 activation sequence) and 114 (jammer levels) were used from extracted
+text only. Each module's `provenance.json` records this per item.
+
+Native tests (`-Wall -Wextra -Wpedantic -Werror -O2`):
+
+| Test | Assertions | Highlights |
+|---|---:|---|
+| `energy_rule_tests` | 906,538 | chance times, small and big sequences, exact 2.5 s / 1 s / 20 s / 45 s boundaries, both failures, both chance policies, tables 5-23/5-24, figure 5-17 radii, phase change, experience cap, 300 randomized runs that reach all ten event kinds |
+| `radar_rule_tests` | 184,681 | the manual example step by step (1, 3, 6, 10, 15, 120, 119.2 ... 108, 103.2, 97.6, 98.6, 100.6), every table 5-29 row, clamps, revival, table 5-30 for every P, double vulnerability, jammer comparison, 200 randomized runs against an independent restatement |
+| `dart_rule_tests` | 519,338 | gate timeline at every boundary millisecond, detection window, four darts, 2 s blackout, occlusion 10/5/3/2 with stacking, every target's benefits, target switching, 400 randomized command streams |
+| `match_lab_tests` | 13,037,639 | 7 configurations: byte-identical reruns, seed sensitivity and per-tick invariants for the old and the new mechanisms; all 31 event kinds exercised |
+
+The three module suites also pass at `-O0` with AddressSanitizer +
+UndefinedBehaviorSanitizer. Tables 5-23 and 5-30 and the dart column of table
+5-2 are compared with the `buff_v1` copies inside those suites.
+
+Full lab output (events, per-second timeline and, for two of them, 10 Hz
+frames) is byte-identical between GCC `-O2`, GCC `-O0` + ASan/UBSan and Clang
+`-O2` for three configurations (default; strong against weak systems with
+moving and random-fixed dart targets; terminal-moving darts without credits):
+1,024,322 / 514,718 / 127,230 bytes, hashes 586682257 / 3702346388 / 2192099092.
+The new sources compile without warnings under Clang with the same flags.
+
+`tests/test_match_lab.py` (7 tests) and `tests/test_lab_http.py` (3 tests) pass.
+The complete `bash tools/check.sh` passed with exit 0 in 8m07s on the final
+tree (100 translation units, 42 targets, 30 native test binaries), including
+every pre-existing suite.
+
+Real Chromium: `tests/lab_browser_smoke.cjs` passed on a desktop viewport and
+an emulated iPhone 13 (run with a moving dart target, playback, scrub, systems
+card, the three new event labels in the feed, the 20-match sweep summary, no
+horizontal scroll, no console errors); `tests/browser_smoke.cjs` for the
+original sandbox page passed again. Other pages remain covered by their
+mock-DOM handler suites only.
+
+Balance of the scripted match. With identical settings for both teams, 200
+seeds each for three setups (default; all three systems off; power/burst
+infantry) gave red 86 / blue 114, red 111 / blue 89 and red 100 / blue 100:
+297 to 303 over 600 matches. The same measurement without the point-symmetric
+tie-break of equal-cost waypoints, on an intermediate build of this change with
+40 seeds per setup, gave red 38 / blue 82. The worst share of a match that any
+robot spent pushing against an obstacle was 22.5% (one robot, one of the 600
+matches); the test suite bounds it at 20% for its seven configurations.
+
+Limits that remain: field geometry, robot physics, assembly time, navigation
+and AI are synthetic; the energy, dart and radar "accuracy" settings replace
+aiming, guidance and vision, which are not simulated; mechanism rotation, dart
+flight, moving detection modules, operator occlusion and jammer decoding are
+not simulated; fortress, central highland, high point, terrain crossing points,
+aerial system, penalties and module offline are still absent. Sweep tallies
+describe this synthetic model, not real win rates. WASM is still unbuilt.
+
+`MANIFEST.sha256` was regenerated over all 280 tracked files other than itself
+and verified with `sha256sum -c`; the previous manifest was one commit behind
+for `web/lab.js`.
