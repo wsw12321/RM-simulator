@@ -1232,6 +1232,23 @@ a full Clang 18 build with `-Wmisleading-indentation` forced on every translatio
 unit compiles all 100 and passes all 30 native test binaries, so no other source
 trips the warning.
 
-Not verified here: the macOS universal package (built only by the release
-workflow on a macOS runner), the macOS quarantine handling, bash 3.2, and running
-the Linux package on an older distribution.
+Release workflow run 42815708850 (commit 7096cce) passed on both runners with
+Python 3.10. `linux-x86_64` on ubuntu-24.04. `macos-universal` on the macos-26
+arm64 image with Apple clang 21 (`-arch arm64 -arch x86_64`, deployment target
+11.0): all 100 translation units compiled, all 30 native test binaries passed
+(arm64 slice), and the extracted 2.0 MB archive passed the same smoke test, with
+`start.sh` run by `/bin/bash` 3.2. The determinism fixtures print the same hashes
+as on Linux (sandbox 2045014215, policy-v-policy 4126628050, tactical
+2168488852), and the integrated rules lab ran the same 13,037,639 assertions.
+
+The assertion counts of the position, energy and dart rule tests differ between
+GCC and Clang (for example 906,538 against 907,060 for energy). Their random
+drivers call `next()` twice in one argument list (`tests/energy_rule_tests.cpp:297`,
+`tests/position_rule_tests.cpp:119` and `:124`, `tests/dart_rule_tests.cpp:198`),
+and C++ leaves argument evaluation order unspecified, so each compiler explores a
+different sequence of random cases. Both pass; the rule modules themselves use no
+randomness. Left unchanged here.
+
+Not verified: the macOS quarantine handling (CI archives are not quarantined),
+running the x86_64 slice of the macOS binaries, running on macOS 11 itself, and
+running the Linux package on an older distribution.
