@@ -187,7 +187,9 @@ def smoke_test(tarball, top):
 
         port = free_port()
         env = {**os.environ, 'PYTHON': sys.executable}
-        server = subprocess.Popen(['bash', 'start.sh', '--no-browser', '--port', str(port)], cwd=pkg, env=env,
+        # macOS users get /bin/bash 3.2 from `bash start.sh`; test that one, not a newer bash earlier in PATH.
+        shell = '/bin/bash' if platform.system() == 'Darwin' else 'bash'
+        server = subprocess.Popen([shell, 'start.sh', '--no-browser', '--port', str(port)], cwd=pkg, env=env,
                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         try:
             deadline = time.monotonic() + 20

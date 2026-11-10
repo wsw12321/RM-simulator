@@ -49,12 +49,16 @@ if want != f'{system}-{machine}' and not (want == 'macos-universal' and system =
     sys.exit(f'这个发布包是为 {want} 构建的，当前系统是 {system}-{machine}。{hint}')
 PY
 
-if [ "$(uname -s)" = Darwin ] && find build -xattrname com.apple.quarantine 2>/dev/null | grep -q .; then
+if [ "$(uname -s)" = Darwin ]; then
   # A browser download marks every extracted file as quarantined, and Gatekeeper
   # then blocks the unsigned helper programs the server starts. Only this
-  # package's own build/ directory is touched.
-  echo "macOS：移除 build/ 中预编译程序的下载隔离标记（com.apple.quarantine），否则系统会拦截这些未签名的程序。"
-  xattr -dr com.apple.quarantine build || echo "警告：移除隔离标记失败，可手动运行 xattr -dr com.apple.quarantine build" >&2
+  # package's own build/ directory is touched. (No `find | grep -q` here: with
+  # pipefail an early grep exit can fail the pipeline through SIGPIPE.)
+  quarantined="$(find build -xattrname com.apple.quarantine 2>/dev/null || true)"
+  if [ -n "$quarantined" ]; then
+    echo "macOS：移除 build/ 中预编译程序的下载隔离标记（com.apple.quarantine），否则系统会拦截这些未签名的程序。"
+    xattr -dr com.apple.quarantine build || echo "警告：移除隔离标记失败，可手动运行 xattr -dr com.apple.quarantine build" >&2
+  fi
 fi
 
 url="http://127.0.0.1:${port}/"
