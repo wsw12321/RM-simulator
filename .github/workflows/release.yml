@@ -27,7 +27,7 @@ jobs:
           - os: ubuntu-24.04
             platform: linux-x86_64
             cxx: g++
-          - os: macos-14
+          - os: macos-latest  # pinned macOS images get retired (macos-14 is no longer offered)
             platform: macos-universal
             cxx: clang++ -arch arm64 -arch x86_64
     runs-on: ${{ matrix.os }}
