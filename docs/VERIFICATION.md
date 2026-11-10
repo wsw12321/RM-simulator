@@ -1252,3 +1252,56 @@ randomness. Left unchanged here.
 Not verified: the macOS quarantine handling (CI archives are not quarantined),
 running the x86_64 slice of the macOS binaries, running on macOS 11 itself, and
 running the Linux package on an older distribution.
+
+## Native Windows support · 2026-11-10
+
+Pipe transport. `tests/test_native_pipe.py` (13 tests: read and write deadlines,
+child exit, unterminated and over-long lines, the bound with and without a Windows
+`\r`, endless output, write errors, helper threads ending on close) passes locally
+and on all three release runners. The suites that drive the real native engines
+through the bridges (`test_bridge_unit`, `test_combat_review`, `test_layered_bridge`,
+`test_layered_review`, `test_policy_bridge`, `test_policy_review`,
+`test_roster_bridge`, `test_roster_review`, `test_tactical_review`,
+`test_damage_review`, `test_heat_review`, `test_objective_api`) pass unchanged.
+The complete `bash tools/check.sh` passed (exit 0) on commit 0f0787f: 100
+translation units, 30 native test binaries, 322 Python tests in 31 suites and every
+Node UI handler suite. Later commits change only the workflow trigger paths and
+`tests/roster_core_tests.cpp` (below). Real Chromium: `tests/lab_browser_smoke.cjs`
+(desktop and iPhone 13) and `tests/browser_smoke.cjs` passed against the changed
+server, which now answers `text/javascript`, `text/css` and `text/html`.
+
+Identities. Combat, layered, roster and tactical build IDs changed; objective,
+match_lab, scenario and integrated IDs did not. `robot_profiles_v1` was re-pinned by
+a script that derives every value from the tree: the catalog differs only in
+`native_source_pin`, the selection examples only in the catalog SHA-256, and the
+configuration example is the byte-exact output of `python -m robot_profiles_v1
+resolve` on the unchanged selection example (the same command reproduced the old
+example byte for byte before the change). `test_robot_profiles` (19) and
+`test_robot_profiles_review` (28) pass.
+
+Launcher (Linux, extracted package): `--help`; an unknown option (argparse, exit 2);
+Python 3.9 (message, exit 1); a missing interpreter (install hints); a package
+labelled `windows-x86_64` (message, exit 1); the browser opener called `$BROWSER`
+with the address only after `/api/meta` answered; SIGINT ended the server with exit
+0 and left none of its five native child processes running.
+
+Release workflow run 42829635358 (commit 6d61c8d) passed on all three runners with
+Python 3.10. `windows-x86_64` on windows-latest with MSYS2 UCRT64 GCC 16.2.0
+(`-static -s`): 100 translation units, 30 native test binaries, the same
+determinism hashes as Linux and macOS (2045014215, 4126628050, 2168488852) and
+13,037,639 integrated-lab assertions; a 6.2 MB zip (302 files, `start.bat` with CRLF,
+PE `.exe` programs, no test binaries or excluded files) whose smoke test passed
+through `cmd /c start.bat`: seven pages, every native engine, a rules lab match, and
+the match_lab, scenario harness and integrated scenario CLIs. The last two start
+their unchanged extensionless driver paths, which Windows resolves to the `.exe`.
+
+Found on the way: GCC 16.2 reported `-Wdangling-pointer` for temporary controller
+lists passed to `roster::Engine::advance` in `tests/roster_core_tests.cpp` (lines
+52 and 56-58), the only compile failure of the Windows build. `advance` keeps those
+pointers in a local vector only, so it is a false positive; the test now passes
+named lists. In the Windows CI log the test binaries' section signs show as
+replacement characters (Python's pipe output there is cp1252); the tests pass.
+
+Not verified: a real Windows desktop (double-clicking `start.bat`, SmartScreen and
+Mark-of-the-Web prompts, Defender, the browser opening, Ctrl+C in a console window),
+Windows 10 and a Chinese-locale (cp936) system, and Windows on arm64 (not built).
