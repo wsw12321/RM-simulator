@@ -20,8 +20,9 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from match_lab.build_id import build_id  # noqa: E402
+from native_pipe import executable  # noqa: E402
 
-NATIVE = ROOT / 'build' / 'rmuc_match_lab'
+NATIVE = executable(ROOT / 'build' / 'rmuc_match_lab')  # .exe on Windows
 CHASSIS = {'hp': 'hp', 'power': 'power'}
 LAUNCHER = {'cooling': 'cooling', 'burst': 'burst'}
 DART_TARGETS = ('none', 'outpost', 'base-fixed', 'base-random-fixed', 'base-random-moving', 'base-terminal-moving')

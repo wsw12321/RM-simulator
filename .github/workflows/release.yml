@@ -1,5 +1,6 @@
 # Download-and-run packages with prebuilt native binaries.
 #  - push a tag v*            -> build, smoke-test and publish a GitHub Release
+#                                (linux-x86_64 and macos-universal tar.gz, windows-x86_64 zip)
 #  - "Run workflow" (manual)  -> build and smoke-test; packages are run artifacts
 #  - push touching packaging  -> same check, so packaging breakage shows up early
 name: Release packages
@@ -30,6 +31,9 @@ jobs:
           - os: macos-latest  # pinned macOS images get retired (macos-14 is no longer offered)
             platform: macos-universal
             cxx: clang++ -arch arm64 -arch x86_64
+          - os: windows-latest
+            platform: windows-x86_64
+            cxx: g++  # MinGW-w64 GCC from MSYS2 UCRT64, put first on PATH below
     runs-on: ${{ matrix.os }}
     env:
       CXX: ${{ matrix.cxx }}
@@ -41,6 +45,19 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.10'  # the documented minimum; the smoke test runs the package with it
+      - uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        id: msys2
+        with:
+          msystem: UCRT64
+          update: false
+          install: mingw-w64-ucrt-x86_64-gcc
+      - name: Put MinGW-w64 GCC first on PATH
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin"
+      - name: Pipe transport tests
+        run: python tests/test_native_pipe.py
       - name: Build, package and smoke-test
         run: python tools/package_release.py --platform ${{ matrix.platform }}
       - uses: actions/upload-artifact@v4

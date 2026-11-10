@@ -9,20 +9,21 @@ so binaries alone would not start.
   1. `git archive HEAD` into a fresh staging directory (uncommitted changes are
      never packaged);
   2. tools/native_build.py there; every native test binary must pass;
-  3. drop the test binaries and the object cache, add start.sh, QUICKSTART.md,
-     BUILD_INFO.json and SHA256SUMS (covering the binaries too);
-  4. write a reproducible tar.gz (fixed order, owners and commit mtime) plus a
-     .sha256 file;
+  3. drop the test binaries and the object cache, add the launcher (start.sh,
+     or start.bat on Windows), QUICKSTART.md, BUILD_INFO.json and SHA256SUMS
+     (covering the binaries too);
+  4. write a reproducible archive (fixed order, owners and commit mtime): tar.gz,
+     or zip on Windows, plus a .sha256 file;
   5. extract that archive again and smoke-test it: launcher, server, every
      mode's native engine and the command-line tools.
 
-  python3 tools/package_release.py                  # dist/rmuc-tactics-lab-<version>-<platform>.tar.gz
+  python3 tools/package_release.py                  # dist/rmuc-tactics-lab-<version>-<platform>.tar.gz (.zip on Windows)
   python3 tools/package_release.py --version v0.2.0
   CXX="clang++ -arch arm64 -arch x86_64" python3 tools/package_release.py --platform macos-universal
 
-On Linux the binaries are linked fully static (LDFLAGS="-static -s" unless
-LDFLAGS is set), so the package does not depend on the glibc or libstdc++
-version of the machine that runs it. The official rules manual PDF (22 MB,
+On Linux and Windows (MinGW-w64 GCC) the binaries are linked fully static
+(LDFLAGS="-static -s" unless LDFLAGS is set), so the package does not depend on
+the C/C++ runtime version of the machine that runs it. The official rules manual PDF (22 MB,
 never read at runtime) is left out unless --include-manual is given.
 """
 import argparse
@@ -43,13 +44,18 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = 'rmuc-tactics-lab'
 EXCLUDE = ['.github', 'MANIFEST.sha256']  # the manifest is replaced by SHA256SUMS, which also covers binaries
 MANUAL = 'docs/rules/*.pdf'
-EXTRAS = {'tools/release/start.sh': ('start.sh', 0o755), 'tools/release/QUICKSTART.md': ('QUICKSTART.md', 0o644)}
+WINDOWS = platform.system() == 'Windows'
+EXE = '.exe' if WINDOWS else ''
+LAUNCHER = 'start.bat' if WINDOWS else 'start.sh'
+EXTRAS = {f'tools/release/{LAUNCHER}': (LAUNCHER, 0o755), 'tools/release/QUICKSTART.md': ('QUICKSTART.md', 0o644)}
+TEXT = {'encoding': 'utf-8', 'errors': 'replace'}  # child output is UTF-8, never the Windows ANSI code page
 TAR_FILTER = {'filter': 'data'} if hasattr(tarfile, 'data_filter') else {}
 
 
@@ -91,7 +97,7 @@ def build(stage, env):
     targets = subprocess.run([sys.executable, '-c', 'import json, sys; sys.path.insert(0, "tools"); import native_build; '
                               'print(json.dumps([out for out, test, _, _ in native_build.plan() if not test]))'],
                              cwd=stage, env=env, check=True, capture_output=True, text=True).stdout
-    runtime = sorted(json.loads(targets))
+    runtime = sorted(name + EXE for name in json.loads(targets))
     for path in (stage / 'build').iterdir():
         if path.name not in runtime:
             shutil.rmtree(path) if path.is_dir() else path.unlink()
@@ -105,7 +111,7 @@ def build(stage, env):
 
 def compiler_version(env):
     try:
-        out = subprocess.run([*shlex.split(env.get('CXX', 'g++')), '--version'], capture_output=True, text=True).stdout
+        out = subprocess.run([*shlex.split(env.get('CXX', 'g++')), '--version'], capture_output=True, text=True, **TEXT).stdout
         return out.splitlines()[0] if out else 'unknown'
     except OSError:
         return 'unknown'
@@ -156,13 +162,56 @@ def write_tarball(stage, target, mtime):
                 tar.addfile(info)
 
 
+def write_zip(stage, target, mtime):
+    """Windows package: same fixed order and commit timestamp as the tarball."""
+    stamp = time.gmtime(max(mtime, 315532800))[:6]  # zip cannot store dates before 1980
+    with zipfile.ZipFile(target, 'w') as zf:
+        for path in files_under(stage):
+            info = zipfile.ZipInfo((Path(stage.name) / path.relative_to(stage)).as_posix(), date_time=stamp)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3  # unix, so the mode below is honored by unzip
+            info.external_attr = (0o755 if path.suffix in ('.exe', '.bat', '.sh') else 0o644) << 16
+            zf.writestr(info, path.read_bytes(), compresslevel=9)
+
+
+def extract(archive, into):
+    if archive.suffix == '.zip':
+        with zipfile.ZipFile(archive) as zf:
+            zf.extractall(into)
+    else:
+        with tarfile.open(archive) as tar:
+            tar.extractall(into, **TAR_FILTER)
+
+
+def start_server(pkg, port, env):
+    if WINDOWS:  # stdin from NUL so the launcher's `pause` cannot wait for a key
+        return subprocess.Popen(['cmd', '/c', LAUNCHER, '--no-browser', '--port', str(port)], cwd=pkg, env=env,
+                                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, **TEXT)
+    # macOS users get /bin/bash 3.2 from `bash start.sh`; test that one, not a newer bash earlier in PATH.
+    shell = '/bin/bash' if platform.system() == 'Darwin' else 'bash'
+    return subprocess.Popen([shell, LAUNCHER, '--no-browser', '--port', str(port)], cwd=pkg, env=env,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, **TEXT)
+
+
+def stop_server(server):
+    if WINDOWS:  # the whole tree: cmd, Python and the native engines, which would otherwise lock the files
+        subprocess.run(['taskkill', '/F', '/T', '/PID', str(server.pid)], capture_output=True)
+    else:
+        server.send_signal(signal.SIGINT)  # start.sh execs Python: a clean server shutdown
+    try:
+        server.wait(10)
+    except subprocess.TimeoutExpired:
+        server.kill()
+        server.wait()
+
+
 def free_port():
     with socket.socket() as s:
         s.bind(('127.0.0.1', 0))
         return s.getsockname()[1]
 
 
-def smoke_test(tarball, top):
+def smoke_test(archive, top):
     """Run the extracted archive the way a user would."""
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # loopback must not go through a proxy
 
@@ -176,9 +225,8 @@ def smoke_test(tarball, top):
         except urllib.error.HTTPError as exc:  # an answer, not a missing server: report the server's message
             raise SystemExit(f'smoke: {path} returned HTTP {exc.code}: {exc.read()[:500]!r}') from exc
 
-    with tempfile.TemporaryDirectory(prefix='rmuc-smoke-') as tmp:
-        with tarfile.open(tarball) as tar:
-            tar.extractall(tmp, **TAR_FILTER)
+    with tempfile.TemporaryDirectory(prefix='rmuc-smoke-', ignore_cleanup_errors=True) as tmp:
+        extract(archive, tmp)
         pkg = Path(tmp) / top
         bad = [line for line in (pkg / 'SHA256SUMS').read_text(encoding='utf-8').splitlines()
                if sha256(pkg / line.split('  ', 1)[1]) != line.split('  ', 1)[0]]
@@ -186,11 +234,9 @@ def smoke_test(tarball, top):
             raise SystemExit(f'smoke: SHA256SUMS mismatch: {bad[:3]}')
 
         port = free_port()
-        env = {**os.environ, 'PYTHON': sys.executable}
-        # macOS users get /bin/bash 3.2 from `bash start.sh`; test that one, not a newer bash earlier in PATH.
-        shell = '/bin/bash' if platform.system() == 'Darwin' else 'bash'
-        server = subprocess.Popen([shell, 'start.sh', '--no-browser', '--port', str(port)], cwd=pkg, env=env,
-                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        # start.bat expands %PYTHON% unquoted, so a path with spaces needs its own quotes.
+        env = {**os.environ, 'PYTHON': f'"{sys.executable}"' if WINDOWS else sys.executable, 'PYTHONUTF8': '1'}
+        server = start_server(pkg, port, env)
         try:
             deadline = time.monotonic() + 20
             while True:
@@ -218,15 +264,11 @@ def smoke_test(tarball, top):
         except (OSError, ValueError) as exc:
             raise SystemExit(f'smoke: {exc}') from exc
         finally:
-            server.send_signal(signal.SIGINT)
-            try:
-                server.wait(10)
-            except subprocess.TimeoutExpired:
-                server.kill()
+            stop_server(server)
         for cmd in (['match_lab/cli.py', 'run'],
                     ['scenario_harness/cli.py', 'run', 'scenario_harness/scenarios/timeout_control_priority.json'],
                     ['integrated_scenario/cli.py', 'run', 'integrated_scenario/scenarios/capture_credit_timeout.json']):
-            result = subprocess.run([sys.executable, *cmd], cwd=pkg, capture_output=True, text=True)
+            result = subprocess.run([sys.executable, *cmd], cwd=pkg, env=env, capture_output=True, text=True, **TEXT)
             if result.returncode:
                 raise SystemExit(f'smoke: {" ".join(cmd)} failed:\n{result.stdout}{result.stderr}')
     log(f'smoke test passed: server {meta.get("build", "")[:12] or "ok"}, 7 pages, 7 native engines, rules lab run, 3 CLIs')
@@ -247,7 +289,7 @@ def main():
     version = args.version or git('describe', '--tags', '--always', 'HEAD')
     top = f'{NAME}-{version}-{args.platform}'
     env = os.environ.copy()
-    if platform.system() == 'Linux':
+    if platform.system() in ('Linux', 'Windows'):
         env.setdefault('LDFLAGS', '-static -s')
 
     with tempfile.TemporaryDirectory(prefix='rmuc-release-') as tmp:
@@ -265,12 +307,12 @@ def main():
         })
         write_sums(stage)
         args.out.mkdir(parents=True, exist_ok=True)
-        tarball = args.out / f'{top}.tar.gz'
-        write_tarball(stage, tarball, commit_time)
-    digest = sha256(tarball)
-    (args.out / f'{tarball.name}.sha256').write_text(f'{digest}  {tarball.name}\n', encoding='utf-8')
-    log(f'wrote {tarball} ({tarball.stat().st_size / 1e6:.1f} MB, sha256 {digest[:16]}...)')
-    smoke_test(tarball, top)
+        archive = args.out / f'{top}{".zip" if WINDOWS else ".tar.gz"}'
+        (write_zip if WINDOWS else write_tarball)(stage, archive, commit_time)
+    digest = sha256(archive)
+    (args.out / f'{archive.name}.sha256').write_text(f'{digest}  {archive.name}\n', encoding='utf-8')
+    log(f'wrote {archive} ({archive.stat().st_size / 1e6:.1f} MB, sha256 {digest[:16]}...)')
+    smoke_test(archive, top)
     return 0
 
 

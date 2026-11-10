@@ -3,6 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 bash tools/build.sh
 ./build/capture_rules_demo > build/capture_demo.out
+python3 -m py_compile native_pipe.py tests/test_native_pipe.py
+python3 tests/test_native_pipe.py
 python3 -m py_compile server.py tests/test_server.py tests/test_bridge_unit.py scenario_harness/cli.py tests/test_scenario_harness.py
 python3 tests/test_scenario_harness.py
 python3 -m py_compile integrated_scenario/cli.py tests/test_integrated_scenario.py

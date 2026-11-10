@@ -16,6 +16,7 @@ SOURCES = [
     'roster_mode/core.hpp', 'roster_mode/core.cpp', 'roster_mode/policy_sdk.hpp',
     'roster_mode/example_policy.cpp', 'roster_mode/cli.cpp', 'roster_mode/bridge.py',
     'roster_mode/default_config.json', 'roster_mode/CONTRACT.md', 'roster_mode/provenance.json', 'roster_mode/build_id.py',
+    'native_pipe.py',
 ]
 def build_id():
     return hashlib.sha256(b''.join(p.encode() + b'\0' + (ROOT / p).read_bytes() + b'\0' for p in SOURCES)).hexdigest()

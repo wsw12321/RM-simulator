@@ -8,8 +8,12 @@ row only. Unsupported class behavior is not added by choosing a row.
 ## Isolation and release identity
 
 No file in `roster_mode/`, any native physics/SDK source, or any existing rule
-module is changed by this feature. The native source identity remains
-`2ee07a70036b4759ea409c704f95ba2de41a02794087c634fed744c943f82f37`.
+module is changed by this feature. The pinned native source identity is
+`2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428`.
+(It was `2ee07a70036b4759ea409c704f95ba2de41a02794087c634fed744c943f82f37` until
+2026-11-10, when the roster transport moved to the shared, Windows-capable
+`native_pipe.py`; roster physics, SDK and rule sources did not change, and the
+catalog changed only in its `native_source_pin` field.)
 The legacy `rmuc-experimental-roster-replay.v1` format remains a raw synthetic
 replay even if its numeric values happen to equal a catalog row. Source claims
 are never inferred from numbers, profile IDs, a caller-provided badge or a URL.

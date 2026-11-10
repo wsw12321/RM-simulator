@@ -21,6 +21,7 @@ SOURCES = [
     'tactical_mode/core.hpp', 'tactical_mode/core.cpp', 'tactical_mode/policy_sdk.hpp',
     'tactical_mode/example_policy.cpp', 'tactical_mode/cli.cpp',
     'tactical_mode/provenance.json', 'tactical_mode/build_id.py', 'tactical_mode/bridge.py',
+    'native_pipe.py',
 ]
 def build_id():
     return hashlib.sha256(b''.join(p.encode() + b'\0' + (ROOT / p).read_bytes() + b'\0'

@@ -6,12 +6,10 @@ It is not an anti-cheat or security boundary against native user-authored code.
 """
 import copy
 import json
-import os
 from pathlib import Path
 import re
-import select
-import subprocess
-import time
+
+from native_pipe import NativePipe
 
 from .build_id import build_id
 
@@ -139,36 +137,17 @@ def frame_tokens(frame):
     return result + [frame['hash'], *frame['observation_hashes']]
 
 
-class _Native:
+class _Native(NativePipe):
     def __init__(self, binary):
-        self.proc = subprocess.Popen([str(binary)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     bufsize=0)
-        os.set_blocking(self.proc.stdin.fileno(), False)
-        self.buffer = b''
+        super().__init__(binary, MAX_BYTES)
 
     def command(self, command):
-        deadline = time.monotonic() + 20
-        pending = memoryview((command + '\n').encode())
         try:
-            while pending:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0 or not select.select([], [self.proc.stdin], [], remaining)[1]:
-                    raise RuntimeError('Combat native command timed out; candidate run invalid.')
-                try:
-                    pending = pending[os.write(self.proc.stdin.fileno(), pending):]
-                except BlockingIOError:
-                    continue
-            while b'\n' not in self.buffer:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0 or not select.select([self.proc.stdout], [], [], remaining)[0]:
-                    raise RuntimeError('Combat native command timed out; candidate run invalid.')
-                chunk = os.read(self.proc.stdout.fileno(), 65536)
-                if not chunk:
-                    raise RuntimeError('Combat native process stopped without a response.')
-                self.buffer += chunk
-                if len(self.buffer) > MAX_BYTES:
-                    raise RuntimeError('Combat native response exceeds size bound.')
-            line, self.buffer = self.buffer.split(b'\n', 1)
+            line = self.exchange((command + '\n').encode(), 20,
+                                 write_timeout='Combat native command timed out; candidate run invalid.',
+                                 read_timeout='Combat native command timed out; candidate run invalid.',
+                                 stopped='Combat native process stopped without a response.',
+                                 oversize='Combat native response exceeds size bound.')
             result = json.loads(line)
             if type(result) is not dict:
                 raise RuntimeError('Malformed native combat response.')
@@ -178,17 +157,6 @@ class _Native:
         if 'error' in result:
             raise ValueError(result['error'])
         return result
-
-    def close(self):
-        if self.proc.poll() is None:
-            self.proc.terminate()
-            try:
-                self.proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                self.proc.kill()
-                self.proc.wait()
-        self.proc.stdin.close()
-        self.proc.stdout.close()
 
 
 class CombatProcess:

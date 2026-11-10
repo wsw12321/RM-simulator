@@ -6,14 +6,11 @@ are privileged developer artifacts, never inputs to the browser's player view.
 """
 import copy
 import json
-import os
 from pathlib import Path
 import re
-import select
-import subprocess
-import time
 
 from combat_mode.bridge import exact, integer, identifier, canonical, action_fields
+from native_pipe import NativePipe
 from .build_id import build_id
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,7 +47,7 @@ ZONES = [
     {'id':'blue-outpost','rect':{'x1':6100,'y1':5300,'x2':7700,'y2':6900},'original_owner':1},
     {'id':'red-base','rect':{'x1':600,'y1':5600,'x2':2200,'y2':7200},'original_owner':0},
     {'id':'blue-base','rect':{'x1':9800,'y1':400,'x2':11400,'y2':2000},'original_owner':1}]
-DEFAULT_CONFIG = json.loads((ROOT / 'roster_mode/default_config.json').read_text())
+DEFAULT_CONFIG = json.loads((ROOT / 'roster_mode/default_config.json').read_text(encoding='utf-8'))
 LIMITATIONS = [
     'SYNTHETIC 1–4 robots per team, default 2v2. These profiles, physics and arena are engineering assumptions, not an official RMUC roster or robot specification.',
     'Every configured stable ID supplies one source each tick. All per-robot observations are frozen before any policy callback; IDs, not array positions, bind actions.',
@@ -481,38 +478,21 @@ def _unique_object(pairs):
     return obj
 
 
-class _Native:
+class _Native(NativePipe):
     """Bounded strict line transport, separate from legacy modes."""
     def __init__(self, binary):
-        self.proc = subprocess.Popen([str(binary)],stdin=subprocess.PIPE,stdout=subprocess.PIPE,bufsize=0)
-        os.set_blocking(self.proc.stdin.fileno(),False)
-        self.buffer = b''
+        super().__init__(binary, MAX_BYTES)
 
     def command(self, command):
         wire = (command+'\n').encode('ascii')
         if len(wire) > MAX_LINE_BYTES:
             raise ValueError('Roster native command exceeds the 1 MiB bound.')
-        pending, deadline = memoryview(wire), time.monotonic()+20
         try:
-            while pending:
-                remaining = deadline-time.monotonic()
-                if remaining<=0 or not select.select([],[self.proc.stdin],[],remaining)[1]:
-                    raise RuntimeError('Roster native command timed out; candidate invalid.')
-                try:
-                    pending = pending[os.write(self.proc.stdin.fileno(),pending):]
-                except BlockingIOError:
-                    continue
-            while b'\n' not in self.buffer:
-                remaining = deadline-time.monotonic()
-                if remaining<=0 or not select.select([self.proc.stdout],[],[],remaining)[0]:
-                    raise RuntimeError('Roster native response timed out; candidate invalid.')
-                chunk = os.read(self.proc.stdout.fileno(),65536)
-                if not chunk:
-                    raise RuntimeError('Roster native stopped without a response.')
-                self.buffer += chunk
-                if len(self.buffer)>MAX_BYTES:
-                    raise RuntimeError('Roster native response exceeds bounded size.')
-            line,self.buffer = self.buffer.split(b'\n',1)
+            line = self.exchange(wire, 20,
+                                 write_timeout='Roster native command timed out; candidate invalid.',
+                                 read_timeout='Roster native response timed out; candidate invalid.',
+                                 stopped='Roster native stopped without a response.',
+                                 oversize='Roster native response exceeds bounded size.')
             result = json.loads(line,object_pairs_hook=_unique_object,parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Non-finite native JSON.')))
             if type(result) is not dict:
                 raise ValueError('Native response must be an object.')
@@ -525,17 +505,6 @@ class _Native:
         except Exception:
             self.close()
             raise
-
-    def close(self):
-        if self.proc.poll() is None:
-            self.proc.terminate()
-            try:
-                self.proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                self.proc.kill()
-                self.proc.wait()
-        self.proc.stdin.close()
-        self.proc.stdout.close()
 
 
 class RosterProcess:

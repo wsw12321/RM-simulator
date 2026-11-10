@@ -6,11 +6,7 @@ import argparse
 from decimal import Decimal
 import json
 import math
-import os
 import re
-import select
-import time
-import subprocess
 import sys
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -22,6 +18,7 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from arena_format import ArenaValidationError, parse_document, query as arena_query
+from native_pipe import NativePipe, executable
 BINARY = ROOT / 'build/rmuc_sandbox'
 OBJECTIVE_BINARY = ROOT / 'build/rmuc_objective'
 MAX_BODY = 2_000_000
@@ -32,38 +29,26 @@ TACTICAL_MAX_BODY = 48 * 1024 * 1024
 ROSTER_MAX_BODY = 96 * 1024 * 1024
 LOCK = threading.RLock()
 
-class EngineProcess:
+ENGINE_TIMEOUT = 'C++ policy timed out; restart the server. This run is invalid, not a game loss.'
+ENGINE_OVERSIZE = 'Engine response exceeded size bound.'
+
+class EngineProcess(NativePipe):
     def __init__(self, binary=None):
-        self.proc = subprocess.Popen([str(binary or BINARY)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0)
-        self.buffer=b''
+        super().__init__(binary or BINARY, 4_000_000)
     def command(self, text):
         if self.proc.poll() is not None:
             raise RuntimeError('C++ engine stopped; restart the server.')
-        self.proc.stdin.write((text + '\n').encode())
-        deadline=time.monotonic()+5
-        while b'\n' not in self.buffer:
-            remaining=deadline-time.monotonic()
-            if remaining<=0 or not select.select([self.proc.stdout],[],[],remaining)[0]:
+        try:
+            line = self.exchange((text + '\n').encode(), 5, write_timeout=ENGINE_TIMEOUT, read_timeout=ENGINE_TIMEOUT,
+                                 stopped='C++ engine returned no response.', oversize=ENGINE_OVERSIZE)
+        except RuntimeError as exc:
+            if str(exc) in (ENGINE_TIMEOUT, ENGINE_OVERSIZE):  # as before: only these discard the process
                 self.close()
-                raise RuntimeError('C++ policy timed out; restart the server. This run is invalid, not a game loss.')
-            chunk=os.read(self.proc.stdout.fileno(),65536)
-            if not chunk:raise RuntimeError('C++ engine returned no response.')
-            self.buffer+=chunk
-            if len(self.buffer)>4_000_000:
-                self.close();raise RuntimeError('Engine response exceeded size bound.')
-        line,self.buffer=self.buffer.split(b'\n',1)
+            raise
         value = json.loads(line)
         if 'error' in value:
             raise ValueError(value['error'])
         return value
-    def close(self):
-        if self.proc.poll() is None:
-            self.proc.terminate()
-            try:self.proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                self.proc.kill();self.proc.wait()
-        self.proc.stdin.close()
-        self.proc.stdout.close()
 
 def objective_build_id():
     import runpy
@@ -489,6 +474,10 @@ def roster_profiles_get(server, path, query):
 
 
 class Handler(SimpleHTTPRequestHandler):
+    # Fixed types for the files in web/: on Windows mimetypes reads the registry, where .js is
+    # sometimes text/plain, and nosniff plus the CSP below would then block every script.
+    extensions_map={**SimpleHTTPRequestHandler.extensions_map,'.html':'text/html','.js':'text/javascript',
+                    '.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png'}
     def __init__(self,*args,**kwargs):
         super().__init__(*args,directory=str(ROOT/'web'),**kwargs)
     def log_message(self,*args):
@@ -678,7 +667,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--port',type=int,default=8765);args=parser.parse_args()
-    if not BINARY.is_file():raise SystemExit('Run ./tools/build.sh first.')
+    if not executable(BINARY).is_file():raise SystemExit('Run ./tools/build.sh first (Windows: py tools/native_build.py).')
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler);server.engine=EngineProcess()
     print(f'RMUC tactics sandbox: http://127.0.0.1:{args.port} (local only; not official rules)',flush=True)
     try:server.serve_forever()

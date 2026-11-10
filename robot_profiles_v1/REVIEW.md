@@ -139,3 +139,17 @@ Reviewed source-audit byte SHA-256:
 - Real Chromium/browser rendering, pointer capture, mobile behavior, and download
   persistence: not run. Chromium is blocked in this environment; no retry or
   bypass is part of this review.
+
+## Re-pin note · 2026-11-10
+
+The identities above are the reviewed ones. For native Windows support the
+roster bridge's pipe transport moved to the shared `native_pipe.py`, which is
+now part of the roster source identity. Only the pins changed: native source
+identity `2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428`,
+catalog byte SHA-256
+`990ba7d8032eff4178e4884386ae3cfc219a94885c46b0b0152a87daf4abb2b2` (the
+catalog differs from the reviewed bytes only in `native_source_pin`). The
+configuration example was regenerated with `python -m robot_profiles_v1 resolve`
+from the unchanged selection example; it differs only in these pins and its
+`configuration_sha256`. Catalog values, sources and resolver behavior were not
+re-reviewed because they did not change.

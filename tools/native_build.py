@@ -17,6 +17,9 @@ not change generated code.) What changes:
 Environment: CXX (default g++), JOBS (default CPU count; JOBS=1 = serial),
 LDFLAGS (extra link-only flags, default none; tools/package_release.py uses it
 for static release binaries, objects and build IDs are unaffected).
+
+Windows: run `py tools/native_build.py` with MinGW-w64 GCC (for example MSYS2
+UCRT64) on PATH; programs are written as build/<name>.exe.
 """
 import concurrent.futures as futures
 import hashlib
@@ -33,6 +36,7 @@ OBJ = BUILD / 'obj'
 CXX = shlex.split(os.environ.get('CXX', 'g++'))
 LDFLAGS = shlex.split(os.environ.get('LDFLAGS', ''))
 JOBS = max(1, int(os.environ.get('JOBS', os.cpu_count() or 2)))
+EXE = '.exe' if os.name == 'nt' else ''
 
 
 def py(*args):
@@ -136,7 +140,9 @@ def tree_hash():
 
 
 def run(cmd, cwd=ROOT):
-    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    # Compiler diagnostics and test output are UTF-8 (the tests print section signs);
+    # decode them as such on every platform instead of the Windows ANSI code page.
+    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace')
 
 
 def main():
@@ -173,7 +179,7 @@ def main():
             return 1
         def link_one(item):
             out, _, flags, objs = item
-            return out, run([*CXX, *flags, *map(str, objs), *LDFLAGS, '-o', str(BUILD / out)])
+            return out, run([*CXX, *flags, *map(str, objs), *LDFLAGS, '-o', str(BUILD / (out + EXE))])
         for out, r in pool.map(link_one, links):
             if r.returncode:
                 failures.append(f'link {out}:\n{r.stderr}')
@@ -182,7 +188,7 @@ def main():
             return 1
         built = time.monotonic()
         tests = [out for out, test, _, _ in links if test]
-        results = list(pool.map(lambda t: (t, run([str(BUILD / t)])), tests))
+        results = list(pool.map(lambda t: (t, run([str(BUILD / (t + EXE))])), tests))
     for name, r in results:  # original order, complete output
         sys.stdout.write(r.stdout)
         sys.stderr.write(r.stderr)

@@ -4,3 +4,6 @@
 
 # Binary reference documents are stored byte-exact.
 *.pdf binary
+
+# Windows batch files must keep CRLF: cmd.exe mis-handles labels in LF-only files.
+*.bat text eol=crlf

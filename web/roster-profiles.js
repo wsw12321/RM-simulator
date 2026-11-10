@@ -3,7 +3,7 @@
 // observations, raw formats or the original roster response validator.
 (() => {
   const SCOPE='partial-parameter-projection-into-synthetic-roster-physics';
-  const PIN='2ee07a70036b4759ea409c704f95ba2de41a02794087c634fed744c943f82f37';
+  const PIN='2328a3428507c59f156683eb4afc14adcdb1ba5513115c899cb747ffbeeb1428';
   const PREFIX='rmuc-sourced2027-', packets=new WeakMap();
   let catalog=null, catalogLoading=false, catalogEpoch=0, prepared=null, active=null, activeStatus='unknown', activeRevision=-1;
   let choices=new Map(), chooserKey='', picker=null, selectionText='';

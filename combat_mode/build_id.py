@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ['src/sim.hpp', 'src/sim.cpp', 'src/directions.inc',
            'combat_mode/core.hpp', 'combat_mode/core.cpp', 'combat_mode/cli.cpp',
            'combat_mode/policy_sdk.hpp', 'combat_mode/example_policy.cpp',
-           'combat_mode/build_id.py', 'combat_mode/bridge.py']
+           'combat_mode/build_id.py', 'combat_mode/bridge.py', 'native_pipe.py']
 def build_id():
     return hashlib.sha256(b''.join(p.encode() + b'\0' + (ROOT / p).read_bytes() + b'\0'
                                   for p in SOURCES)).hexdigest()

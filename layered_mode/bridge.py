@@ -5,14 +5,11 @@ Python validates and transports data; movement and state hashes are native.
 import copy
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
-import select
-import subprocess
-import time
 
 from arena_format import ArenaValidationError, validate_document
+from native_pipe import NativePipe
 from .build_id import build_id
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -135,7 +132,7 @@ def validate_config(config, document):
 
 
 def sample():
-    return {'map': json.loads((ROOT / 'layered_mode/examples/synthetic_ramp_tunnel.json').read_text()), 'config': copy.deepcopy(DEFAULT_CONFIG)}
+    return {'map': json.loads((ROOT / 'layered_mode/examples/synthetic_ramp_tunnel.json').read_text(encoding='utf-8')), 'config': copy.deepcopy(DEFAULT_CONFIG)}
 
 
 def load_command(document, config):
@@ -164,35 +161,17 @@ def load_command(document, config):
     return ' '.join(map(str, tokens))
 
 
-class _Native:
+class _Native(NativePipe):
     def __init__(self, binary):
-        self.proc = subprocess.Popen([str(binary)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0)
-        os.set_blocking(self.proc.stdin.fileno(), False)
-        self.buffer = b''
+        super().__init__(binary, MAX_REPLAY_BYTES)
 
     def command(self, command):
-        deadline = time.monotonic() + 20
-        pending = memoryview((command + '\n').encode())
         try:
-            while pending:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0 or not select.select([], [self.proc.stdin], [], remaining)[1]:
-                    raise RuntimeError('Native layered engine timed out; run invalid.')
-                try:
-                    pending = pending[os.write(self.proc.stdin.fileno(), pending):]
-                except BlockingIOError:
-                    continue
-            while b'\n' not in self.buffer:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0 or not select.select([self.proc.stdout], [], [], remaining)[0]:
-                    raise RuntimeError('Native layered engine timed out; run invalid.')
-                chunk = os.read(self.proc.stdout.fileno(), 65536)
-                if not chunk:
-                    raise RuntimeError('Native layered engine stopped without a response.')
-                self.buffer += chunk
-                if len(self.buffer) > MAX_REPLAY_BYTES:
-                    raise RuntimeError('Native layered response exceeds size bound.')
-            line, self.buffer = self.buffer.split(b'\n', 1)
+            line = self.exchange((command + '\n').encode(), 20,
+                                 write_timeout='Native layered engine timed out; run invalid.',
+                                 read_timeout='Native layered engine timed out; run invalid.',
+                                 stopped='Native layered engine stopped without a response.',
+                                 oversize='Native layered response exceeds size bound.')
             result = json.loads(line)
             if type(result) is not dict:
                 raise RuntimeError('Invalid native layered response.')
@@ -202,15 +181,6 @@ class _Native:
         if 'error' in result:
             raise ValueError(result['error'])
         return result
-
-    def close(self):
-        if self.proc.poll() is None:
-            self.proc.terminate()
-            try:
-                self.proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                self.proc.kill(); self.proc.wait()
-        self.proc.stdin.close(); self.proc.stdout.close()
 
 
 class LayeredProcess:
