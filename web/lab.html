@@ -15,9 +15,9 @@
   </header>
   <section class="intro">
     <div>
-      <span class="eyebrow">RULES LAB · rmuc2027-rules-lab-v1 · official=false</span>
+      <span class="eyebrow">RULES LAB · rmuc2027-rules-lab-v2 · official=false</span>
       <h1>2027 规则全流程实验对局</h1>
-      <p>每方 1 重装 + 2 步兵 + 1 哨兵，内置脚本 AI 打满 7 分钟：经验升级、战亡复活、金币兑换、装配与 42mm、增益与防御、阵地控制与前哨站重建、胜负判定全部由带出处的规则模块结算。场地、机器人物理和 AI 是合成的，<b>不是完整官方比赛</b>。</p>
+      <p>每方 1 重装 + 2 步兵 + 1 哨兵，内置脚本 AI 打满 7 分钟：经验升级、战亡复活、金币兑换、装配与 42mm、增益与防御、阵地控制与前哨站重建、能量机关、飞镖、雷达标记、胜负判定全部由带出处的规则模块结算。场地、机器人物理和 AI 是合成的，能量机关 / 飞镖 / 雷达的“命中率”是代替瞄准、制导与视觉的合成参数，<b>不是完整官方比赛</b>。</p>
     </div>
   </section>
 
@@ -31,6 +31,10 @@
       <label>哨兵<select name="red-sentry"><option value="auto">自动（400 血）</option><option value="semi">半自动（200 血）</option></select></label>
       <label>最高装配难度<select name="red-asm"><option value="3">三级</option><option value="2">二级</option><option value="1">一级</option><option value="0">不装配</option></select></label>
       <label>保留金币<input name="red-reserve" type="number" min="0" max="5000" step="50" value="200"></label>
+      <label>能量机关命中率 %<input name="red-energy" type="number" min="0" max="100" step="5" value="70"></label>
+      <label>飞镖目标<select name="red-dart"><option value="outpost">前哨站</option><option value="base-fixed">基地固定目标</option><option value="base-random-fixed">基地随机固定目标</option><option value="base-random-moving">基地随机移动目标</option><option value="base-terminal-moving">基地末端移动目标</option><option value="none">不上场</option></select></label>
+      <label>飞镖命中率 %<input name="red-dart-acc" type="number" min="0" max="100" step="5" value="50"></label>
+      <label>雷达准确率 %<input name="red-radar" type="number" min="0" max="100" step="5" value="70"></label>
     </fieldset>
     <fieldset class="team blue" data-team="blue">
       <legend>蓝方</legend>
@@ -41,14 +45,28 @@
       <label>哨兵<select name="blue-sentry"><option value="auto">自动（400 血）</option><option value="semi">半自动（200 血）</option></select></label>
       <label>最高装配难度<select name="blue-asm"><option value="3">三级</option><option value="2">二级</option><option value="1">一级</option><option value="0">不装配</option></select></label>
       <label>保留金币<input name="blue-reserve" type="number" min="0" max="5000" step="50" value="200"></label>
+      <label>能量机关命中率 %<input name="blue-energy" type="number" min="0" max="100" step="5" value="70"></label>
+      <label>飞镖目标<select name="blue-dart"><option value="outpost">前哨站</option><option value="base-fixed">基地固定目标</option><option value="base-random-fixed">基地随机固定目标</option><option value="base-random-moving">基地随机移动目标</option><option value="base-terminal-moving">基地末端移动目标</option><option value="none">不上场</option></select></label>
+      <label>飞镖命中率 %<input name="blue-dart-acc" type="number" min="0" max="100" step="5" value="50"></label>
+      <label>雷达准确率 %<input name="blue-radar" type="number" min="0" max="100" step="5" value="70"></label>
     </fieldset>
     <div class="run-row">
       <label>时长（秒）<input name="duration" type="number" min="10" max="420" step="10" value="420"></label>
+      <label>随机种子<input name="seed" type="number" min="0" max="999999999" step="1" value="2027"></label>
       <label class="check"><input name="credits" type="checkbox" checked> 实验性每秒末控制度结算</label>
       <button id="run" class="primary" type="submit">运行对局</button>
+      <button id="sweep" type="button" title="同一配置、从当前种子起连续 20 个种子各打一局，只返回统计">同配置 20 局统计</button>
       <span id="status" class="status" role="status">尚未运行</span>
     </div>
+    <p class="hint">命中率 / 准确率为 0（或飞镖“不上场”）时该系统不参与。种子只改变合成随机数：弹道散布、能量机关瞄准、飞镖与雷达的命中判定。</p>
   </form>
+
+  <section id="sweep-result" class="sweep" hidden aria-live="polite">
+    <h3>同配置多局统计 <small id="sweep-range"></small></h3>
+    <div class="sweep-bar" role="img" aria-label="胜负分布"><i id="sweep-red"></i><i id="sweep-draw"></i><i id="sweep-blue"></i></div>
+    <p id="sweep-text"></p>
+    <p class="hint">各局只有合成随机数不同。场地、机器人物理与 AI 都是合成模型，这些统计<b>不代表真实比赛胜率</b>。</p>
+  </section>
 
   <section id="result" class="result" hidden>
     <div class="scoreboard">
@@ -65,11 +83,12 @@
           <input id="scrub" type="range" min="0" max="0" value="0" aria-label="时间轴">
           <span id="frame-time" class="mono">0.0 s</span>
         </div>
-        <p class="legend"><i class="sw red"></i>红方 <i class="sw blue"></i>蓝方 · H 重装 / I 步兵 / S 哨兵 · 白圈 = 无敌 · 黄圈 = 虚弱 · 灰 = 战亡读条 · 阵地底色 = 当前控制方（虚线 = 临时控制） · 青框 = 补给区 · 紫框 = 装配区</p>
+        <p class="legend"><i class="sw red"></i>红方 <i class="sw blue"></i>蓝方 · H 重装 / I 步兵 / S 哨兵 · 白圈 = 无敌 · 黄圈 = 虚弱 · 灰 = 战亡读条 · 阵地底色 = 当前控制方（虚线 = 临时控制） · 青框 = 补给区 · 紫框 = 装配区 · 黄虚框 = 能量机关击打点 · E = 能量机关（黄圈 = 正在激活，实心 = 增益中，双圈 = 大能量机关增益） · 紫点 = 被对方雷达标记易伤</p>
       </section>
       <aside>
         <section class="card"><h3>机器人</h3><div id="robots" class="robots"></div></section>
         <section class="card"><h3>阵地</h3><div id="positions" class="positions"></div></section>
+        <section class="card"><h3>能量机关 · 飞镖 · 雷达</h3><div id="systems" class="systems"></div></section>
         <section class="card events"><h3>事件 <small id="event-count"></small></h3><ol id="events"></ol></section>
       </aside>
     </div>

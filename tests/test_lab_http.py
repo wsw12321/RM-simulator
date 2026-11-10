@@ -29,13 +29,37 @@ class LabHttp(unittest.TestCase):
         config['duration_s'] = 60
         status, result = call('/api/lab/run', {'config': config, 'frame_every': 12})
         self.assertEqual(status, 200, result)
-        self.assertEqual(result['schema'], 'rmuc2027-rules-lab-result.v1')
+        self.assertEqual(result['schema'], 'rmuc2027-rules-lab-result.v2')
+        self.assertEqual(result['seed'], config['seed'])
+        self.assertEqual(len(result['field']['energy']), 2)
         self.assertIs(result['official'], False)
         self.assertEqual(result['ticks'], 3600)
         self.assertEqual(len(result['frames']), 300)
         self.assertEqual(result['config'], config)
         status, again = call('/api/lab/run', {'config': config, 'frame_every': 12})
         self.assertEqual(again['hash'], result['hash'])  # stateless and deterministic
+
+    def test_sweep(self):
+        _, example = call('/api/lab/example')
+        config = copy.deepcopy(example)
+        config['duration_s'] = 30
+        status, result = call('/api/lab/sweep', {'config': config, 'seeds': 3})
+        self.assertEqual(status, 200, result)
+        self.assertEqual(result['schema'], 'rmuc2027-rules-lab-sweep.v1')
+        self.assertIs(result['official'], False)
+        self.assertEqual(result['seeds'], 3)
+        self.assertEqual(len(result['matches']), 3)
+        self.assertEqual(sum(result['outcomes'].values()), 3)
+        self.assertNotIn('frames', result)
+        status, again = call('/api/lab/sweep', {'config': config, 'seeds': 3})
+        self.assertEqual(again, result)
+        bad = copy.deepcopy(config)
+        bad['blue']['dart_target'] = 'radar'
+        for body in ({'config': config, 'seeds': 1}, {'config': config, 'seeds': 51}, {'config': config, 'seeds': True},
+                     {'config': config}, {'config': config, 'seeds': 3, 'frame_every': 0}, {'config': bad, 'seeds': 3}):
+            status, result = call('/api/lab/sweep', body)
+            self.assertEqual(status, 400, body)
+            self.assertIn('error', result)
 
     def test_rejections(self):
         _, example = call('/api/lab/example')

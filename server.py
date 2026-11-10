@@ -441,19 +441,32 @@ LAB_MAX_BODY = 20_000
 LAB_LOCK = threading.Lock()
 
 
+LAB_SWEEP_MAX = 50  # matches per request; each is a full native run
+
+
 def lab_post(path, data):
-    """Stateless integrated rules lab run: validated config in, native result out."""
+    """Stateless integrated rules lab: validated config in, native result out.
+
+    /api/lab/run plays one match (optionally with frames); /api/lab/sweep plays
+    the same setup with consecutive seeds and returns only the tallies.
+    """
     from match_lab import cli as lab
-    if path != '/api/lab/run':
-        raise ValueError('Unknown rules lab endpoint.')
-    if set(data) != {'config', 'frame_every'}:
-        raise ValueError('Rules lab request needs exactly config and frame_every.')
-    frames = integer(data['frame_every'], 0, 600)
     try:
-        with LAB_LOCK:  # one native lab run at a time
-            return lab.run(lab.validate(data['config']), frames)
+        if path == '/api/lab/run':
+            if set(data) != {'config', 'frame_every'}:
+                raise ValueError('Rules lab request needs exactly config and frame_every.')
+            frames = integer(data['frame_every'], 0, 600)
+            with LAB_LOCK:  # one native lab run at a time
+                return lab.run(lab.validate(data['config']), frames)
+        if path == '/api/lab/sweep':
+            if set(data) != {'config', 'seeds'}:
+                raise ValueError('Rules lab sweep needs exactly config and seeds.')
+            seeds = integer(data['seeds'], 2, LAB_SWEEP_MAX)
+            with LAB_LOCK:
+                return lab.sweep(lab.validate(data['config']), seeds)
     except lab.LabError as exc:
         raise ValueError(str(exc)) from exc
+    raise ValueError('Unknown rules lab endpoint.')
 
 
 def roster_profiles_get(server, path, query):
@@ -597,7 +610,7 @@ class Handler(SimpleHTTPRequestHandler):
             data=json.loads(self.rfile.read(length),**options)
             if not isinstance(data,dict):raise ValueError('Expected JSON object.')
             if self.path.startswith('/api/lab/'):
-                if self.path!='/api/lab/run':
+                if self.path not in ('/api/lab/run','/api/lab/sweep'):
                     return self.respond({'error':'Not found'},404)
                 return self.respond(lab_post(self.path,data))
             if self.path.startswith('/api/arena/'):

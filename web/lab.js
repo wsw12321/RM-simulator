@@ -11,7 +11,16 @@
     '42mm-confirmed': '42mm 确认射击', 'temporary-control': '临时控制', 'full-control': '完全控制',
     'outpost-destroyed': '前哨站被击毁', 'outpost-rebuilt': '前哨站重建', 'base-destroyed': '基地被击毁',
     'posture': '哨兵姿态', 'chassis-cutoff': '底盘断电', 'match-start': '比赛开始', 'match-end': '比赛结束',
+    'energy-chance': '获得能量机关激活机会', 'energy-trigger': '触发能量机关', 'energy-activated': '激活能量机关',
+    'energy-failed': '能量机关激活失败', 'energy-ended': '能量机关增益结束', 'energy-voided': '能量机关增益被清除',
+    'energy-suspended': '能量机关增益暂时失效', 'dart-gate': '飞镖闸门', 'dart-launch': '发射飞镖', 'dart-hit': '飞镖命中',
+    'dart-miss': '飞镖未命中', 'base-armor': '基地护甲展开', 'radar-marked': '被雷达标记易伤', 'radar-double': '雷达双倍易伤',
   };
+  // Bookkeeping events are left out of the feed so that the highlights stay readable.
+  const QUIET = new Set(['posture', 'purchase', 'energy-chance', 'dart-gate', 'radar-marked']);
+  const ENERGY_STATE = ['未激活', '正在激活', '小能量机关增益中', '大能量机关增益中', '', '', '小能量机关增益被飞镖压制', '大能量机关增益被飞镖压制'];
+  const GATE_STATE = ['闸门关闭', '闸门开启中', '闸门已开启', '闸门关闭中'];
+  const SWEEP_SEEDS = 20;
   const OUTCOME = { 'red-wins': '红方胜', 'blue-wins': '蓝方胜', 'draw': '平局', 'ongoing': '未到终局', 'unresolved': '待裁定' };
   const REASON = {
     'base-destroyed': '基地被击毁', 'timeout-control': '420 秒 · 控制度', 'timeout-attack-damage': '420 秒 · 攻击伤害',
@@ -33,13 +42,40 @@
       sentry: value(`${side}-sentry`),
       max_assembly: Number.parseInt(value(`${side}-asm`), 10),
       gold_reserve: Number.parseInt(value(`${side}-reserve`), 10),
+      energy_accuracy: Number.parseInt(value(`${side}-energy`), 10),
+      dart_target: value(`${side}-dart`),
+      dart_accuracy: Number.parseInt(value(`${side}-dart-acc`), 10),
+      radar_accuracy: Number.parseInt(value(`${side}-radar`), 10),
     });
     return {
       duration_s: Number.parseInt(value('duration'), 10),
       credits: $('config').elements.credits.checked,
+      seed: Number.parseInt(value('seed'), 10),
       red: team('red'),
       blue: team('blue'),
     };
+  }
+  // Returns a message for the first field the form itself can tell is wrong.
+  function configProblem(config, extraSeeds = 0) {
+    const whole = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+    if (!whole(config.duration_s, 1, 420)) return '时长需为 1–420 秒的整数。';
+    if (!whole(config.seed, 0, 999999999 - extraSeeds)) return `随机种子需为 0–${999999999 - extraSeeds} 的整数。`;
+    for (const side of ['red', 'blue']) {
+      const t = config[side];
+      if (!whole(t.gold_reserve, 0, 5000)) return '保留金币需为 0–5000 的整数。';
+      if (![t.energy_accuracy, t.dart_accuracy, t.radar_accuracy].every((v) => whole(v, 0, 100))) return '命中率 / 准确率需为 0–100 的整数。';
+    }
+    return '';
+  }
+  async function post(path, body) {
+    const response = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Sandbox-Client': '1' },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    return data;
   }
 
   function setStatus(text, error = false) {
@@ -50,22 +86,20 @@
   async function run(event) {
     event.preventDefault();
     const config = readConfig();
-    if (!Number.isInteger(config.duration_s) || config.duration_s < 1 || config.duration_s > 420) {
-      setStatus('时长需为 1–420 秒的整数。', true);
+    const problem = configProblem(config);
+    if (problem) {
+      setStatus(problem, true);
       return;
     }
     $('run').disabled = true;
+    $('sweep').disabled = true;
     setStatus('本机原生引擎计算中…');
     stop();
     try {
-      const response = await fetch('/api/lab/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Sandbox-Client': '1' },
-        body: JSON.stringify({ config, frame_every: FRAME_EVERY }),
-      });
-      const data = await response.json();
-      if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
-      if (!Array.isArray(data.frames) || !data.field || data.official !== false) throw new Error('结果格式不符合 rmuc2027-rules-lab-result.v1。');
+      const data = await post('/api/lab/run', { config, frame_every: FRAME_EVERY });
+      if (data.schema !== 'rmuc2027-rules-lab-result.v2' || !Array.isArray(data.frames) || !data.field || data.official !== false) {
+        throw new Error('结果格式不符合 rmuc2027-rules-lab-result.v2。');
+      }
       result = data;
       frame = 0;
       $('scrub').max = String(Math.max(0, data.frames.length - 1));
@@ -80,6 +114,43 @@
       setStatus(`运行失败：${error.message}`, true);
     } finally {
       $('run').disabled = false;
+      $('sweep').disabled = false;
+    }
+  }
+
+  // Same setup, SWEEP_SEEDS consecutive seeds: only the tallies come back.
+  async function sweep() {
+    const config = readConfig();
+    const problem = configProblem(config, SWEEP_SEEDS - 1);
+    if (problem) {
+      setStatus(problem, true);
+      return;
+    }
+    $('run').disabled = true;
+    $('sweep').disabled = true;
+    setStatus(`本机原生引擎连续计算 ${SWEEP_SEEDS} 局…`);
+    try {
+      const data = await post('/api/lab/sweep', { config, seeds: SWEEP_SEEDS });
+      if (data.schema !== 'rmuc2027-rules-lab-sweep.v1' || data.official !== false) throw new Error('统计格式不符合 rmuc2027-rules-lab-sweep.v1。');
+      const o = data.outcomes;
+      const share = (n) => `${(100 * n) / data.seeds}%`;
+      $('sweep-red').style.width = share(o['red-wins']);
+      $('sweep-draw').style.width = share(data.seeds - o['red-wins'] - o['blue-wins']);
+      $('sweep-blue').style.width = share(o['blue-wins']);
+      $('sweep-range').textContent = `seed ${config.seed}–${config.seed + data.seeds - 1} · ${data.seeds} 局`;
+      const reasons = Object.keys(data.reasons).sort().map((k) => `${REASON[k] || k} ${data.reasons[k]} 局`).join('，');
+      const other = data.seeds - o['red-wins'] - o['blue-wins'] - o.draw;
+      $('sweep-text').textContent = `红方胜 ${o['red-wins']} 局 · 蓝方胜 ${o['blue-wins']} 局 · 平局 ${o.draw} 局${other ? ` · 未到终局 ${other} 局` : ''}。`
+        + `结束方式：${reasons}。平均基地血量 红 ${data.mean.base_hp[0]} / 蓝 ${data.mean.base_hp[1]}，`
+        + `平均控制度 红 ${data.mean.control_score[0]} / 蓝 ${data.mean.control_score[1]}，`
+        + `平均攻击伤害 红 ${data.mean.attack_damage[0]} / 蓝 ${data.mean.attack_damage[1]}。`;
+      $('sweep-result').hidden = false;
+      setStatus(`统计完成：${data.seeds} 局。`);
+    } catch (error) {
+      setStatus(`统计失败：${error.message}`, true);
+    } finally {
+      $('run').disabled = false;
+      $('sweep').disabled = false;
     }
   }
 
@@ -123,8 +194,30 @@
     });
     field.supply.forEach((r) => rect(r, '#4cc9c0', '#4cc9c010'));
     field.assembly.forEach((r) => rect(r, '#b38cf0', '#b38cf010'));
+    field.energy.forEach((e) => rect(e.zone, '#e8c95a', '#e8c95a0c', [3, 4]));
     ctx.fillStyle = '#2b3846';
     field.walls.forEach((w) => ctx.fillRect(sx(w[0]), sy(w[1]), sx(w[2] - w[0]), sy(w[3] - w[1])));
+    // Energy mechanisms on the two faces of the central block.
+    field.energy.forEach((e, k) => {
+      const code = line ? line.energy[k] : 0;
+      const cx = sx(e.pos[0]) + (k ? 17 : -17);
+      const cy = sy(e.pos[1]);
+      const colour = TEAM[k ? 'blue' : 'red'];
+      const buffed = code === 2 || code === 3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+      ctx.fillStyle = buffed ? colour : code >= 6 ? '#55606c' : '#141d27';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = code === 1 ? '#f0c46a' : colour;
+      ctx.stroke();
+      if (code === 3 || code === 7) { ctx.beginPath(); ctx.arc(cx, cy, 16, 0, Math.PI * 2); ctx.stroke(); }
+      ctx.fillStyle = buffed ? '#0c1016' : '#e9f0f5';
+      ctx.font = 'bold 11px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('E', cx, cy + 4);
+      ctx.textAlign = 'left';
+    });
     field.structures.forEach((s, i) => {
       const hp = line ? (i < 2 ? line.outpost[i] : line.base[i - 2]) : (i < 2 ? 1000 : 10000);
       const owner = line && i < 2 ? line.outpost_owner[i] : (i % 2 ? 'blue' : 'red');
@@ -161,6 +254,12 @@
       ctx.textAlign = 'center';
       ctx.fillText(meta.role === 'heavy' ? 'H' : meta.role === 'sentry' ? 'S' : 'I', sx(r[0]), sy(r[1]) + 4);
       ctx.textAlign = 'left';
+      if (alive && line && line.robots[i][4] > 0) { // marked vulnerable by the opposing radar
+        ctx.beginPath();
+        ctx.arc(sx(r[0]) + sx(meta.radius) * 0.75, sy(r[1]) - sx(meta.radius) * 0.75, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#e07be0';
+        ctx.fill();
+      }
     });
   }
 
@@ -180,7 +279,7 @@
     const robots = $('robots');
     robots.replaceChildren();
     result.field.robots.forEach((meta, i) => {
-      const stats = line ? line.robots[i] : [0, 1, 1, 1];
+      const stats = line ? line.robots[i] : [0, 1, 1, 1, 0];
       const row = document.createElement('div');
       row.className = `robot ${meta.team ? 'blue' : 'red'}${stats[3] ? '' : ' dead'}`;
       const badge = document.createElement('b');
@@ -195,7 +294,7 @@
       middle.append(bar);
       const info = document.createElement('span');
       info.className = 'meta';
-      info.textContent = `Lv${stats[2]} ${stats[0]}/${stats[1]}`;
+      info.textContent = `Lv${stats[2]} ${stats[0]}/${stats[1]}${stats[4] > 0 ? ` · 易伤 ${stats[4]}%` : ''}`;
       row.append(badge, middle, info);
       robots.append(row);
     });
@@ -208,10 +307,27 @@
       cell.textContent = `${z.id}：${state.startsWith('red') ? '红' : '蓝'}方${state.endsWith('full') ? '完全' : '临时'}控制`;
       positions.append(cell);
     });
+    const systems = $('systems');
+    systems.replaceChildren();
+    const past = result.events.filter((e) => e.t <= ms);
+    ['red', 'blue'].forEach((side, k) => {
+      const count = (kind) => past.filter((e) => e.kind === kind && e.subject === side).length;
+      const row = document.createElement('div');
+      row.className = side;
+      const name = document.createElement('b');
+      name.textContent = side === 'red' ? '红方' : '蓝方';
+      const double = past.filter((e) => e.kind === 'radar-double' && e.subject === side && ms < e.t + 30000).length > 0;
+      row.append(name, ` 能量机关：${line ? ENERGY_STATE[line.energy[k]] : ENERGY_STATE[0]}（已激活 ${count('energy-activated')} 次）`,
+        document.createElement('br'),
+        `飞镖：${line ? GATE_STATE[line.dart[k]] : GATE_STATE[0]}，命中 ${count('dart-hit')} / 发射 ${count('dart-launch')}`,
+        document.createElement('br'),
+        `雷达：双倍易伤 ${count('radar-double')} 次${double ? '（生效中）' : ''} · 己方基地护甲${count('base-armor') ? '已展开' : '闭合'}`);
+      systems.append(row);
+    });
     const list = $('events');
     list.replaceChildren();
-    const visible = result.events.filter((e) => e.t <= ms && e.kind !== 'posture' && e.kind !== 'purchase');
-    $('event-count').textContent = `${visible.length} 条（不含姿态 / 兑换）`;
+    const visible = past.filter((e) => !QUIET.has(e.kind));
+    $('event-count').textContent = `${visible.length} 条（不含姿态 / 兑换 / 闸门 / 雷达标记）`;
     visible.slice(-80).reverse().forEach((e) => {
       const item = document.createElement('li');
       const time = document.createElement('time');
@@ -260,6 +376,7 @@
   }
 
   $('config').addEventListener('submit', run);
+  $('sweep').addEventListener('click', sweep);
   $('play').addEventListener('click', () => (playing ? stop() : play()));
   $('scrub').addEventListener('input', () => {
     frame = Number.parseInt($('scrub').value, 10) || 0;

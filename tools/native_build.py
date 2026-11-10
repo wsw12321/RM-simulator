@@ -109,7 +109,7 @@ def plan():
           ('radar_rule_tests', True, flags, [buffs, radar, 'tests/radar_rule_tests.cpp']),
           ('dart_rule_tests', True, flags, [buffs, dart, 'tests/dart_rule_tests.cpp'])]
     lab = ['-std=c++20', '-O2', '-Wall', '-Wextra', '-Wpedantic', '-Werror', '-Isrc', f'-DMATCH_LAB_BUILD_ID="{py("match_lab/build_id.py")}"']
-    lsrc = ['src/sim.cpp', 'rules/rmuc2027_buff_v1/buff_rules.cpp', capture, damage, 'rules/rmuc2027_economy_v1/economy_rules.cpp', growth, heat,
+    lsrc = ['src/sim.cpp', buffs, capture, damage, dart, 'rules/rmuc2027_economy_v1/economy_rules.cpp', energy, growth, heat, radar,
             'rules/rmuc2027_lifecycle_v1/lifecycle_rules.cpp', 'rules/rmuc2027_limits_v1/limits_rules.cpp',
             'rules/rmuc2027_position_v1/position_rules.cpp', match, 'match_lab/engine.cpp']
     T += [('rmuc_match_lab', False, lab, lsrc + ['match_lab/cli.cpp']),
