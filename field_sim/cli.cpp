@@ -37,7 +37,8 @@ Value init(const Value& req) {
             if (used[static_cast<std::size_t>(team)] >= slots.size()) throw json::Error("no free start pose for team " + team_name);
             pose = slots[used[static_cast<std::size_t>(team)]++];
         }
-        next->add_robot(r.at("id").as_string(), team, default_vehicle(), pose);
+        const Value* vehicle = r.find("vehicle");
+        next->add_robot(r.at("id").as_string(), team, vehicle ? vehicle_from_json(*vehicle) : default_vehicle(), pose);
     }
     engine = std::move(next);
     Value o = Value::object();
@@ -112,6 +113,36 @@ Value handle(const std::string& line) {
         Value o = Value::object();
         o.set("ok", true);
         o.set("state", engine->state_json());
+        return o;
+    }
+    if (cmd == "vehicle_schema") {
+        Value o = Value::object();
+        o.set("ok", true);
+        o.set("schema", vehicle_schema_json());
+        return o;
+    }
+    if (cmd == "vehicle_check") {
+        // Validates and normalises a vehicle and reports what the rule tables give it.
+        VehicleParams v = vehicle_from_json(req.at("vehicle"));
+        Value o = Value::object();
+        o.set("ok", true);
+        o.set("vehicle", vehicle_to_json(v));
+        Value levels = Value::array();
+        bool armed = v.rules.robot_class == RobotClass::Heavy && v.launcher.caliber == Caliber::Mm42;
+        for (int level : {1, 5, 10}) {
+            if (v.rules.robot_class != RobotClass::Infantry && level != 1) break;   // only infantry has levels (§5.5)
+            Attributes a = attributes(v, level, armed);
+            Value row = Value::object();
+            row.set("level", level);
+            row.set("max_hp", a.max_hp);
+            row.set("chassis_power_limit_w", a.chassis_power_limit);
+            row.set("heat_limit", a.heat_limit);
+            row.set("cooling_per_s", a.cooling_per_second);
+            row.set("muzzle_speed_limit_mps", a.muzzle_speed_limit);
+            row.set("initial_allowance", a.initial_allowance);
+            levels.push(row);
+        }
+        o.set("attributes", levels);
         return o;
     }
     if (cmd == "meta") {

@@ -27,7 +27,6 @@ double wrap_angle(double a) {
     return a - PI;
 }
 std::string build_id() { return FIELD_SIM_BUILD_ID; }
-VehicleParams default_vehicle() { return VehicleParams{}; }
 
 bool Zone::contains(double x, double y) const {
     if (x < min_x || x > max_x || y < min_y || y > max_y) return false;
@@ -185,6 +184,8 @@ std::size_t Engine::add_robot(const std::string& id, int team, const VehiclePara
     r.y = pose.y;
     r.yaw = wrap_angle(pose.yaw);
     r.z = field_.terrain.support(r.x, r.y, -1.0e6);
+    r.attr = attributes(veh, r.level, veh.rules.robot_class == RobotClass::Heavy && veh.launcher.caliber == Caliber::Mm42);
+    r.power_limit = r.attr.chassis_power_limit;
     r.gimbal_yaw = r.gimbal_yaw_target = r.yaw;
     r.cap_energy = veh.chassis.supercap_energy;
     robots_.push_back(std::move(r));
@@ -262,7 +263,7 @@ void Engine::drive(Robot& r) {
     const ChassisParams& c = r.veh.chassis;
     const Terrain& t = field_.terrain;
     bool powered = r.power.snapshot().chassis_enabled(time_ms());
-    double limit = r.veh.rules.chassis_power_limit;
+    double limit = r.power_limit;
     double cy = std::cos(r.yaw), sy = std::sin(r.yaw);
     double z_ref = r.z + c.max_step + 0.02;
     const double e = 0.1;
@@ -464,7 +465,7 @@ void Engine::referee_power(Robot& r) {
     r.window_energy = 0;
     r.measured_power = average;
     auto result = r.power.settle(time_ms(), static_cast<lim::I>(std::llround(average * 1000.0)),
-                                 static_cast<lim::I>(std::llround(r.veh.rules.chassis_power_limit * 1000.0)));
+                                 static_cast<lim::I>(std::llround(r.power_limit * 1000.0)));
     if (std::holds_alternative<lim::Error>(result))
         throw std::runtime_error("chassis power settlement failed: " + std::string(lim::error_name(std::get<lim::Error>(result))));
 }
@@ -498,6 +499,16 @@ json::Value Engine::robot_json(const Robot& r) const {
     o.set("id", r.id);
     o.set("team", r.team == 0 ? "red" : "blue");
     o.set("vehicle", r.veh.name);
+    static const char* const classes[] = {"infantry", "heavy", "sentry"};
+    o.set("class", classes[static_cast<int>(r.veh.rules.robot_class)]);
+    o.set("level", r.level);
+    json::Value attr = json::Value::object();
+    attr.set("max_hp", r.attr.max_hp);
+    attr.set("chassis_power_limit_w", r.attr.chassis_power_limit);
+    attr.set("heat_limit", r.attr.heat_limit);
+    attr.set("cooling_per_s", r.attr.cooling_per_second);
+    attr.set("muzzle_speed_limit_mps", r.attr.muzzle_speed_limit);
+    o.set("attributes", attr);
     o.set("x", r.x); o.set("y", r.y); o.set("z", r.z);
     o.set("yaw", r.yaw); o.set("pitch", r.pitch); o.set("roll", r.roll);
     o.set("vx", r.vx); o.set("vy", r.vy); o.set("vz", r.vz); o.set("wz", r.wz);
@@ -514,7 +525,7 @@ json::Value Engine::robot_json(const Robot& r) const {
     pw.set("motor_w", r.motor_power);
     pw.set("battery_w", r.battery_power);
     pw.set("measured_w", r.measured_power);
-    pw.set("limit_w", r.veh.rules.chassis_power_limit);
+    pw.set("limit_w", r.power_limit);
     pw.set("buffer_j", p.buffer_uj * 1e-6);
     pw.set("supercap_j", r.cap_energy);
     pw.set("chassis_enabled", p.chassis_enabled(time_ms()));

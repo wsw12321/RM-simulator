@@ -11,7 +11,7 @@
 <main class="field-app">
   <header class="app-header">
     <a class="brand" href="/"><span class="brand-mark">R</span><span>TACTICS <b>LAB</b><small>RMUC 2027 官方场地仿真 / LOCAL ONLY</small></span></a>
-    <a class="back-link" href="/">返回战术沙盒 ↗</a>
+    <span><a class="back-link" href="garage.html">车库 ↗</a>　<a class="back-link" href="/">返回战术沙盒 ↗</a></span>
   </header>
   <section class="intro">
     <span class="eyebrow">OFFICIAL FIELD · 1:1</span>
@@ -36,6 +36,15 @@
     </div>
     <aside>
       <section class="card">
+        <h3>对局设置 <small>每队至多 4 台</small></h3>
+        <table class="lineup"><tbody id="lineup"></tbody></table>
+        <div class="lineup-actions">
+          <button id="add-red">＋红方</button><button id="add-blue">＋蓝方</button>
+          <button class="primary" id="apply">应用并重置</button>
+        </div>
+        <p class="hint">车辆来自<a href="garage.html">车库</a>：内置默认车辆和你保存的车辆。</p>
+      </section>
+      <section class="card">
         <h3>所选机器人 <small id="sel-id">—</small></h3>
         <dl class="telemetry">
           <dt>位置 x / y</dt><dd id="t-pos">—</dd>
@@ -45,6 +54,7 @@
           <dt>云台 偏航 / 俯仰</dt><dd id="t-gimbal">—</dd>
           <dt>底盘功率 / 上限</dt><dd id="t-power">—</dd>
           <dt>缓冲能量</dt><dd id="t-buffer">—</dd>
+          <dt>规则属性</dt><dd id="t-attr">—</dd>
           <dt>状态</dt><dd id="t-state">—</dd>
           <dt>所在增益点</dt><dd id="t-zones">—</dd>
         </dl>

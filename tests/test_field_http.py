@@ -59,9 +59,59 @@ class FieldHttp(unittest.TestCase):
         session = {'robots': [{'id': 'solo', 'team': 'blue'}]}
         status, out = call('/api/field/reset', session)
         self.assertEqual(status, 200, out)
-        self.assertEqual(out['session'], session)
+        robot = out['session']['robots'][0]
+        self.assertEqual((robot['id'], robot['team'], robot['vehicle'], robot['vehicle_name']), ('solo', 'blue', 'builtin:infantry_mecanum', '麦轮步兵（默认）'))
+        self.assertRegex(robot['vehicle_hash'], r'^[0-9a-f]{64}$')
         self.assertEqual([r['id'] for r in out['state']['robots']], ['solo'])
         self.assertEqual(out['state']['tick'], 0)
+
+    def test_vehicles_and_garage(self):
+        status, listing = call('/api/field/vehicles')
+        self.assertEqual(status, 200, listing)
+        self.assertEqual(listing['default'], 'builtin:infantry_mecanum')
+        self.assertGreaterEqual(len(listing['vehicles']), 7)
+        status, meta = call('/api/field/vehicles/schema')
+        self.assertEqual(status, 200)
+        self.assertEqual(len(meta['schema']['fields']), 60)
+        self.assertIn('chassis.max_speed_mps', meta['labels']['fields'])
+        status, entry = call('/api/field/vehicles/get', {'id': 'builtin:infantry_omni'})
+        self.assertEqual(status, 200, entry)
+        self.assertTrue(entry['readonly'])
+        vehicle = entry['vehicle']
+        vehicle['name'] = 'http 测试车'
+        vehicle['chassis']['max_speed_mps'] = 2.0
+        vehicle['chassis']['max_lateral_speed_mps'] = 2.0
+        status, checked = call('/api/field/vehicles/check', {'vehicle': vehicle})
+        self.assertEqual(status, 200, checked)
+        self.assertEqual(checked['vehicle'], vehicle)
+        for leftover in [v for v in listing['vehicles'] if v.get('name') == vehicle['name']]:
+            call('/api/field/vehicles/delete', {'id': leftover['id']})
+        status, saved = call('/api/field/vehicles/save', {'vehicle': vehicle, 'id': None})
+        self.assertEqual(status, 200, saved)
+        self.addCleanup(call, '/api/field/vehicles/delete', {'id': saved['id']})
+        self.assertEqual(saved['hash'], checked['hash'])
+        status, out = call('/api/field/reset', {'robots': [{'id': 'R1', 'team': 'red', 'vehicle': saved['id']}]})
+        self.assertEqual(status, 200, out)
+        self.assertEqual(out['session']['robots'][0]['vehicle_hash'], saved['hash'])
+        self.assertEqual(out['state']['robots'][0]['vehicle'], 'http 测试车')
+        status, out = call('/api/field/step', {'ticks': 200, 'commands': {'R1': {'chassis': {'vx': 9}}}})
+        self.assertAlmostEqual(out['state']['robots'][0]['vx'], 2.0, places=6)
+        # rejections: bad parameter, read-only built-in, unknown id, wrong shapes
+        vehicle['chassis']['mass_kg'] = 500
+        status, out = call('/api/field/vehicles/check', {'vehicle': vehicle})
+        self.assertEqual(status, 400)
+        self.assertIn('chassis.mass_kg', out['error'])
+        self.assertEqual(call('/api/field/vehicles/save', {'vehicle': entry['vehicle'], 'id': 'builtin:infantry_omni'})[0], 400)
+        self.assertEqual(call('/api/field/vehicles/delete', {'id': 'builtin:infantry_omni'})[0], 400)
+        self.assertEqual(call('/api/field/vehicles/get', {'id': 'garage:000000000000'})[0], 400)
+        self.assertEqual(call('/api/field/vehicles/save', {'vehicle': vehicle})[0], 400)
+        self.assertEqual(call('/api/field/vehicles/get', {})[0], 400)
+        self.assertEqual(call('/api/field/vehicles/rename', {'id': 'x'})[0], 404)
+        self.assertEqual(call('/api/field/reset', {'robots': [{'id': 'R1', 'team': 'red', 'vehicle': 'garage:000000000000'}]})[0], 400)
+        self.assertEqual(call('/api/field/vehicles/delete', {'id': saved['id']})[0], 200)
+        self.assertEqual(call('/api/field/vehicles/get', {'id': saved['id']})[0], 400)
+        for page in ('/garage.html', '/garage.js', '/garage.css'):
+            self.assertEqual(call(page, raw=True)[0], 200)
 
     def test_rejections(self):
         before = call('/api/field/state')[1]

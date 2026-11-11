@@ -29,3 +29,8 @@ aside{display:flex;flex-direction:column;gap:12px}
 .telemetry{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:11px}
 .telemetry dt{color:var(--muted)}.telemetry dd{margin:0;text-align:right;font:11px ui-monospace,monospace;color:#d5e0e8;overflow-wrap:anywhere}
 @media (max-width:1000px){.workspace{grid-template-columns:1fr}.field-app{padding:16px}}
+.lineup{width:100%;border-collapse:collapse;font-size:11px}.lineup td{padding:3px 2px}.lineup td:first-child{font:700 11px ui-monospace,monospace;width:34px}
+.lineup .red{color:var(--red)}.lineup .blue{color:var(--blue)}.lineup select{width:100%;padding:5px 6px;font-size:11px}
+.lineup button{padding:4px 8px;font-size:11px}
+.lineup-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.lineup-actions button{padding:7px 10px}
+.hint{font-size:10px;color:#7e91a1;margin:8px 0 0}.hint a{color:var(--accent)}

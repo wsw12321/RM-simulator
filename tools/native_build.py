@@ -128,7 +128,7 @@ def plan():
     T += [('rmuc_match_lab', False, lab, lsrc + ['match_lab/cli.cpp']),
           ('match_lab_tests', True, lab, lsrc + ['tests/match_lab_tests.cpp'])]
     ff = ['-std=c++20', '-O2', '-Wall', '-Wextra', '-Wpedantic', '-Werror', f'-DFIELD_SIM_BUILD_ID="{py("field_sim/build_id.py")}"']
-    fsrc = [heat, 'rules/rmuc2027_limits_v1/limits_rules.cpp', 'field_sim/terrain.cpp', 'field_sim/engine.cpp']
+    fsrc = [heat, 'rules/rmuc2027_limits_v1/limits_rules.cpp', growth, 'field_sim/terrain.cpp', 'field_sim/vehicle.cpp', 'field_sim/engine.cpp']
     T += [('rmuc_field', False, ff, fsrc + ['field_sim/cli.cpp']),
           ('field_sim_tests', True, ff, fsrc + ['tests/field_sim_tests.cpp'])]
     return T

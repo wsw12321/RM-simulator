@@ -322,3 +322,23 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
 - `.gitattributes` keeps `*.bin` byte-exact; the release smoke test covers the new page
   and engine.
 
+## 2026-11-11 · Vehicle configuration and garage (field_sim, plan item 2)
+
+- Vehicle documents `rmuc-vehicle.v1`: 60 tunable parameters (chassis, gimbal, launcher,
+  camera, lidar) plus an armour layout, defined once in the parameter table of
+  `field_sim/vehicle.cpp` with JSON key, unit, range and default. Schema, validation,
+  defaults and the generated form all come from that table; consistency rules cover
+  geometry, armour fit and launcher calibre per class.
+- Rule-given attributes (max HP, chassis power limit, heat limit and cooling, muzzle
+  speed limit, initial allowance) are not configurable: they follow from the class and
+  rule choices through `growth_v1`. The engine now uses the table value for the chassis
+  power limit instead of a fixed 80 W.
+- Seven built-in read-only default vehicles in `field_sim/vehicles/`.
+- Garage (`field_sim/garage.py`): save, overwrite, delete, list; one JSON file per vehicle
+  under `user_data/vehicles/` (ignored by git; `--data-dir` / `RMUC_DATA_DIR`), validated
+  only by the native engine, damaged files listed as invalid instead of loaded.
+- Runs select a garage vehicle per robot; the session records vehicle id, name and
+  content hash. `/api/field/vehicles*` endpoints, `web/garage.html` editor with import /
+  export, and a line-up panel in `web/field.html`.
+- The field_sim build ID changed (new sources); there is no stored replay format yet.
+

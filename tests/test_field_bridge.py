@@ -5,6 +5,7 @@ import json
 import math
 import struct
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -53,16 +54,21 @@ class FieldData(unittest.TestCase):
 
 class Session(unittest.TestCase):
     def setUp(self):
-        self.sim = bridge.FieldSim()
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.sim = bridge.FieldSim(garage_dir=tmp.name)
         self.addCleanup(self.sim.close)
 
     def test_validate_session(self):
         ok = {'robots': [{'id': 'a', 'team': 'red'}]}
-        self.assertEqual(bridge.validate_session(ok), ok)
+        self.assertEqual(bridge.validate_session(ok), {'robots': [{'id': 'a', 'team': 'red', 'vehicle': 'builtin:infantry_mecanum'}]})
+        named = {'robots': [{'id': 'a', 'team': 'red', 'vehicle': 'builtin:sentry_auto'}]}
+        self.assertEqual(bridge.validate_session(named), named)
         bad = [None, {}, {'robots': []}, {'robots': [{'id': 'a'}]}, {'robots': [{'id': 'a', 'team': 'green'}]},
                {'robots': [{'id': 'a b', 'team': 'red'}]}, {'robots': [{'id': 'a', 'team': 'red'}, {'id': 'a', 'team': 'blue'}]},
                {'robots': [{'id': f'r{i}', 'team': 'red'} for i in range(5)]}, {'robots': [{'id': 1, 'team': 'red'}]},
-               {'robots': [{'id': 'a', 'team': 'red', 'x': 1}]}, {'robots': ok['robots'], 'extra': 1}]
+               {'robots': [{'id': 'a', 'team': 'red', 'x': 1}]}, {'robots': ok['robots'], 'extra': 1},
+               {'robots': [{'id': 'a', 'team': 'red', 'vehicle': 5}]}, {'robots': [{'id': 'a', 'team': 'red', 'vehicle': 'x' * 65}]}]
         for case in bad:
             with self.assertRaises(bridge.FieldError, msg=case):
                 bridge.validate_session(case)
@@ -123,8 +129,8 @@ class Session(unittest.TestCase):
         real = bridge.build_id
         bridge.build_id = lambda: 'not-the-binary'
         try:
-            with self.assertRaises(RuntimeError):
-                bridge.FieldSim()
+            with self.assertRaises(RuntimeError), tempfile.TemporaryDirectory() as tmp:
+                bridge.FieldSim(garage_dir=tmp)
         finally:
             bridge.build_id = real
 

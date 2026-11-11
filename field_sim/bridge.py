@@ -11,6 +11,7 @@ import threading
 from pathlib import Path
 
 from native_pipe import NativePipe, executable
+from field_sim.garage import DEFAULT_VEHICLE, Garage, GarageError
 
 ROOT = Path(__file__).resolve().parents[1]
 BINARY = ROOT / 'build/rmuc_field'
@@ -22,8 +23,8 @@ MAX_ROBOTS = 8
 MAX_STEP_TICKS = 200
 ID_PATTERN = re.compile(r'^[A-Za-z0-9_-]{1,16}$')
 TIMEOUT = 'Field engine timed out; the run was discarded.'
-DEFAULT_SESSION = {'robots': [{'id': 'R1', 'team': 'red'}, {'id': 'R2', 'team': 'red'},
-                              {'id': 'B1', 'team': 'blue'}, {'id': 'B2', 'team': 'blue'}]}
+DEFAULT_SESSION = {'robots': [{'id': 'R1', 'team': 'red', 'vehicle': DEFAULT_VEHICLE}, {'id': 'R2', 'team': 'red', 'vehicle': DEFAULT_VEHICLE},
+                              {'id': 'B1', 'team': 'blue', 'vehicle': DEFAULT_VEHICLE}, {'id': 'B2', 'team': 'blue', 'vehicle': DEFAULT_VEHICLE}]}
 
 
 class FieldError(ValueError):
@@ -52,8 +53,11 @@ def validate_session(data):
     seen, out = set(), []
     per_team = {'red': 0, 'blue': 0}
     for robot in robots:
-        if not isinstance(robot, dict) or set(robot) != {'id', 'team'}:
-            raise FieldError('A robot needs exactly "id" and "team".')
+        if not isinstance(robot, dict) or not {'id', 'team'} <= set(robot) <= {'id', 'team', 'vehicle'}:
+            raise FieldError('A robot needs "id" and "team", and may name a "vehicle".')
+        vehicle = robot.get('vehicle', DEFAULT_VEHICLE)
+        if not isinstance(vehicle, str) or len(vehicle) > 64:
+            raise FieldError('A robot vehicle is a garage vehicle id.')
         if not isinstance(robot['id'], str) or not ID_PATTERN.match(robot['id']):
             raise FieldError('A robot id is 1..16 letters, digits, "_" or "-".')
         if robot['team'] not in per_team:
@@ -64,7 +68,7 @@ def validate_session(data):
         per_team[robot['team']] += 1
         if per_team[robot['team']] > 4:
             raise FieldError('At most four robots per team (four start poses).')
-        out.append({'id': robot['id'], 'team': robot['team']})
+        out.append({'id': robot['id'], 'team': robot['team'], 'vehicle': vehicle})
     return {'robots': out}
 
 
@@ -89,18 +93,50 @@ class _Engine(NativePipe):
 class FieldSim:
     """One field session. All public methods are serialised by an internal lock."""
 
-    def __init__(self):
+    def __init__(self, garage_dir=None):
         self._lock = threading.RLock()
         self._engine = None
         self._session = None
         self._build = build_id()
+        self._tools = None          # a second engine process for stateless vehicle checks
+        self._tools_lock = threading.Lock()
+        self.garage = Garage(self._check_vehicle, garage_dir)
         self.reset(DEFAULT_SESSION)
+
+    def _tool(self, request):
+        with self._tools_lock:
+            if self._tools is None or self._tools.proc.poll() is not None:
+                self._tools = _Engine()
+                if self._tools.call({'cmd': 'meta'})['build'] != self._build:
+                    self._tools.close()
+                    self._tools = None
+                    raise RuntimeError('Field engine binary is stale. Run bash tools/build.sh and restart the server.')
+            try:
+                return self._tools.call(request)
+            except FieldError:
+                raise
+            except Exception:
+                self._tools.close()
+                self._tools = None
+                raise
+
+    def _check_vehicle(self, vehicle):
+        out = self._tool({'cmd': 'vehicle_check', 'vehicle': vehicle})
+        return {'vehicle': out['vehicle'], 'attributes': out['attributes']}
+
+    def vehicle_schema(self):
+        labels = json.loads((ROOT / 'field_sim/vehicle_labels.json').read_text(encoding='utf-8'))
+        return {'schema': self._tool({'cmd': 'vehicle_schema'})['schema'], 'labels': labels}
 
     def close(self):
         with self._lock:
             if self._engine is not None:
                 self._engine.close()
                 self._engine = None
+        with self._tools_lock:
+            if self._tools is not None:
+                self._tools.close()
+                self._tools = None
 
     def meta(self):
         return {'profile': PROFILE, 'build': self._build, 'tick_hz': TICK_HZ, 'max_robots': MAX_ROBOTS,
@@ -109,11 +145,19 @@ class FieldSim:
 
     def reset(self, session):
         session = validate_session(session)
+        robots = []
+        for robot in session['robots']:
+            try:
+                entry = self.garage.get(robot['vehicle'])
+            except GarageError as exc:
+                raise FieldError(f'Robot {robot["id"]}: {exc}') from None
+            robot['vehicle_name'], robot['vehicle_hash'] = entry['vehicle']['name'], entry['hash']
+            robots.append({'id': robot['id'], 'team': robot['team'], 'vehicle': entry['vehicle']})
         candidate = _Engine()
         try:
             if candidate.call({'cmd': 'meta'})['build'] != self._build:
                 raise RuntimeError('Field engine binary is stale. Run bash tools/build.sh and restart the server.')
-            state = candidate.call({'cmd': 'init', 'field': str(FIELD_DIR), 'robots': session['robots']})['state']
+            state = candidate.call({'cmd': 'init', 'field': str(FIELD_DIR), 'robots': robots})['state']
         except Exception:
             candidate.close()
             raise

@@ -249,11 +249,11 @@ def smoke_test(archive, top):
                     if time.monotonic() > deadline:
                         raise SystemExit('smoke: server did not answer within 20 s')
                     time.sleep(0.2)
-            for page in ['/', '/field.html', '/lab.html', '/roster.html', '/tactical.html', '/combat.html', '/layered.html', '/arena.html']:
+            for page in ['/', '/field.html', '/garage.html', '/lab.html', '/roster.html', '/tactical.html', '/combat.html', '/layered.html', '/arena.html']:
                 call(port, page)
             # Each first call starts that mode's native engine and checks binary build ID against the sources.
             for path in ['/api/state', '/api/objective/state', '/api/layered/state', '/api/combat/state',
-                         '/api/tactical/state', '/api/roster/state', '/api/roster/profiles/catalog', '/api/field/state']:
+                         '/api/tactical/state', '/api/roster/state', '/api/roster/profiles/catalog', '/api/field/state', '/api/field/vehicles']:
                 data = json.loads(call(port, path))
                 if 'error' in data:
                     raise SystemExit(f'smoke: {path}: {data["error"]}')
@@ -271,7 +271,7 @@ def smoke_test(archive, top):
             result = subprocess.run([sys.executable, *cmd], cwd=pkg, env=env, capture_output=True, text=True, **TEXT)
             if result.returncode:
                 raise SystemExit(f'smoke: {" ".join(cmd)} failed:\n{result.stdout}{result.stderr}')
-    log(f'smoke test passed: server {meta.get("build", "")[:12] or "ok"}, 8 pages, 8 native engines, rules lab run, 3 CLIs')
+    log(f'smoke test passed: server {meta.get("build", "")[:12] or "ok"}, 9 pages, 8 native engines, garage listing, rules lab run, 3 CLIs')
 
 
 def main():

@@ -31,6 +31,12 @@ Command drive_cmd(double vx, double vy = 0, double wz = 0) {
     c.vx = vx; c.vy = vy; c.wz = wz;
     return c;
 }
+// The driving tests were calibrated with an 80 W chassis allowance; rule-table values are tested separately.
+std::size_t add(Engine& e, const std::string& id, int team, const VehicleParams& v, const Pose& pose, double limit_w = 80.0) {
+    std::size_t i = e.add_robot(id, team, v, pose);
+    e.robot(i).power_limit = limit_w;
+    return i;
+}
 double rel(const Terrain& t, double x, double y) { return t.surface(x, y, -1e6) - t.floor_z(y); }
 
 void json_tests() {
@@ -168,24 +174,24 @@ void official_field_tests() {
     for (int team = 0; team < 2; ++team) {
         CHECK(e.field().spawns[team].size() == 4);
         for (std::size_t k = 0; k < e.field().spawns[team].size(); ++k) {
-            std::size_t index = e.add_robot(std::string(team ? "B" : "R") + std::to_string(k), team, default_vehicle(), e.field().spawns[team][k]);
+            std::size_t index = add(e, std::string(team ? "B" : "R") + std::to_string(k), team, default_vehicle(), e.field().spawns[team][k]);
             const Robot& r = e.robots()[index];
             CHECK(r.zones.size() == 1 && e.field().zones[r.zones[0]].id == (team ? "blue_base" : "red_base"));
         }
     }
-    CHECK(raises([&] { e.add_robot("R0", 0, default_vehicle(), {5.0, 5.0, 0}); }));          // duplicate id
-    CHECK(raises([&] { e.add_robot("X", 0, default_vehicle(), {2.411, 7.5, 0}); }));         // inside the base
-    CHECK(raises([&] { e.add_robot("X", 0, default_vehicle(), {-1.0, 7.5, 0}); }));          // outside
-    CHECK(raises([&] { e.add_robot("X", 0, default_vehicle(), {14.0, 0.6, 0}); }));          // under a 250 mm roof
-    CHECK(raises([&] { e.add_robot("X", 0, default_vehicle(), e.field().spawns[0][0]); }));  // on another robot
-    CHECK(raises([&] { e.add_robot("X", 2, default_vehicle(), {5.0, 5.0, 0}); }));
+    CHECK(raises([&] { add(e, "R0", 0, default_vehicle(), {5.0, 5.0, 0}); }));          // duplicate id
+    CHECK(raises([&] { add(e, "X", 0, default_vehicle(), {2.411, 7.5, 0}); }));         // inside the base
+    CHECK(raises([&] { add(e, "X", 0, default_vehicle(), {-1.0, 7.5, 0}); }));          // outside
+    CHECK(raises([&] { add(e, "X", 0, default_vehicle(), {14.0, 0.6, 0}); }));          // under a 250 mm roof
+    CHECK(raises([&] { add(e, "X", 0, default_vehicle(), e.field().spawns[0][0]); }));  // on another robot
+    CHECK(raises([&] { add(e, "X", 2, default_vehicle(), {5.0, 5.0, 0}); }));
 }
 
 void driving_tests() {
     // flat ground: accelerates within its limits, respects the power allowance, stops at the fence
     Engine e(synthetic(Terrain::flat(1000, 200, 0.02)));          // 20 m x 4 m
     VehicleParams veh = default_vehicle();
-    std::size_t a = e.add_robot("a", 0, veh, {1.0, 2.0, 0});
+    std::size_t a = add(e, "a", 0, veh, {1.0, 2.0, 0});
     e.set_command(a, drive_cmd(10.0));                             // asks for more than the vehicle can do
     double peak = 0, last_v = 0;
     for (int i = 0; i < 400; ++i) {
@@ -216,7 +222,7 @@ void driving_tests() {
     wild.chassis.power_limiter = false;
     wild.chassis.max_speed = 8.0;
     wild.chassis.max_accel = 8.0;
-    std::size_t w = e2.add_robot("w", 0, wild, {1.0, 2.0, 0});
+    std::size_t w = add(e2, "w", 0, wild, {1.0, 2.0, 0});
     e2.set_command(w, drive_cmd(8.0, 0, 9.0));
     bool cut = false;
     for (int i = 0; i < 800 && !cut; ++i) { e2.step(); cut = !e2.robots()[w].power.snapshot().chassis_enabled(e2.time_ms()); }
@@ -233,13 +239,13 @@ void driving_tests() {
     Engine e3(synthetic(Terrain::flat(1500, 200, 0.02)));
     VehicleParams cap = default_vehicle();
     cap.chassis.supercap_energy = 1500;
-    std::size_t c0 = e3.add_robot("cap", 0, cap, {1.0, 1.0, 0});
-    std::size_t c1 = e3.add_robot("plain", 0, default_vehicle(), {1.0, 3.0, 0});
+    std::size_t c0 = add(e3, "cap", 0, cap, {1.0, 1.0, 0});
+    std::size_t c1 = add(e3, "plain", 0, default_vehicle(), {1.0, 3.0, 0});
     e3.set_command(c0, drive_cmd(3.5));
     e3.set_command(c1, drive_cmd(3.5));
     for (int i = 0; i < 100; ++i) {
         e3.step();
-        CHECK(e3.robots()[c0].battery_power <= cap.rules.chassis_power_limit + 40.0 + 1e-6);   // allowance plus buffer surplus
+        CHECK(e3.robots()[c0].battery_power <= 80.0 + 40.0 + 1e-6);   // allowance plus buffer surplus
         CHECK(e3.robots()[c0].power.snapshot().cutoffs == 0);
     }
     CHECK(e3.robots()[c0].x > e3.robots()[c1].x + 0.1 && e3.robots()[c0].cap_energy < 1500);
@@ -252,8 +258,8 @@ void driving_tests() {
     Engine e4(synthetic(Terrain::flat(500, 1200, 0.02)));
     VehicleParams diff = default_vehicle();
     diff.chassis.drive = Drive::Differential;
-    std::size_t d = e4.add_robot("d", 0, diff, {5.0, 3.0, 0});
-    std::size_t h = e4.add_robot("h", 0, default_vehicle(), {5.0, 7.0, 0});
+    std::size_t d = add(e4, "d", 0, diff, {5.0, 3.0, 0});
+    std::size_t h = add(e4, "h", 0, default_vehicle(), {5.0, 7.0, 0});
     e4.set_command(d, drive_cmd(0, 2.0));
     e4.set_command(h, drive_cmd(0, 2.0));
     for (int i = 0; i < 100; ++i) e4.step();
@@ -273,8 +279,8 @@ void driving_tests() {
 
     // two robots driving at each other do not overlap and neither is pushed through the fence
     Engine e5(synthetic(Terrain::flat(500, 200, 0.02)));
-    std::size_t p = e5.add_robot("p", 0, default_vehicle(), {3.0, 2.0, 0});
-    std::size_t q = e5.add_robot("q", 1, default_vehicle(), {7.0, 2.0, PI});
+    std::size_t p = add(e5, "p", 0, default_vehicle(), {3.0, 2.0, 0});
+    std::size_t q = add(e5, "q", 1, default_vehicle(), {7.0, 2.0, PI});
     e5.set_command(p, drive_cmd(3.0));
     e5.set_command(q, drive_cmd(3.0));
     for (int i = 0; i < 400; ++i) {
@@ -284,10 +290,9 @@ void driving_tests() {
     CHECK(std::fabs(e5.robots()[p].x + e5.robots()[q].x - 10.0) < 0.05);     // equal masses: stalemate in the middle
     VehicleParams heavy = default_vehicle();
     heavy.chassis.mass = 60;
-    heavy.rules.chassis_power_limit = 200;
     Engine e6(synthetic(Terrain::flat(500, 200, 0.02)));
-    p = e6.add_robot("p", 0, heavy, {3.0, 2.0, 0});
-    q = e6.add_robot("q", 1, default_vehicle(), {4.0, 2.0, PI});
+    p = add(e6, "p", 0, heavy, {3.0, 2.0, 0}, 200.0);
+    q = add(e6, "q", 1, default_vehicle(), {4.0, 2.0, PI});
     e6.set_command(p, drive_cmd(3.0));
     for (int i = 0; i < 1500; ++i) e6.step();
     CHECK(e6.robots()[q].x <= 10.0 - 0.33 + 0.03 && e6.robots()[p].x <= e6.robots()[q].x - 0.66 + 1e-6);   // pinned at the fence, not through it
@@ -311,10 +316,10 @@ void relief_tests() {
     VehicleParams low = veh;
     low.chassis.height = 0.20;
     Engine e(synthetic(t));
-    std::size_t wall = e.add_robot("wall", 0, veh, {4.0, 3.0, 0});
-    std::size_t step = e.add_robot("step", 0, climber, {4.0, 4.0, 0});
-    std::size_t ramp = e.add_robot("ramp", 0, veh, {4.0, 1.0, 0});
-    std::size_t tall = e.add_robot("tall", 0, veh, {1.0, 4.5, 0});
+    std::size_t wall = add(e, "wall", 0, veh, {4.0, 3.0, 0});
+    std::size_t step = add(e, "step", 0, climber, {4.0, 4.0, 0});
+    std::size_t ramp = add(e, "ramp", 0, veh, {4.0, 1.0, 0});
+    std::size_t tall = add(e, "tall", 0, veh, {1.0, 4.5, 0});
     for (std::size_t r : {wall, step, ramp}) e.set_command(r, drive_cmd(2.0));
     e.set_command(tall, drive_cmd(1.0));
     double ramp_power = 0;
@@ -334,8 +339,8 @@ void relief_tests() {
     CHECK(flew && !e.robots()[step].airborne && e.robots()[step].z == 0.0 && e.robots()[step].x < 5.0);
     // ... and it cannot back up the 200 mm edge without its climbing ability
     Engine e2(synthetic(t));
-    std::size_t lowbot = e2.add_robot("low", 0, low, {1.0, 4.5, 0});
-    std::size_t over = e2.add_robot("over", 0, veh, {8.0, 3.0, PI});
+    std::size_t lowbot = add(e2, "low", 0, low, {1.0, 4.5, 0});
+    std::size_t over = add(e2, "over", 0, veh, {8.0, 3.0, PI});
     e2.set_command(lowbot, drive_cmd(1.5));
     e2.set_command(over, drive_cmd(3.0));
     bool under_roof = false;
@@ -359,8 +364,7 @@ void relief_tests() {
     Engine e3(synthetic(jump));
     VehicleParams fast = default_vehicle();
     fast.chassis.max_slope = 35;
-    fast.rules.chassis_power_limit = 400;
-    std::size_t j0 = e3.add_robot("jump", 0, fast, {1.0, 2.0, 0});
+    std::size_t j0 = add(e3, "jump", 0, fast, {1.0, 2.0, 0}, 400.0);
     e3.set_command(j0, drive_cmd(3.5));
     double top = 0, air_start = -1, air_end = -1;
     for (int i = 0; i < 400; ++i) {
@@ -377,7 +381,7 @@ void relief_tests() {
 void gimbal_tests() {
     Engine e(synthetic(Terrain::flat(500, 500, 0.02)));
     VehicleParams veh = default_vehicle();
-    std::size_t a = e.add_robot("a", 0, veh, {5, 5, 0});
+    std::size_t a = add(e, "a", 0, veh, {5, 5, 0});
     Command c;
     c.gimbal = GimbalMode::Angle;
     c.yaw = rad(120);
@@ -412,7 +416,7 @@ void gimbal_tests() {
     limited.gimbal.yaw_continuous = false;
     limited.gimbal.yaw_min = rad(-90);
     limited.gimbal.yaw_max = rad(90);
-    std::size_t b = e.add_robot("b", 0, limited, {2, 2, 0});
+    std::size_t b = add(e, "b", 0, limited, {2, 2, 0});
     Command rate;
     rate.gimbal = GimbalMode::Rate;
     rate.yaw_rate = rad(90);
@@ -430,6 +434,157 @@ void gimbal_tests() {
     CHECK(std::fabs(e.robots()[b].gimbal_yaw - rad(-90)) < 1e-9 && high <= rad(90) + 1e-9 && low >= rad(-90) - 1e-9);
 }
 
+void vehicle_tests() {
+    // the default document round-trips and reproduces the default struct
+    VehicleParams d = default_vehicle();
+    json::Value doc = vehicle_to_json(d);
+    CHECK(doc.at("format").as_string() == "rmuc-vehicle.v1");
+    CHECK(doc.at("chassis").at("length_mm").as_number() == 550 && doc.at("chassis").at("max_yaw_rate_dps").as_number() == 520);
+    CHECK(doc.at("class").as_string() == "infantry" && doc.at("rules").at("chassis_type").as_string() == "hp_first");
+    CHECK(doc.at("armor").as_array().size() == 4 && doc.at("sensors").at("camera").at("hfov_deg").as_number() == 70);
+    VehicleParams back = vehicle_from_json(doc);
+    CHECK(vehicle_to_json(back).dump() == doc.dump());
+    CHECK(std::fabs(back.chassis.length - 0.55) < 1e-12 && std::fabs(back.gimbal.max_yaw_rate - rad(540)) < 1e-12 && back.armor.size() == 4);
+    // missing keys take defaults; only format and name are required
+    VehicleParams minimal = vehicle_from_json(json::parse(R"({"format":"rmuc-vehicle.v1","name":"最小配置"})"));
+    json::Value expect = vehicle_to_json(d);
+    expect.set("name", "最小配置");
+    CHECK(vehicle_to_json(minimal).dump() == expect.dump());
+    // every table entry: its default is inside its range, and both bounds are enforced
+    json::Value schema = vehicle_schema_json();
+    int numbers = 0, enums = 0, flags = 0;
+    for (const auto& f : schema.at("fields").as_array()) {
+        const std::string& section = f.at("section").as_string();
+        const std::string& key = f.at("key").as_string();
+        const std::string& type = f.at("type").as_string();
+        auto with = [&](json::Value value) {
+            // {"format":..,"name":..,<section path>:{key:value}} with consistent companions left at defaults
+            json::Value v = json::Value::object();
+            v.set("format", "rmuc-vehicle.v1");
+            v.set("name", "t");
+            if (section.empty()) v.set(key, value);
+            else if (section.find('.') == std::string::npos) { json::Value s = json::Value::object(); s.set(key, value); v.set(section, s); }
+            else {
+                json::Value inner = json::Value::object(); inner.set(key, value);
+                json::Value outer = json::Value::object(); outer.set(section.substr(section.find('.') + 1), inner);
+                v.set(section.substr(0, section.find('.')), outer);
+            }
+            return v;
+        };
+        if (type == "number" || type == "integer") {
+            ++numbers;
+            double lo = f.at("min").as_number(), hi = f.at("max").as_number(), def = f.at("default").as_number();
+            CHECK(def >= lo && def <= hi);
+            CHECK(raises([&] { vehicle_from_json(with(json::Value(lo - (type == "integer" ? 1 : 1e-3)))); }));
+            CHECK(raises([&] { vehicle_from_json(with(json::Value(hi + (type == "integer" ? 1 : 1e-3)))); }));
+            CHECK(raises([&] { vehicle_from_json(with(json::Value("12"))); }));
+            CHECK(raises([&] { vehicle_from_json(with(json::Value(true))); }));
+            if (type == "integer") CHECK(raises([&] { vehicle_from_json(with(json::Value(lo + 0.5))); }));
+        } else if (type == "enum") {
+            ++enums;
+            CHECK(f.at("choices").as_array().size() >= 2);
+            CHECK(raises([&] { vehicle_from_json(with(json::Value("no-such-choice"))); }));
+            CHECK(raises([&] { vehicle_from_json(with(json::Value(1))); }));
+        } else {
+            ++flags;
+            CHECK(type == "boolean");
+            CHECK(raises([&] { vehicle_from_json(with(json::Value(1))); }));
+            CHECK(!raises([&] { vehicle_from_json(with(json::Value(!f.at("default").as_bool()))); }));
+        }
+    }
+    if (numbers != 50 || enums != 6 || flags != 4) std::cerr << "table: " << numbers << " numbers, " << enums << " enums, " << flags << " flags\n";
+    CHECK(numbers == 50 && enums == 6 && flags == 4);
+    // structure and consistency
+    auto bad = [](const std::string& body) {
+        return raises([&] { vehicle_from_json(json::parse("{\"format\":\"rmuc-vehicle.v1\",\"name\":\"t\"," + body + "}")); });
+    };
+    CHECK(raises([] { vehicle_from_json(json::parse(R"({"name":"t"})")); }));
+    CHECK(raises([] { vehicle_from_json(json::parse(R"({"format":"rmuc-vehicle.v2","name":"t"})")); }));
+    CHECK(raises([] { vehicle_from_json(json::parse(R"({"format":"rmuc-vehicle.v1"})")); }));
+    CHECK(raises([] { vehicle_from_json(json::parse(R"({"format":"rmuc-vehicle.v1","name":"  "})")); }));
+    CHECK(raises([] { vehicle_from_json(json::parse(R"([])")); }));
+    CHECK(bad(R"("wheels":4)") && bad(R"("chassis":{"colour":"red"})") && bad(R"("chassis":5)") && bad(R"("sensors":{"radar":{}})"));
+    CHECK(bad(R"("sensors":{"camera":{"zoom":2}})") && bad(R"("notes":5)") && bad("\"name2\":\"x\""));
+    CHECK(bad(R"("chassis":{"wheelbase_mm":600})"));                       // longer than the 550 mm body
+    CHECK(bad(R"("chassis":{"track_mm":500})"));
+    CHECK(bad(R"("chassis":{"collision_radius_mm":200})") && bad(R"("chassis":{"collision_radius_mm":450})"));
+    CHECK(bad(R"("chassis":{"max_lateral_speed_mps":4})"));
+    CHECK(bad(R"("gimbal":{"pivot_height_mm":600})") && bad(R"("sensors":{"lidar":{"height_mm":600}})"));
+    CHECK(bad(R"("launcher":{"caliber":"42mm"})") && bad(R"("launcher":{"caliber":"none"})"));   // infantry: one 17 mm launcher
+    CHECK(bad(R"("class":"heavy")"));                                       // heavy with the default 17 mm launcher
+    CHECK(!bad(R"("class":"heavy","launcher":{"caliber":"42mm","muzzle_speed_mps":15})") && !bad(R"("class":"heavy","launcher":{"caliber":"none"})"));
+    CHECK(bad(R"("armor":[{"face":"front"},{"face":"front"}])") && bad(R"("armor":[{"face":"top"}])") && bad(R"("armor":[{"size":"small"}])"));
+    CHECK(bad(R"("armor":[{"face":"front","offset_mm":200}])"));            // 135 mm plate 200 mm off centre on a 470 mm face
+    CHECK(bad(R"("armor":[{"face":"left","center_height_mm":460}])") && bad(R"("armor":[{"face":"left","center_height_mm":30}])"));
+    CHECK(bad(R"("armor":[{"face":"front","colour":1}])") && bad(R"("armor":{})"));
+    CHECK(!bad(R"("armor":[])") && !bad(R"("armor":[{"face":"front","size":"large"},{"face":"rear","size":"large","offset_mm":-100}])"));
+    std::string long_name(41, 'x');
+    CHECK(bad("\"notes\":\"a\\u0001\"") && raises([&] { vehicle_from_json(json::parse("{\"format\":\"rmuc-vehicle.v1\",\"name\":\"" + long_name + "\"}")); }));
+    // rule attributes follow the choices, not free parameters (tables 3-6, 5-16..5-18)
+    auto attr = [](const std::string& body, int level) {
+        VehicleParams v = vehicle_from_json(json::parse("{\"format\":\"rmuc-vehicle.v1\",\"name\":\"t\"" + body + "}"));
+        return attributes(v, level, v.rules.robot_class == RobotClass::Heavy && v.launcher.caliber == Caliber::Mm42);
+    };
+    Attributes a = attr("", 1);
+    CHECK(a.max_hp == 200 && a.chassis_power_limit == 45 && a.heat_limit == 40 && a.cooling_per_second == 12 && a.muzzle_speed_limit == 25 && a.initial_allowance == 0);
+    a = attr(R"(,"rules":{"chassis_type":"power_first","launcher_type":"burst_first"})", 1);
+    CHECK(a.max_hp == 150 && a.chassis_power_limit == 60 && a.heat_limit == 170 && a.cooling_per_second == 5);
+    a = attr(R"(,"rules":{"chassis_type":"power_first","launcher_type":"burst_first"})", 10);
+    CHECK(a.max_hp == 400 && a.chassis_power_limit == 100 && a.heat_limit == 260 && a.cooling_per_second == 20);
+    a = attr(R"(,"class":"sentry")", 1);
+    CHECK(a.max_hp == 400 && a.chassis_power_limit == 100 && a.heat_limit == 260 && a.cooling_per_second == 30 && a.initial_allowance == 300);
+    a = attr(R"(,"class":"sentry","rules":{"sentry_mode":"semi"})", 1);
+    CHECK(a.max_hp == 200 && a.chassis_power_limit == 60 && a.heat_limit == 100 && a.cooling_per_second == 10);
+    a = attr(R"(,"class":"heavy","launcher":{"caliber":"42mm","muzzle_speed_mps":15})", 1);
+    CHECK(a.max_hp == 600 && a.chassis_power_limit == 50 && a.caliber == Caliber::Mm42 && a.heat_limit == 300 && a.muzzle_speed_limit == 16.5);
+    a = attr(R"(,"class":"heavy","launcher":{"caliber":"none"})", 1);
+    CHECK(a.max_hp == 400 && a.caliber == Caliber::None && a.heat_limit == 0);
+
+    // parameters change behaviour: top speed, turn rate, gimbal rate, step height, power allowance
+    Engine e(synthetic(Terrain::flat(1500, 400, 0.02)));
+    VehicleParams slow = d, quick = d, sentry = d;
+    slow.chassis.max_speed = 1.0;
+    slow.chassis.max_speed_lateral = 1.0;
+    slow.chassis.max_yaw_rate = rad(90);
+    slow.gimbal.max_yaw_rate = rad(60);
+    quick.chassis.supercap_energy = 2000;
+    sentry.rules.robot_class = RobotClass::Sentry;
+    std::size_t s0 = e.add_robot("slow", 0, slow, {2, 1, 0});
+    std::size_t q0 = e.add_robot("quick", 0, quick, {2, 2, 0});
+    std::size_t n0 = e.add_robot("normal", 0, d, {2, 3, 0});
+    std::size_t y0 = e.add_robot("sentry", 0, sentry, {2, 3.5 + 0.4, 0});
+    CHECK(e.robots()[n0].power_limit == 45 && e.robots()[y0].power_limit == 100 && e.robots()[n0].attr.max_hp == 200);
+    Command c = drive_cmd(0, 0, 20.0);                   // spin on the spot while slewing the gimbal
+    c.gimbal = GimbalMode::Rate;
+    c.yaw_rate = 20.0;
+    for (std::size_t i : {s0, q0, n0, y0}) e.set_command(i, c);
+    double slow_gimbal = 0, normal_gimbal = 0, slow_spin = 0, sentry_spin = 0;
+    for (int i = 0; i < 150; ++i) {
+        e.step();
+        slow_spin = std::max(slow_spin, std::fabs(e.robots()[s0].wz));
+        sentry_spin = std::max(sentry_spin, std::fabs(e.robots()[y0].wz));
+        slow_gimbal = std::max(slow_gimbal, std::fabs(e.robots()[s0].gimbal_yaw_rate));
+        normal_gimbal = std::max(normal_gimbal, std::fabs(e.robots()[n0].gimbal_yaw_rate));
+    }
+    CHECK(std::fabs(slow_spin - rad(90)) < 1e-6 && sentry_spin > rad(300));
+    CHECK(std::fabs(slow_gimbal - rad(60)) < 1e-9 && std::fabs(normal_gimbal - rad(540)) < 1e-9);
+    // straight-line run from rest on a fresh field
+    Engine e2(synthetic(Terrain::flat(1500, 400, 0.02)));
+    s0 = e2.add_robot("slow", 0, slow, {2, 1, 0});
+    q0 = e2.add_robot("quick", 0, quick, {2, 2, 0});
+    n0 = e2.add_robot("normal", 0, d, {2, 3, 0});
+    y0 = e2.add_robot("sentry", 0, sentry, {2, 4, 0});
+    for (std::size_t i : {s0, q0, n0, y0}) e2.set_command(i, drive_cmd(5.0));
+    for (int i = 0; i < 300; ++i) {
+        e2.step();
+        CHECK(std::hypot(e2.robots()[s0].vx, e2.robots()[s0].vy) <= 1.0 + 1e-9);
+    }
+    double run[4] = {e2.robots()[s0].odometer, e2.robots()[q0].odometer, e2.robots()[n0].odometer, e2.robots()[y0].odometer};
+    CHECK(run[1] > run[2] + 0.5);        // the supercapacitor buys acceleration
+    CHECK(run[3] > run[2] + 0.5);        // 100 W against 45 W
+    CHECK(run[2] > run[0] + 0.5 && run[0] > 2.0 && run[0] < 3.0);
+}
+
 void official_driving_tests() {
     VehicleParams veh = default_vehicle();
     VehicleParams climber = veh;
@@ -439,13 +594,13 @@ void official_driving_tests() {
     Engine e(Field::load(FIELD_DIR));
     const Terrain& t = e.field().terrain;
     // the 300 mm central highland wall stops a normal chassis and not a step climber
-    std::size_t wall = e.add_robot("wall", 0, veh, {9.0, 11.0, 0});
-    std::size_t step = e.add_robot("step", 0, climber, {9.0, 10.0, 0});
+    std::size_t wall = add(e, "wall", 0, veh, {9.0, 11.0, 0});
+    std::size_t step = add(e, "step", 0, climber, {9.0, 10.0, 0});
     // the 11 degree road ramp (figure 4-35) leads from the floor up to the 200 mm road
-    std::size_t ramp = e.add_robot("ramp", 0, veh, {8.2, 2.45, PI});
+    std::size_t ramp = add(e, "ramp", 0, veh, {8.2, 2.45, PI});
     // the far highland tunnel: 250 mm of clearance
-    std::size_t tall = e.add_robot("tall", 0, veh, {12.6, 0.6, 0});
-    CHECK(raises([&] { e.add_robot("clash", 0, low, {12.6, 0.6, 0}); }));
+    std::size_t tall = add(e, "tall", 0, veh, {12.6, 0.6, 0});
+    CHECK(raises([&] { add(e, "clash", 0, low, {12.6, 0.6, 0}); }));
     for (std::size_t r : {wall, step, ramp, tall}) e.set_command(r, drive_cmd(2.0));
     bool wall_stayed_low = true, wall_touched = false, on_card = false;
     for (int i = 0; i < 400; ++i) {
@@ -463,7 +618,7 @@ void official_driving_tests() {
 
     // a low robot drives through the tunnel and reads end card, interior card, end card in order
     Engine e2(Field::load(FIELD_DIR));
-    std::size_t l = e2.add_robot("low", 0, low, {12.6, 0.6, 0});
+    std::size_t l = add(e2, "low", 0, low, {12.6, 0.6, 0});
     e2.set_command(l, drive_cmd(2.0));
     std::vector<std::string> seen;
     for (int i = 0; i < 300; ++i) {
@@ -480,7 +635,7 @@ void official_driving_tests() {
     auto run = [&] {
         Engine d(Field::load(FIELD_DIR));
         for (int team = 0; team < 2; ++team)
-            for (std::size_t k = 0; k < 4; ++k) d.add_robot(std::string(team ? "B" : "R") + std::to_string(k), team, veh, d.field().spawns[team][k]);
+            for (std::size_t k = 0; k < 4; ++k) add(d, std::string(team ? "B" : "R") + std::to_string(k), team, veh, d.field().spawns[team][k]);
         for (int i = 0; i < 1500; ++i) {
             if (i % 100 == 0)
                 for (std::size_t k = 0; k < d.robots().size(); ++k) {
@@ -511,6 +666,7 @@ int main() {
     driving_tests();
     relief_tests();
     gimbal_tests();
+    vehicle_tests();
     official_driving_tests();
-    return finish("field_sim (terrain, official field, chassis and gimbal)");
+    return finish("field_sim (terrain, official field, vehicles, chassis and gimbal)");
 }

@@ -488,6 +488,10 @@ def field_get(server, path):
         return sim.meta()
     if path == '/api/field/state':
         return sim.state()
+    if path == '/api/field/vehicles':
+        return sim.garage.list()
+    if path == '/api/field/vehicles/schema':
+        return sim.vehicle_schema()
     raise ValueError('Unknown field endpoint.')
 
 def field_post(server, path, data):
@@ -498,6 +502,20 @@ def field_post(server, path, data):
         if set(data) != {'ticks', 'commands'}:
             raise ValueError('A field step needs exactly ticks and commands.')
         return {'state': sim.step(data['ticks'], data['commands'])}
+    if path.startswith('/api/field/vehicles/'):
+        action = path.rsplit('/', 1)[1]
+        if action == 'get':
+            if set(data) != {'id'}: raise ValueError('Expected exactly id.')
+            return sim.garage.get(data['id'])
+        if action == 'check':
+            if set(data) != {'vehicle'}: raise ValueError('Expected exactly vehicle.')
+            return sim.garage.check(data['vehicle'])
+        if action == 'save':
+            if set(data) != {'vehicle', 'id'}: raise ValueError('Expected exactly vehicle and id (null for a new vehicle).')
+            return sim.garage.save(data['vehicle'], data['id'])
+        if action == 'delete':
+            if set(data) != {'id'}: raise ValueError('Expected exactly id.')
+            return sim.garage.delete(data['id'])
     if path == '/api/field/probe':
         if set(data) != {'x', 'y'}:
             raise ValueError('A field probe needs exactly x and y.')
@@ -590,7 +608,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_response(200); self.send_header('Content-Type','application/octet-stream'); self.send_header('Content-Length',str(len(raw))); self.end_headers(); self.wfile.write(raw)
             return
         if path.startswith('/api/field/'):
-            if path not in ('/api/field/meta','/api/field/state'):
+            if path not in ('/api/field/meta','/api/field/state','/api/field/vehicles','/api/field/vehicles/schema'):
                 return self.respond({'error':'Not found'},404)
             try:return self.respond(field_get(self.server,path))
             except ValueError as exc:return self.respond({'error':str(exc)},400)
@@ -649,7 +667,7 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.respond({'error':'Not found'},404)
                 return self.respond(lab_post(self.path,data))
             if self.path.startswith('/api/field/'):
-                if self.path not in ('/api/field/reset','/api/field/step','/api/field/probe'):
+                if self.path not in ('/api/field/reset','/api/field/step','/api/field/probe','/api/field/vehicles/get','/api/field/vehicles/check','/api/field/vehicles/save','/api/field/vehicles/delete'):
                     return self.respond({'error':'Not found'},404)
                 return self.respond(field_post(self.server,self.path,data))
             if self.path.startswith('/api/arena/'):
@@ -716,7 +734,12 @@ class Handler(SimpleHTTPRequestHandler):
         except (RuntimeError,OSError) as exc:self.respond({'error':str(exc)},500)
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--port',type=int,default=8765);args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--port',type=int,default=8765)
+    parser.add_argument('--data-dir',help='where saved vehicles are kept (default: user_data/ next to server.py, or $RMUC_DATA_DIR)')
+    args=parser.parse_args()
+    if args.data_dir:
+        import os
+        os.environ['RMUC_DATA_DIR']=str(Path(args.data_dir).resolve())
     if not executable(BINARY).is_file():raise SystemExit('Run ./tools/build.sh first (Windows: py tools/native_build.py).')
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler);server.engine=EngineProcess()
     print(f'RMUC tactics sandbox: http://127.0.0.1:{args.port} (local only; not official rules)',flush=True)

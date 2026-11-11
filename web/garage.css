@@ -1,0 +1,36 @@
+code{font:11px ui-monospace,monospace;color:#c9d5df;background:#17212c;border-radius:4px;padding:1px 5px}
+input[type=text],input[type=number]{background:#141d27;border:1px solid #334152;border-radius:6px;padding:7px 8px;font-size:12px;color:var(--text);width:100%}
+input:disabled,select:disabled{opacity:.5}
+input.invalid{border-color:#d9705f}
+.garage{display:grid;grid-template-columns:290px minmax(0,1fr);gap:14px;margin-top:18px}
+.vehicle-list,.editor{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.vehicle-list{align-self:start;position:sticky;top:12px}
+.vehicle-list h3,.derived h3,.group h3{font-size:12px;margin:0 0 10px;font-weight:600}
+.derived h3 small,.group h3 small{color:var(--muted);font-weight:400;margin-left:8px;font-size:10px}
+.vehicle-list ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.vehicle-list li button{width:100%;text-align:left;display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:8px 10px;font-weight:500}
+.vehicle-list li button small{grid-column:1/-1;color:var(--muted);font-size:10px;font-weight:400}
+.vehicle-list li button.selected{border-color:var(--accent);background:#1f2c22}
+.vehicle-list li button.broken{opacity:.55}
+.tag{font-size:9px;border:1px solid #3a4858;border-radius:4px;padding:1px 5px;color:#9fb0bf;align-self:center}
+.tag.saved{color:var(--accent);border-color:#4d6238}
+.list-actions{margin-top:12px;display:flex;gap:8px}
+.editor-head{display:flex;gap:12px;flex-wrap:wrap}
+.wide{font-size:10px;color:var(--muted);display:flex;flex-direction:column;gap:5px;width:260px}.wide.grow{flex:1;min-width:260px}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.danger{border-color:#6b3a36;color:#efb3a9}.danger:hover{background:#3a2220;border-color:#d9705f}
+.derived{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:14px;background:#0f161f}
+table{border-collapse:collapse;width:100%;font-size:11px}
+th{font-weight:500;color:var(--muted);text-align:right;padding:4px 8px}td{text-align:right;padding:4px 8px;font:11px ui-monospace,monospace;border-top:1px solid #1c2733}
+th:first-child,td:first-child{text-align:left}
+.group{border-top:1px solid var(--line);padding:14px 0 6px}
+.group p.help{font-size:10px;color:#8fa0b0;margin:-4px 0 10px;line-height:1.7}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px 14px}
+.field{font-size:10px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.field .row{display:flex;gap:6px;align-items:center}.field .unit{font:10px ui-monospace,monospace;color:#7e91a1;min-width:30px}
+.field small{font-size:9px;color:#6f8192;line-height:1.5;min-height:13px}
+.field.check{flex-direction:row;align-items:center;gap:8px;color:#b8c5d0;font-size:11px;flex-wrap:wrap}
+.field.check small{flex-basis:100%}
+.field input[type=checkbox]{accent-color:var(--accent)}
+.armor td,.armor th{text-align:left}.armor input[type=number]{width:110px}.armor select{width:170px}
+@media (max-width:900px){.garage{grid-template-columns:1fr}.vehicle-list{position:static}}

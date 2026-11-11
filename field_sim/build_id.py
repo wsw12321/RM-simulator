@@ -8,7 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = [
     'rules/rmuc2027_heat_v1/heat_rules.hpp', 'rules/rmuc2027_heat_v1/heat_rules.cpp',
     'rules/rmuc2027_limits_v1/limits_rules.hpp', 'rules/rmuc2027_limits_v1/limits_rules.cpp',
-    'field_sim/json.hpp', 'field_sim/terrain.hpp', 'field_sim/terrain.cpp',
+    'rules/rmuc2027_growth_v1/growth_rules.hpp', 'rules/rmuc2027_growth_v1/growth_rules.cpp',
+    'field_sim/json.hpp', 'field_sim/terrain.hpp', 'field_sim/terrain.cpp', 'field_sim/vehicle.hpp', 'field_sim/vehicle.cpp',
     'field_sim/engine.hpp', 'field_sim/engine.cpp', 'field_sim/cli.cpp', 'field_sim/build_id.py',
     'field_sim/field/rmuc2027_v1/field.json', 'field_sim/field/rmuc2027_v1/terrain.bin',
 ]

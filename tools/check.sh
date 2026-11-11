@@ -41,10 +41,13 @@ python3 -m py_compile tests/test_growth_catalog_crosscheck.py
 python3 tests/test_growth_catalog_crosscheck.py
 python3 -m py_compile match_lab/*.py tests/test_match_lab.py
 python3 tests/test_match_lab.py
-python3 -m py_compile field_sim/*.py tests/test_field_bridge.py tests/test_field_http.py
+python3 -m py_compile field_sim/*.py tests/test_field_bridge.py tests/test_field_http.py tests/test_field_garage.py
 python3 tests/test_field_bridge.py
+python3 tests/test_field_garage.py
 node --check web/field.js
+node --check web/garage.js
 node --check tests/field_browser_smoke.cjs
+node --check tests/garage_browser_smoke.cjs
 node --check web/roster-profiles.js
 node --check tests/sourced_profiles_ui_handlers.cjs
 node --check web/roster.js
@@ -63,7 +66,9 @@ node --check tests/objective_ui_handlers.cjs
 node --check tests/objective_browser_smoke.cjs
 python3 tests/test_bridge_unit.py
 PORT="${TEST_PORT:-18765}"
-python3 server.py --port "$PORT" > build/check-server.log 2>&1 &
+# Saved vehicles of the test server go to a throw-away directory, never to user_data/.
+rm -rf build/check-user-data
+RMUC_DATA_DIR="$PWD/build/check-user-data" python3 server.py --port "$PORT" > build/check-server.log 2>&1 &
 PID=$!
 trap 'kill "$PID" 2>/dev/null || true' EXIT
 # Readiness, not a fixed sleep: concurrent native builds can delay Python startup.

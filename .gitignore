@@ -6,3 +6,4 @@ __pycache__/
 /docs/sample_replay.json
 /docs/objective-*.png
 /dist/
+/user_data/

@@ -16,6 +16,7 @@
   };
   let meta = null, terrain = null, background = null, state = null;
   let running = false, busy = false, selected = null, timer = null;
+  let vehicles = [], lineup = [];                 // garage summaries; draft session [{id, team, vehicle}]
   const keys = new Set();
   let aim = null;                                 // field coordinates of the pointer
 
@@ -159,6 +160,7 @@
     $('t-gimbal').textContent = `${deg(robot.gimbal.yaw)} / ${deg(robot.gimbal.pitch)}`;
     $('t-power').textContent = `${robot.power.measured_w.toFixed(0)} / ${robot.power.limit_w.toFixed(0)} W`;
     $('t-buffer').textContent = `${robot.power.buffer_j.toFixed(1)} J`;
+    $('t-attr').textContent = `${robot.attributes.max_hp} 血 · 热量 ${robot.attributes.heat_limit} · 冷却 ${robot.attributes.cooling_per_s}/s`;
     const flags = [];
     if (robot.airborne) flags.push('腾空');
     if (robot.blocked) flags.push('受阻');
@@ -231,10 +233,49 @@
     pause();
     $('reset').disabled = true;
     try {
-      state = (await api('/api/field/reset', meta.default_session)).state;
-      fillRobots(); draw(); showTelemetry();
+      const out = await api('/api/field/reset', { robots: lineup });
+      state = out.state;
+      lineup = out.session.robots.map((r) => ({ id: r.id, team: r.team, vehicle: r.vehicle }));
+      fillRobots(); renderLineup(); draw(); showTelemetry();
       setStatus('已重置。点击“开始”后用 WASD 行驶。');
     } catch (error) { setStatus(error.message, true); } finally { $('reset').disabled = false; }
+  }
+
+  function renderLineup() {
+    const body = $('lineup');
+    body.replaceChildren();
+    lineup.forEach((slot, index) => {
+      const select = document.createElement('select');
+      for (const v of vehicles) {
+        if (v.invalid) continue;
+        const option = document.createElement('option');
+        option.value = v.id;
+        option.textContent = `${v.name}${v.readonly ? '' : ' ★'}`;
+        select.append(option);
+      }
+      select.value = slot.vehicle;
+      select.addEventListener('change', () => { slot.vehicle = select.value; setStatus('对局设置已修改，点击“应用并重置”生效。'); });
+      const remove = document.createElement('button');
+      remove.textContent = '移除';
+      remove.disabled = lineup.length <= 1;
+      remove.addEventListener('click', () => { lineup.splice(index, 1); renderLineup(); setStatus('对局设置已修改，点击“应用并重置”生效。'); });
+      const row = document.createElement('tr'), id = document.createElement('td'), mid = document.createElement('td'), last = document.createElement('td');
+      id.textContent = slot.id;
+      id.className = slot.team;
+      mid.append(select); last.append(remove);
+      row.append(id, mid, last);
+      body.append(row);
+    });
+    for (const team of ['red', 'blue']) $(`add-${team}`).disabled = lineup.filter((s) => s.team === team).length >= 4;
+  }
+  function addSlot(team) {
+    const prefix = team === 'red' ? 'R' : 'B';
+    let n = 1;
+    while (lineup.some((s) => s.id === `${prefix}${n}`)) n++;
+    lineup.push({ id: `${prefix}${n}`, team, vehicle: meta.default_session.robots[0].vehicle });
+    lineup.sort((a, b) => (a.team === b.team ? a.id.localeCompare(b.id) : a.team === 'red' ? -1 : 1));
+    renderLineup();
+    setStatus('对局设置已修改，点击“应用并重置”生效。');
   }
 
   function pointerField(event) {
@@ -276,6 +317,9 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden && running) { pause(); setStatus('页面在后台，已暂停。'); } });
   $('play').addEventListener('click', () => (running ? (pause(), setStatus('已暂停。')) : play()));
   $('reset').addEventListener('click', reset);
+  $('apply').addEventListener('click', reset);
+  $('add-red').addEventListener('click', () => addSlot('red'));
+  $('add-blue').addEventListener('click', () => addSlot('blue'));
   $('robot').addEventListener('change', (event) => select(event.target.value));
   $('show-zones').addEventListener('change', draw);
   $('show-labels').addEventListener('change', draw);
@@ -288,6 +332,9 @@
       terrain = parseTerrain(await response.arrayBuffer());
       renderBackground();
       state = await api('/api/field/state');
+      vehicles = (await api('/api/field/vehicles')).vehicles;
+      lineup = meta.session.robots.map((r) => ({ id: r.id, team: r.team, vehicle: r.vehicle }));
+      renderLineup();
       $('f-id').textContent = meta.field.id;
       $('f-size').textContent = `${meta.field.size_mm[0] / 1000} × ${meta.field.size_mm[1] / 1000} m / ${meta.field.cell_mm} mm`;
       $('f-build').textContent = meta.build.slice(0, 12);

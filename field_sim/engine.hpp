@@ -4,6 +4,7 @@
 // mechanics below are an explicit 2.5-D ENGINEERING model (see README.md).
 #include "json.hpp"
 #include "terrain.hpp"
+#include "vehicle.hpp"
 #include "../rules/rmuc2027_limits_v1/limits_rules.hpp"
 #include <array>
 #include <cstdint>
@@ -20,9 +21,6 @@ inline constexpr const char* PROFILE = "rmuc2027-field-sim-v1";
 inline constexpr int TICK_HZ = 100;
 inline constexpr double DT = 1.0 / TICK_HZ;
 inline constexpr double GRAVITY = 9.80665;
-inline constexpr double PI = 3.14159265358979323846;
-inline double rad(double deg) { return deg * PI / 180.0; }
-inline double deg(double r) { return r * 180.0 / PI; }
 double wrap_angle(double a);   // to (-pi, pi]
 
 // ---- field description (field.json next to the terrain file)
@@ -45,49 +43,6 @@ struct Field {
     static Field load(const std::string& dir);
 };
 
-// ---- vehicle parameters (SI units). Defaults are engineering values.
-enum class Drive : std::uint8_t { Omni, Mecanum, Steering, Differential, Balance };
-inline bool holonomic(Drive d) { return d == Drive::Omni || d == Drive::Mecanum || d == Drive::Steering; }
-struct ChassisParams {
-    Drive drive = Drive::Mecanum;
-    double length = 0.55, width = 0.47, height = 0.48;   // body box; height is the tallest point above the wheels' contact
-    double mass = 18.0;
-    double wheelbase = 0.40, track = 0.38;
-    double collision_radius = 0.33;
-    double max_speed = 3.5, max_speed_lateral = 3.0;      // m/s
-    double max_accel = 4.5, max_decel = 7.0;              // m/s^2
-    double max_yaw_rate = 9.0, max_yaw_accel = 40.0;      // rad/s, rad/s^2
-    double max_step = 0.03;                               // climbable vertical step, m
-    double max_slope = 30.0;                              // climbable grade, degrees
-    double rolling_resistance = 0.07;                     // resisting force / weight
-    double drivetrain_efficiency = 0.75;
-    double idle_power = 6.0;                              // W
-    double stall_power = 60.0;                            // W of loss at full acceleration force
-    bool power_limiter = true;                            // on-board limiter keeps the draw inside the allowance
-    double buffer_reserve = 20.0;                         // J of referee buffer the limiter leaves untouched
-    double supercap_energy = 0.0;                         // J, 0 = none fitted
-    double supercap_power = 150.0;                        // W, maximum charge / discharge rate
-};
-struct GimbalParams {
-    bool yaw_continuous = true;                 // slip ring; otherwise limited relative to the chassis
-    double yaw_min = rad(-170), yaw_max = rad(170);
-    double pitch_min = rad(-25), pitch_max = rad(35);   // relative to the chassis, up positive
-    double max_yaw_rate = rad(540), max_pitch_rate = rad(360);
-    double max_yaw_accel = rad(6000), max_pitch_accel = rad(4000);
-    double response = 18.0;                     // 1/s proportional gain of the angle loop
-    double pivot_height = 0.36;                 // m above the wheels' contact
-    double muzzle_forward = 0.14;               // m from the pitch axis
-};
-struct RuleParams {
-    double chassis_power_limit = 80.0;          // W. Replaced by the rule tables in a later milestone.
-};
-struct VehicleParams {
-    std::string name = "default-infantry";
-    ChassisParams chassis;
-    GimbalParams gimbal;
-    RuleParams rules;
-};
-
 // ---- per-robot command (latest value persists)
 enum class ChassisFrame : std::uint8_t { Chassis, Gimbal };
 enum class GimbalMode : std::uint8_t { Hold, Angle, Rate };
@@ -106,6 +61,9 @@ struct Robot {
     std::string id;
     int team = 0;                               // 0 red, 1 blue
     VehicleParams veh;
+    Attributes attr;                            // rule-given attributes at the current level
+    int level = 1;
+    double power_limit = 0;                     // W: chassis power limit in force
     Command cmd;
     // chassis state (field frame, metres / radians)
     double x = 0, y = 0, z = 0, yaw = 0, pitch = 0, roll = 0;
@@ -159,5 +117,4 @@ private:
     double chassis_power(const Robot&, double ax, double ay, double alpha, double slope_fx, double slope_fy) const;
 };
 std::string build_id();
-VehicleParams default_vehicle();
 } // namespace field_sim

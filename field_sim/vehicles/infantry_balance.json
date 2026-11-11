@@ -1,0 +1,93 @@
+{
+ "format": "rmuc-vehicle.v1",
+ "name": "平衡步兵",
+ "notes": "两轮平衡底盘：不能横移，直线快，前后各一块大装甲。",
+ "class": "infantry",
+ "rules": {
+  "chassis_type": "power_first",
+  "launcher_type": "cooling_first",
+  "sentry_mode": "auto"
+ },
+ "chassis": {
+  "drive": "balance",
+  "length_mm": 420,
+  "width_mm": 520,
+  "height_mm": 520,
+  "mass_kg": 15,
+  "wheelbase_mm": 120,
+  "track_mm": 440,
+  "collision_radius_mm": 300,
+  "max_speed_mps": 4.2,
+  "max_lateral_speed_mps": 1,
+  "max_accel_mps2": 4,
+  "max_decel_mps2": 7,
+  "max_yaw_rate_dps": 520,
+  "max_yaw_accel_dps2": 2300,
+  "max_step_mm": 60,
+  "max_slope_deg": 30,
+  "rolling_resistance": 0.04,
+  "drivetrain_efficiency": 0.75,
+  "idle_power_w": 6,
+  "stall_power_w": 60,
+  "power_limiter": true,
+  "buffer_reserve_j": 20,
+  "supercap_energy_j": 2000,
+  "supercap_power_w": 150
+ },
+ "gimbal": {
+  "yaw_continuous": true,
+  "yaw_min_deg": -170,
+  "yaw_max_deg": 170,
+  "pitch_min_deg": -25,
+  "pitch_max_deg": 35,
+  "max_yaw_rate_dps": 540,
+  "max_pitch_rate_dps": 360,
+  "max_yaw_accel_dps2": 6000,
+  "max_pitch_accel_dps2": 4000,
+  "response_per_s": 18,
+  "pivot_height_mm": 420,
+  "muzzle_forward_mm": 140
+ },
+ "launcher": {
+  "caliber": "17mm",
+  "muzzle_speed_mps": 23,
+  "speed_sigma_mps": 0.3,
+  "max_fire_rate_hz": 15,
+  "dispersion_mrad": 4,
+  "heat_guard": true
+ },
+ "armor": [
+  {
+   "face": "front",
+   "size": "large",
+   "center_height_mm": 200,
+   "offset_mm": 0
+  },
+  {
+   "face": "rear",
+   "size": "large",
+   "center_height_mm": 200,
+   "offset_mm": 0
+  }
+ ],
+ "sensors": {
+  "camera": {
+   "hfov_deg": 70,
+   "vfov_deg": 50,
+   "max_range_m": 8,
+   "fps": 60,
+   "latency_ms": 20,
+   "angle_noise_mrad": 1.5,
+   "range_noise_pct": 2,
+   "max_view_angle_deg": 65
+  },
+  "lidar": {
+   "enabled": false,
+   "beams": 72,
+   "max_range_m": 10,
+   "rate_hz": 10,
+   "height_mm": 300,
+   "noise_mm": 10
+  }
+ }
+}

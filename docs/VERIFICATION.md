@@ -1342,3 +1342,24 @@ bit-identical results across platforms (double precision is used); the vehicle m
 against any real robot; the zone outlines against a physical field. The browser smoke
 test is not part of `tools/check.sh` because it needs Playwright.
 
+## Vehicle configuration and garage (field_sim, plan item 2) · 2026-11-11
+
+Environment as above (Linux x86_64, GCC 13.3, Python 3.13, Node 22, Chromium via Playwright).
+
+| Suite | Result |
+|---|---|
+| `field_sim_tests` (native) | 74,800 assertions passed. New: document round trip; for each of the 60 table entries the default lies in range and both bounds, wrong types and unknown choices are rejected; structure and consistency rejections; rule attributes for infantry (both chassis / launcher choices, levels 1 and 10), both sentry modes and the heavy robot with and without its 42 mm launcher equal the `growth_v1` tables; top speed, spin rate, gimbal rate, supercapacitor and power allowance change behaviour |
+| `tests/test_field_garage.py` | 8 tests passed: built-in files equal their normalised form, schema and labels match one to one, save / overwrite / delete, a saved vehicle is still there after closing and reopening the bridge and drives with its saved top speed, rejections write nothing, damaged files are listed as invalid |
+| `tests/test_field_bridge.py` | 9 tests passed |
+| `tests/test_field_http.py` | 5 tests passed, including the garage endpoints |
+| `tests/garage_browser_smoke.cjs` | passed: form generated from the schema, an out-of-range value is named and blocks saving, a power-first edit shows 60 W, save as new vehicle, vehicle offered in the line-up of `field.html`, the robot's measured top speed follows the saved 1.2 m/s, delete |
+| `tests/field_browser_smoke.cjs` | passed with the new line-up panel |
+| `bash tools/check.sh` | exit 0; the test server keeps saved vehicles in `build/check-user-data`, nothing is written to `user_data/` |
+| `python3 tools/package_release.py` (on the item 1 commit `36eab19`) | static Linux package built and smoke-tested: 8 pages, 8 native engines |
+
+Not verified: the release package of this commit on macOS and Windows (CI runs on tags);
+file-system behaviour of the garage on Windows (atomic replace of an open file);
+concurrent editing of the same vehicle from two browser tabs (last save wins).
+Launcher, armour and sensor parameters are validated and stored but not yet used by
+the engine; they take effect with plan item 3.
+

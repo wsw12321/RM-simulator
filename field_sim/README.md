@@ -11,8 +11,8 @@ python3 server.py            # 浏览器打开 http://127.0.0.1:8765/field.html
 页面里用 WASD 平移、Q / E 旋转、鼠标控制云台指向；点击机器人切换操控对象；
 光标移到场地上可以读出该处的地面高度、上方结构净空和所在增益点。
 
-开发计划见 [docs/PLAN.md](../docs/PLAN.md)：本目录目前完成的是第 1 项（场地），
-车辆配置与车库、对外感知 / 控制接口在后两项加入。
+开发计划见 [docs/PLAN.md](../docs/PLAN.md)：目前完成了第 1 项（场地）和第 2 项（车辆配置与车库，
+见 [VEHICLES.md](VEHICLES.md)，页面 `garage.html`）；对外感知 / 控制接口在第 3 项加入。
 
 ## 场地数据从哪里来
 
@@ -85,6 +85,8 @@ python3 tools/field_extract/build_field_json.py cache/ field_sim/field/rmuc2027_
 
 固定 100 Hz。每个 tick：底盘驱动与碰撞 → 机器人之间的碰撞 → 竖直运动与姿态 → 云台 → 裁判系统功率结算 → 增益点检测。
 
+车辆的全部机械参数来自所选车辆配置（[VEHICLES.md](VEHICLES.md)）；下面括号里的数值是默认车辆的。
+
 - **碰撞体**：竖直圆柱（默认半径 0.33 m），因此原地旋转不会被卡住。沿圆周每 20 mm 取一个探测点。
   探测点处的地形如果比车底高出越障高度、并且在 40 mm 内突然升高，就是墙；
   上方有顶而净空小于车高，也是墙。被挡住时沿障碍物切向滑动。
@@ -99,7 +101,7 @@ python3 tools/field_extract/build_field_json.py cache/ field_sim/field/rmuc2027_
 - **功率**：电功率 = 待机 + 机械功率 / 效率 + 与牵引力平方成正比的损耗。车载限制器（可关闭）
   把功率压在“上限 + 超级电容 + 缓冲能量余量”之内。电池侧功率每 100 ms 结算一次，
   由规则模块 [`limits_v1`](../rules/rmuc2027_limits_v1/README.md) 按 §5.1.4 扣缓冲能量、耗尽后断电 5 秒。
-  功率上限暂为固定 80 W，第 2、3 项改为按兵种 / 等级查表。
+  功率上限按车辆的兵种与规则选择由 [`growth_v1`](../rules/rmuc2027_growth_v1/README.md) 查表（目前固定为 1 级）。
 - **云台**：场地系下的偏航（默认滑环、可连续旋转）和相对水平面的俯仰；角度或角速度指令，
   受最大角速度、角加速度和相对车体的机械限位约束；自稳，底盘旋转不带动云台。
 - **增益点**：机器人中心落在卡的多边形内、且没有腾空，即视为检测到。这是几何判断，
@@ -118,7 +120,8 @@ python3 tools/field_extract/build_field_json.py cache/ field_sim/field/rmuc2027_
 | `GET /api/field/meta` | 模式、构建 ID、`field.json` 全文、当前与默认对局 |
 | `GET /api/field/terrain` | `terrain.bin` 原始字节 |
 | `GET /api/field/state` | 当前全部机器人状态（观察者视角，不是机器人自己的感知） |
-| `POST /api/field/reset` | `{"robots":[{"id":"R1","team":"red"},…]}`，每队至多 4 台 |
+| `POST /api/field/reset` | `{"robots":[{"id":"R1","team":"red","vehicle":"builtin:infantry_mecanum"},…]}`，每队至多 4 台；`vehicle` 是车库里的车辆 ID，可省略 |
+| `/api/field/vehicles…` | 车辆列表、参数表、校验、保存、删除，见 [VEHICLES.md](VEHICLES.md) |
 | `POST /api/field/step` | `{"ticks":1..200,"commands":{"R1":{…}}}`；指令保持到被替换 |
 | `POST /api/field/probe` | `{"x":…,"y":…}`（米）→ 该处地形与区域 |
 
@@ -138,9 +141,11 @@ python3 tools/field_extract/build_field_json.py cache/ field_sim/field/rmuc2027_
 
 ## 测试
 
-- `tests/field_sim_tests.cpp`（74,177 个断言）：JSON 解析；合成地形上的分层、插值与射线；
+- `tests/field_sim_tests.cpp`（74,800 个断言）：JSON 解析；车辆参数表的每一项范围、一致性检查、规则属性查表、参数对行为的影响；合成地形上的分层、插值与射线；
   官方场地的尺寸、高度、对称、视线、功能区与出生点；加速 / 功率 / 断电 / 超级电容；墙、台阶、坡道、低顶、
   驶下台地、飞坡；差速底盘；云台跟踪与限位；机器人互撞；官方场地上的沿墙滑行、上坡、穿隧道读卡顺序；确定性。
 - `tests/test_field_bridge.py`：场地数据与来源记录一致性、对局校验、拒绝不改变状态、过期二进制被拒绝。
-- `tests/test_field_http.py`：HTTP 接口与各拒绝路径。
+- `tests/test_field_garage.py`：内置车辆、保存 / 覆盖 / 删除、重启后仍在、按位置选车、损坏存档、拒绝路径。
+- `tests/test_field_http.py`：HTTP 接口（含车库）与各拒绝路径。
+- `tests/garage_browser_smoke.cjs`：真实浏览器里改参数、保存、在场地页选用并验证最高速度随之改变（可选）。
 - `tests/field_browser_smoke.cjs`：真实浏览器里加载页面、驾驶机器人、读取地形（可选，需要 Playwright）。

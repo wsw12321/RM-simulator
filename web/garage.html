@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RMUC · 车库</title>
+  <link rel="stylesheet" href="field.css">
+  <link rel="stylesheet" href="garage.css">
+</head>
+<body>
+<main class="field-app">
+  <header class="app-header">
+    <a class="brand" href="/"><span class="brand-mark">R</span><span>TACTICS <b>LAB</b><small>RMUC 2027 车库 / LOCAL ONLY</small></span></a>
+    <a class="back-link" href="field.html">去官方场地仿真 ↗</a>
+  </header>
+  <section class="intro">
+    <span class="eyebrow">GARAGE · VEHICLE CONFIGURATION</span>
+    <h1>配置车辆，保存整车，下次直接选用</h1>
+    <p>左侧是内置默认车辆（只读）和保存在本机的车辆。选中一辆后可以修改任何参数：改内置车辆请“另存为新车辆”。
+      保存的车辆存放在本机 <code>user_data/vehicles/</code>，重启服务后仍在，可在官方场地仿真里按出场位置选用。
+      血量、热量、底盘功率上限由“规则属性选择”按规则手册给出，不能直接填写；其余机械、电气与感知参数是工程假设，请按自己的车填写。</p>
+  </section>
+  <section class="garage">
+    <aside class="vehicle-list">
+      <h3>车辆</h3>
+      <ul id="vehicles"></ul>
+      <div class="list-actions">
+        <button id="import">导入 JSON ↑</button>
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </div>
+    </aside>
+    <section class="editor">
+      <div class="editor-head">
+        <label class="wide">名称 <input type="text" id="name" maxlength="40" autocomplete="off"></label>
+        <label class="wide grow">备注 <input type="text" id="notes" maxlength="300" autocomplete="off"></label>
+      </div>
+      <div class="actions">
+        <button class="primary" id="save">保存修改</button>
+        <button id="save-as">另存为新车辆</button>
+        <button id="export">导出 JSON ↓</button>
+        <button id="delete" class="danger">删除</button>
+        <span class="status" id="status" role="status" aria-live="polite">正在读取车库…</span>
+      </div>
+      <div class="derived">
+        <h3>按规则手册得到的属性 <small id="derived-note"></small></h3>
+        <table id="attributes"><thead><tr><th>等级</th><th>上限血量</th><th>底盘功率上限</th><th>热量上限</th><th>冷却 / 秒</th><th>初速度上限</th><th>初始允许发弹量</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div id="form"></div>
+    </section>
+  </section>
+</main>
+<script src="garage.js"></script>
+</body>
+</html>
