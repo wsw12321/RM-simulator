@@ -1,0 +1,1442 @@
+{
+ "format": "rmuc-field.v1",
+ "id": "rmuc2027_v1",
+ "title": "RMUC 2027 battlefield, extracted from the official STEP model V1.0.0",
+ "size_mm": [
+  28000,
+  15000
+ ],
+ "cell_mm": 20,
+ "grid": [
+  1400,
+  750
+ ],
+ "terrain": {
+  "file": "terrain.bin",
+  "sha256": "56f74cef4b90d770c3e5b4466012e45cd6c71660d92fcecc73fcbd2d0b1338f8",
+  "overhang_cells": 25794
+ },
+ "frame": "x: red baseline -> blue, y: across (red on the left when y is up), z: up from the floor ridge",
+ "floor": {
+  "ridge_y_mm": 7500,
+  "tilt_deg": 1.5,
+  "fence_height_mm": 2400,
+  "note": "two planes falling 1.5 deg from the long centre line (manual figure 4-6); fence height from §4.1"
+ },
+ "structures": [
+  {
+   "id": "blue_base",
+   "kind": "base",
+   "team": "blue",
+   "center_mm": [
+    25589,
+    7500
+   ],
+   "bbox_mm": [
+    [
+     25134,
+     6906,
+     196
+    ],
+    [
+     26226,
+     8096,
+     1381
+    ]
+   ],
+   "source": "axis: manual figure 4-5; bbox: STEP model"
+  },
+  {
+   "id": "red_base",
+   "kind": "base",
+   "team": "red",
+   "center_mm": [
+    2411,
+    7500
+   ],
+   "bbox_mm": [
+    [
+     1775,
+     6906,
+     196
+    ],
+    [
+     2868,
+     8097,
+     1381
+    ]
+   ],
+   "source": "axis: manual figure 4-5; bbox: STEP model"
+  },
+  {
+   "id": "blue_dart_station",
+   "kind": "dart_station",
+   "team": "blue",
+   "center_mm": [
+    27149,
+    794
+   ],
+   "bbox_mm": [
+    [
+     26318,
+     351,
+     -183
+    ],
+    [
+     27980,
+     1236,
+     2589
+    ]
+   ],
+   "source": "STEP model"
+  },
+  {
+   "id": "red_dart_station",
+   "kind": "dart_station",
+   "team": "red",
+   "center_mm": [
+    851,
+    14208
+   ],
+   "bbox_mm": [
+    [
+     20,
+     13766,
+     -183
+    ],
+    [
+     1682,
+     14651,
+     2589
+    ]
+   ],
+   "source": "STEP model"
+  },
+  {
+   "id": "energy_mechanism",
+   "kind": "energy_mechanism",
+   "team": "neutral",
+   "center_mm": [
+    14000,
+    7501
+   ],
+   "bbox_mm": [
+    [
+     12466,
+     5967,
+     236
+    ],
+    [
+     15534,
+     9036,
+     3498
+    ]
+   ],
+   "source": "STEP model"
+  },
+  {
+   "id": "blue_outpost",
+   "kind": "outpost",
+   "team": "blue",
+   "center_mm": [
+    17024,
+    11400
+   ],
+   "bbox_mm": [
+    [
+     16860,
+     11105,
+     344
+    ],
+    [
+     17391,
+     11681,
+     1822
+    ]
+   ],
+   "source": "axis: manual figure 4-5; bbox: STEP model"
+  },
+  {
+   "id": "red_outpost",
+   "kind": "outpost",
+   "team": "red",
+   "center_mm": [
+    10976,
+    3600
+   ],
+   "bbox_mm": [
+    [
+     10609,
+     3321,
+     344
+    ],
+    [
+     11140,
+     3898,
+     1822
+    ]
+   ],
+   "source": "axis: manual figure 4-5; bbox: STEP model"
+  }
+ ],
+ "zones": [
+  {
+   "id": "red_supply",
+   "kind": "supply",
+   "team": "red",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     0,
+     3162
+    ],
+    [
+     0,
+     2362
+    ],
+    [
+     725,
+     2362
+    ],
+    [
+     912,
+     2162
+    ],
+    [
+     912,
+     0
+    ],
+    [
+     3509,
+     0
+    ],
+    [
+     3509,
+     2675
+    ],
+    [
+     2672,
+     3162
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "blue_supply",
+   "kind": "supply",
+   "team": "blue",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     28000,
+     11838
+    ],
+    [
+     28000,
+     12638
+    ],
+    [
+     27275,
+     12638
+    ],
+    [
+     27088,
+     12838
+    ],
+    [
+     27088,
+     15000
+    ],
+    [
+     24491,
+     15000
+    ],
+    [
+     24491,
+     12325
+    ],
+    [
+     25328,
+     11838
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "red_high_point",
+   "kind": "high_point",
+   "team": "red",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     787,
+     13162
+    ],
+    [
+     412,
+     12788
+    ],
+    [
+     412,
+     11550
+    ],
+    [
+     812,
+     11162
+    ],
+    [
+     2036,
+     11162
+    ],
+    [
+     2410,
+     11538
+    ],
+    [
+     2410,
+     12788
+    ],
+    [
+     2036,
+     13162
+    ]
+   ],
+   "mean_height_above_floor_mm": 800,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "blue_high_point",
+   "kind": "high_point",
+   "team": "blue",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     27213,
+     1838
+    ],
+    [
+     27588,
+     2212
+    ],
+    [
+     27588,
+     3450
+    ],
+    [
+     27188,
+     3838
+    ],
+    [
+     25964,
+     3838
+    ],
+    [
+     25590,
+     3462
+    ],
+    [
+     25590,
+     2212
+    ],
+    [
+     25964,
+     1838
+    ]
+   ],
+   "mean_height_above_floor_mm": 800,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "red_base",
+   "kind": "base",
+   "team": "red",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     2224,
+     9438
+    ],
+    [
+     850,
+     8638
+    ],
+    [
+     850,
+     6312
+    ],
+    [
+     2248,
+     5538
+    ],
+    [
+     4209,
+     6662
+    ],
+    [
+     4209,
+     8288
+    ]
+   ],
+   "mean_height_above_floor_mm": 48,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "blue_base",
+   "kind": "base",
+   "team": "blue",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     25776,
+     5562
+    ],
+    [
+     27150,
+     6362
+    ],
+    [
+     27150,
+     8688
+    ],
+    [
+     25752,
+     9462
+    ],
+    [
+     23791,
+     8338
+    ],
+    [
+     23791,
+     6712
+    ]
+   ],
+   "mean_height_above_floor_mm": 49,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "red_fortress",
+   "kind": "fortress",
+   "team": "red",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     5957,
+     8538
+    ],
+    [
+     5458,
+     7525
+    ],
+    [
+     5957,
+     6462
+    ],
+    [
+     7194,
+     6450
+    ],
+    [
+     7706,
+     7500
+    ],
+    [
+     7206,
+     8525
+    ]
+   ],
+   "mean_height_above_floor_mm": 99,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "blue_fortress",
+   "kind": "fortress",
+   "team": "blue",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     22043,
+     6462
+    ],
+    [
+     22542,
+     7475
+    ],
+    [
+     22043,
+     8538
+    ],
+    [
+     20806,
+     8550
+    ],
+    [
+     20294,
+     7500
+    ],
+    [
+     20794,
+     6475
+    ]
+   ],
+   "mean_height_above_floor_mm": 99,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "red_outpost",
+   "kind": "outpost",
+   "team": "red",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     10503,
+     2712
+    ],
+    [
+     11252,
+     2712
+    ],
+    [
+     11777,
+     3238
+    ],
+    [
+     11777,
+     4038
+    ],
+    [
+     11477,
+     4688
+    ],
+    [
+     10603,
+     4662
+    ],
+    [
+     10828,
+     4062
+    ],
+    [
+     11028,
+     4038
+    ],
+    [
+     11252,
+     3812
+    ],
+    [
+     11252,
+     3488
+    ],
+    [
+     11003,
+     3238
+    ],
+    [
+     10853,
+     3238
+    ]
+   ],
+   "mean_height_above_floor_mm": 296,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "blue_outpost",
+   "kind": "outpost",
+   "team": "blue",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     17497,
+     12288
+    ],
+    [
+     16748,
+     12288
+    ],
+    [
+     16223,
+     11762
+    ],
+    [
+     16223,
+     10962
+    ],
+    [
+     16523,
+     10312
+    ],
+    [
+     17397,
+     10338
+    ],
+    [
+     17172,
+     10938
+    ],
+    [
+     16972,
+     10962
+    ],
+    [
+     16748,
+     11188
+    ],
+    [
+     16748,
+     11512
+    ],
+    [
+     16997,
+     11762
+    ],
+    [
+     17147,
+     11762
+    ]
+   ],
+   "mean_height_above_floor_mm": 296,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "red_assembly",
+   "kind": "assembly",
+   "team": "red",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     14325,
+     8588
+    ],
+    [
+     13176,
+     8912
+    ],
+    [
+     12127,
+     8038
+    ],
+    [
+     12127,
+     7688
+    ],
+    [
+     12851,
+     7112
+    ]
+   ],
+   "mean_height_above_floor_mm": 416,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "blue_assembly",
+   "kind": "assembly",
+   "team": "blue",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     13675,
+     6412
+    ],
+    [
+     14824,
+     6088
+    ],
+    [
+     15873,
+     6962
+    ],
+    [
+     15873,
+     7312
+    ],
+    [
+     15149,
+     7888
+    ]
+   ],
+   "mean_height_above_floor_mm": 416,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "central_highland_west",
+   "kind": "central_highland",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     10603,
+     4662
+    ],
+    [
+     10353,
+     5188
+    ],
+    [
+     10353,
+     9362
+    ],
+    [
+     12376,
+     12262
+    ],
+    [
+     12551,
+     12338
+    ],
+    [
+     12576,
+     11212
+    ],
+    [
+     11128,
+     9138
+    ],
+    [
+     11128,
+     5462
+    ],
+    [
+     11477,
+     4688
+    ]
+   ],
+   "mean_height_above_floor_mm": 300,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "central_highland_east",
+   "kind": "central_highland",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     17397,
+     10338
+    ],
+    [
+     17647,
+     9812
+    ],
+    [
+     17647,
+     5638
+    ],
+    [
+     15624,
+     2738
+    ],
+    [
+     15449,
+     2662
+    ],
+    [
+     15424,
+     3788
+    ],
+    [
+     16872,
+     5862
+    ],
+    [
+     16872,
+     9538
+    ],
+    [
+     16523,
+     10312
+    ]
+   ],
+   "mean_height_above_floor_mm": 300,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "highland_step_low_west",
+   "kind": "crossing_highland_low",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     8580,
+     8888
+    ],
+    [
+     8355,
+     8662
+    ],
+    [
+     8355,
+     6288
+    ],
+    [
+     8555,
+     6088
+    ],
+    [
+     9179,
+     6088
+    ],
+    [
+     9179,
+     8888
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "highland_step_low_east",
+   "kind": "crossing_highland_low",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     19420,
+     6112
+    ],
+    [
+     19645,
+     6338
+    ],
+    [
+     19645,
+     8712
+    ],
+    [
+     19445,
+     8912
+    ],
+    [
+     18821,
+     8912
+    ],
+    [
+     18821,
+     6112
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_step_low_west",
+   "kind": "crossing_road_low",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     7756,
+     2738
+    ],
+    [
+     7756,
+     2188
+    ],
+    [
+     8730,
+     2188
+    ],
+    [
+     8730,
+     2738
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_step_low_east",
+   "kind": "crossing_road_low",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     20244,
+     12262
+    ],
+    [
+     20244,
+     12812
+    ],
+    [
+     19270,
+     12812
+    ],
+    [
+     19270,
+     12262
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_step_high_west",
+   "kind": "crossing_road_high",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     7756,
+     1938
+    ],
+    [
+     7756,
+     1362
+    ],
+    [
+     8730,
+     1362
+    ],
+    [
+     8730,
+     1938
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_step_high_east",
+   "kind": "crossing_road_high",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     20244,
+     13062
+    ],
+    [
+     20244,
+     13638
+    ],
+    [
+     19270,
+     13638
+    ],
+    [
+     19270,
+     13062
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_tunnel_end_a_west",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     8905,
+     3262
+    ],
+    [
+     8905,
+     2488
+    ],
+    [
+     9729,
+     2488
+    ],
+    [
+     9729,
+     3262
+    ]
+   ],
+   "mean_height_above_floor_mm": 22,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_tunnel_end_a_east",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     19095,
+     11738
+    ],
+    [
+     19095,
+     12512
+    ],
+    [
+     18271,
+     12512
+    ],
+    [
+     18271,
+     11738
+    ]
+   ],
+   "mean_height_above_floor_mm": 22,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_tunnel_inside_west",
+   "kind": "tunnel_inside",
+   "team": "neutral",
+   "layer": "under",
+   "polygon_mm": [
+    [
+     8905,
+     2488
+    ],
+    [
+     8905,
+     1938
+    ],
+    [
+     9729,
+     1938
+    ],
+    [
+     9729,
+     2488
+    ]
+   ],
+   "mean_height_above_floor_mm": 169,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_tunnel_inside_east",
+   "kind": "tunnel_inside",
+   "team": "neutral",
+   "layer": "under",
+   "polygon_mm": [
+    [
+     19095,
+     12512
+    ],
+    [
+     19095,
+     13062
+    ],
+    [
+     18271,
+     13062
+    ],
+    [
+     18271,
+     12512
+    ]
+   ],
+   "mean_height_above_floor_mm": 168,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_tunnel_end_b_west",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     8905,
+     1938
+    ],
+    [
+     8905,
+     1262
+    ],
+    [
+     9729,
+     1262
+    ],
+    [
+     9729,
+     1938
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "road_tunnel_end_b_east",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     19095,
+     13062
+    ],
+    [
+     19095,
+     13738
+    ],
+    [
+     18271,
+     13738
+    ],
+    [
+     18271,
+     13062
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "far_tunnel_end_a_west",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     12976,
+     938
+    ],
+    [
+     12976,
+     238
+    ],
+    [
+     13800,
+     238
+    ],
+    [
+     13800,
+     938
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "far_tunnel_end_a_east",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     15024,
+     14062
+    ],
+    [
+     15024,
+     14762
+    ],
+    [
+     14200,
+     14762
+    ],
+    [
+     14200,
+     14062
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "far_tunnel_inside_west",
+   "kind": "tunnel_inside",
+   "team": "neutral",
+   "layer": "under",
+   "polygon_mm": [
+    [
+     13800,
+     938
+    ],
+    [
+     13800,
+     238
+    ],
+    [
+     14150,
+     238
+    ],
+    [
+     14150,
+     938
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "far_tunnel_inside_east",
+   "kind": "tunnel_inside",
+   "team": "neutral",
+   "layer": "under",
+   "polygon_mm": [
+    [
+     14200,
+     14062
+    ],
+    [
+     14200,
+     14762
+    ],
+    [
+     13850,
+     14762
+    ],
+    [
+     13850,
+     14062
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "far_tunnel_end_b_west",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     14150,
+     938
+    ],
+    [
+     14150,
+     238
+    ],
+    [
+     14974,
+     238
+    ],
+    [
+     14974,
+     938
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "far_tunnel_end_b_east",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     13850,
+     14062
+    ],
+    [
+     13850,
+     14762
+    ],
+    [
+     13026,
+     14762
+    ],
+    [
+     13026,
+     14062
+    ]
+   ],
+   "mean_height_above_floor_mm": 200,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "near_tunnel_end_a_west",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     13925,
+     1888
+    ],
+    [
+     13925,
+     1188
+    ],
+    [
+     14749,
+     1188
+    ],
+    [
+     14749,
+     1888
+    ]
+   ],
+   "mean_height_above_floor_mm": 17,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "near_tunnel_end_a_east",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     14075,
+     13112
+    ],
+    [
+     14075,
+     13812
+    ],
+    [
+     13251,
+     13812
+    ],
+    [
+     13251,
+     13112
+    ]
+   ],
+   "mean_height_above_floor_mm": 17,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "near_tunnel_inside_west",
+   "kind": "tunnel_inside",
+   "team": "neutral",
+   "layer": "under",
+   "polygon_mm": [
+    [
+     14749,
+     1888
+    ],
+    [
+     14749,
+     1188
+    ],
+    [
+     15099,
+     1188
+    ],
+    [
+     15099,
+     1888
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "near_tunnel_inside_east",
+   "kind": "tunnel_inside",
+   "team": "neutral",
+   "layer": "under",
+   "polygon_mm": [
+    [
+     13251,
+     13112
+    ],
+    [
+     13251,
+     13812
+    ],
+    [
+     12901,
+     13812
+    ],
+    [
+     12901,
+     13112
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "near_tunnel_end_b_west",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     15099,
+     1888
+    ],
+    [
+     15099,
+     1188
+    ],
+    [
+     15923,
+     1188
+    ],
+    [
+     15923,
+     1888
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  },
+  {
+   "id": "near_tunnel_end_b_east",
+   "kind": "tunnel_end",
+   "team": "neutral",
+   "layer": "any",
+   "polygon_mm": [
+    [
+     12901,
+     13112
+    ],
+    [
+     12901,
+     13812
+    ],
+    [
+     12077,
+     13812
+    ],
+    [
+     12077,
+     13112
+    ]
+   ],
+   "mean_height_above_floor_mm": 0,
+   "source": "RMUC 2027 manual V1.0.0 figure 5-23 (printed p102)"
+  }
+ ],
+ "spawns": {
+  "red": [
+   {
+    "x_mm": 3098,
+    "y_mm": 8750,
+    "yaw_deg": 0
+   },
+   {
+    "x_mm": 3098,
+    "y_mm": 6250,
+    "yaw_deg": 0
+   },
+   {
+    "x_mm": 3974,
+    "y_mm": 8062,
+    "yaw_deg": 0
+   },
+   {
+    "x_mm": 3974,
+    "y_mm": 6938,
+    "yaw_deg": 0
+   }
+  ],
+  "blue": [
+   {
+    "x_mm": 24902,
+    "y_mm": 6250,
+    "yaw_deg": 180
+   },
+   {
+    "x_mm": 24902,
+    "y_mm": 8750,
+    "yaw_deg": 180
+   },
+   {
+    "x_mm": 24026,
+    "y_mm": 6938,
+    "yaw_deg": 180
+   },
+   {
+    "x_mm": 24026,
+    "y_mm": 8062,
+    "yaw_deg": 180
+   }
+  ]
+ }
+}

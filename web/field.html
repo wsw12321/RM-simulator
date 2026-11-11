@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RMUC · 官方场地仿真</title>
+  <link rel="stylesheet" href="field.css">
+</head>
+<body>
+<main class="field-app">
+  <header class="app-header">
+    <a class="brand" href="/"><span class="brand-mark">R</span><span>TACTICS <b>LAB</b><small>RMUC 2027 官方场地仿真 / LOCAL ONLY</small></span></a>
+    <a class="back-link" href="/">返回战术沙盒 ↗</a>
+  </header>
+  <section class="intro">
+    <span class="eyebrow">OFFICIAL FIELD · 1:1</span>
+    <h1>在官方场地上行驶</h1>
+    <p>场地高度场由官方开源 STEP 模型（RMUC2027 V1.0.0）按 20 mm 网格提取，并与规则手册第 4 章的标注尺寸核对；增益点区域取自手册图 5-23。
+      机器人的底盘、功率与云台是 2.5 维工程模型，不是官方数据。坡道可以爬，超过越障能力的台阶是墙，隧道按车高判断能否通过。</p>
+  </section>
+  <section class="toolbar">
+    <button class="primary" id="play">▶ 开始</button>
+    <button id="reset">↻ 重置</button>
+    <label>操控机器人 <select id="robot"></select></label>
+    <label class="check"><input type="checkbox" id="gimbal-frame"> 相对云台方向行驶</label>
+    <label class="check"><input type="checkbox" id="show-zones" checked> 显示增益点</label>
+    <label class="check"><input type="checkbox" id="show-labels"> 区域名称</label>
+    <span class="status" id="status" role="status" aria-live="polite">正在连接本机引擎…</span>
+  </section>
+  <section class="workspace">
+    <div class="field-panel">
+      <canvas id="field" width="1400" height="750" tabindex="0" aria-label="官方场地俯视图。WASD 移动，Q E 旋转，鼠标瞄准。"></canvas>
+      <p class="legend"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 平移　<kbd>Q</kbd><kbd>E</kbd> 旋转　鼠标：云台指向　点击机器人可切换操控对象。
+        颜色表示相对战场地面的高度；黄色描边为增益点（场地交互模块卡）范围；斜线区域上方有顶（隧道等）。</p>
+    </div>
+    <aside>
+      <section class="card">
+        <h3>所选机器人 <small id="sel-id">—</small></h3>
+        <dl class="telemetry">
+          <dt>位置 x / y</dt><dd id="t-pos">—</dd>
+          <dt>离地面高度</dt><dd id="t-height">—</dd>
+          <dt>速度</dt><dd id="t-speed">—</dd>
+          <dt>车体朝向 / 俯仰 / 横滚</dt><dd id="t-att">—</dd>
+          <dt>云台 偏航 / 俯仰</dt><dd id="t-gimbal">—</dd>
+          <dt>底盘功率 / 上限</dt><dd id="t-power">—</dd>
+          <dt>缓冲能量</dt><dd id="t-buffer">—</dd>
+          <dt>状态</dt><dd id="t-state">—</dd>
+          <dt>所在增益点</dt><dd id="t-zones">—</dd>
+        </dl>
+      </section>
+      <section class="card">
+        <h3>光标处地形</h3>
+        <dl class="telemetry">
+          <dt>坐标 x / y</dt><dd id="p-pos">—</dd>
+          <dt>地面高于战场地面</dt><dd id="p-ground">—</dd>
+          <dt>上方结构</dt><dd id="p-over">—</dd>
+          <dt>区域</dt><dd id="p-zones">—</dd>
+        </dl>
+      </section>
+      <section class="card">
+        <h3>场地数据</h3>
+        <dl class="telemetry">
+          <dt>场地</dt><dd id="f-id">—</dd>
+          <dt>尺寸 / 网格</dt><dd id="f-size">—</dd>
+          <dt>比赛时间</dt><dd id="f-time">—</dd>
+          <dt>引擎构建</dt><dd id="f-build">—</dd>
+        </dl>
+      </section>
+    </aside>
+  </section>
+</main>
+<script src="field.js"></script>
+</body>
+</html>

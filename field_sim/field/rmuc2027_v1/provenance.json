@@ -1,0 +1,35 @@
+{
+ "field": "rmuc2027_v1",
+ "summary": "RMUC 2027 battlefield as a 20 mm layered height field, extracted from the official STEP model and checked against the rules manual.",
+ "step_model": {
+  "name": "RMUC2027_V1.0.0.stp",
+  "publisher": "RoboMaster Organizing Committee, post 'RMU 2027场地图纸&可移动道具开源'",
+  "page": "https://bbs.robomaster.com/article/1970956",
+  "url": "https://hz-rm-bbs-web-prod.oss-cn-hangzhou.aliyuncs.com/080ae7230f6c469c9bec9d2c892797b61791994813953/RMUC2027_V1.0.0.stp",
+  "bytes": 653443279,
+  "md5": "3d3d6a411f44e9a4983794261b3f0bf7",
+  "sha256": "a5ad3ede3b7674fc98f2e73b71717216383cb2b4b5dcdbe900c2038918bea8e0",
+  "retrieved": "2026-11-10",
+  "in_repository": false,
+  "note": "The publisher states the model is for reference only; where it differs from the manual or the real venue, those take precedence."
+ },
+ "manual": {
+  "file": "docs/rules/RMUC2027_rules_manual_CN_V1.0.0_20261015.pdf",
+  "sha256": "9e2eed9295536c6fd547b62d634df1d5e70a2e1e2250e5dff3521d557e5d54be",
+  "used_for": ["§4.1 size and tolerances", "figure 4-5 module positions", "figure 4-6 floor tilt", "figure 4-27 central highland", "figure 4-35 road and tunnels", "figure 5-23 buff point areas", "§5.6.4.5 crossing cards"]
+ },
+ "pipeline": [
+  "tools/field_extract/extract_step.py: OpenCASCADE reads the STEP assembly (81 leaf instances, 5.59 million triangles at 1 mm chord tolerance)",
+  "tools/field_extract/build_terrain.py: frame from the two fitted floor planes; vertical-ray sampling on a 20 mm grid; solids by winding count, open sheets by their vertical hull; ground and lowest overhang per cell",
+  "tools/field_extract/trace_zones.py + build_field_json.py: red-side buff point outlines from manual figure 5-23 (25 mm per pixel), blue side by point reflection; structure axes from figure 4-5; checks"
+ ],
+ "terrain_sha256": "56f74cef4b90d770c3e5b4466012e45cd6c71660d92fcecc73fcbd2d0b1338f8",
+ "known_limits": [
+  "20 mm cells; heights rounded to 1 mm",
+  "one overhang per cell: anything above the lowest overhang is not represented",
+  "free space lower than 100 mm under a body is filled (hollow decks, recovery slots)",
+  "props (bases, outposts, energy mechanism, dart stations, energy units) are frozen in their modelled pose as solid terrain",
+  "zone outlines are accurate to about one figure pixel (25 mm); tunnel interior cards are taken as the strip between the two end cards",
+  "start poses are an engineering choice inside the start zone"
+ ]
+}

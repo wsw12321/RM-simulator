@@ -41,6 +41,10 @@ python3 -m py_compile tests/test_growth_catalog_crosscheck.py
 python3 tests/test_growth_catalog_crosscheck.py
 python3 -m py_compile match_lab/*.py tests/test_match_lab.py
 python3 tests/test_match_lab.py
+python3 -m py_compile field_sim/*.py tests/test_field_bridge.py tests/test_field_http.py
+python3 tests/test_field_bridge.py
+node --check web/field.js
+node --check tests/field_browser_smoke.cjs
 node --check web/roster-profiles.js
 node --check tests/sourced_profiles_ui_handlers.cjs
 node --check web/roster.js
@@ -105,6 +109,7 @@ node tests/tactical_ui_handlers.cjs "http://127.0.0.1:$PORT"
 
 python3 tests/test_roster_http.py "$PORT"
 python3 tests/test_lab_http.py "$PORT"
+python3 tests/test_field_http.py "$PORT"
 node tests/roster_ui_handlers.cjs "http://127.0.0.1:$PORT"
 
 python3 tests/test_sourced_profiles_http.py "$PORT"

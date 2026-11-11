@@ -1305,3 +1305,40 @@ replacement characters (Python's pipe output there is cp1252); the tests pass.
 Not verified: a real Windows desktop (double-clicking `start.bat`, SmartScreen and
 Mark-of-the-Web prompts, Defender, the browser opening, Ctrl+C in a console window),
 Windows 10 and a Chinese-locale (cp936) system, and Windows on arm64 (not built).
+
+## Official field replica (field_sim, plan item 1) · 2026-11-11
+
+Environment: Linux x86_64, GCC 13.3, Python 3.13, Node 22; extraction with
+cadquery-ocp 8.0.1 (OpenCASCADE) and numpy 2.5.
+
+Field extraction, run once on the official `RMUC2027_V1.0.0.stp` (653,443,279 bytes,
+MD5 `3d3d6a411f44e9a4983794261b3f0bf7`, equal to the MD5 published with the download):
+
+- `extract_step.py`: 81 leaf instances, 5,591,119 triangles, two faces without a mesh
+  (dart station and resource area details); 182 s, 4.7 GB peak.
+- `build_terrain.py`: floor planes fitted with at most 0.9 mm residual, tilt 1.4997 and
+  1.4994 degrees; 4 of 1,050,000 cells without any geometry (filled with the floor
+  plane); 25,794 overhang cells kept; 4.5 s.
+- `build_field_json.py`: the manual comparison stored in
+  `field_sim/field/rmuc2027_v1/extraction_report.json` (table in `field_sim/README.md`):
+  length 28000.0, fortress centre 6570 vs 6571, trapezoid highland 199.7 vs 200,
+  central highland 10820.0 long and 8040 wide including both 150 mm edges, levels
+  200/300/350/360/400, three 200 mm steps to the high point, tunnel clearances
+  250/250/305 mm. Base and outpost axes measured 20-35 mm from the manual's figure 4-5
+  values; the manual values are used.
+
+Tests run:
+
+| Suite | Result |
+|---|---|
+| `field_sim_tests` (native) | 74,177 assertions passed |
+| `tests/test_field_bridge.py` | 9 tests passed |
+| `tests/test_field_http.py` (in `tools/check.sh`) | 4 tests passed |
+| `tests/field_browser_smoke.cjs` (Chromium via Playwright) | passed: page loads, terrain painted, a robot driven with the keyboard moves forward, the pointer probe reads 800 mm and `red_high_point` over the high point, no page errors |
+| `bash tools/check.sh` | exit 0: 44 native targets, 31 native test binaries and every earlier Python / Node suite unchanged |
+
+Not verified: other compilers and platforms for the new targets (macOS clang, MinGW);
+bit-identical results across platforms (double precision is used); the vehicle model
+against any real robot; the zone outlines against a physical field. The browser smoke
+test is not part of `tools/check.sh` because it needs Playwright.
+

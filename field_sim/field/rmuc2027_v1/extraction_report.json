@@ -1,0 +1,174 @@
+{
+ "frame": {
+  "cad_ridge_y": 1625.4558490108498,
+  "cad_ridge_z": -1640.8961059671612,
+  "cad_centre_x": 0.00732421875,
+  "tilt_deg": [
+   1.4997302767028684,
+   1.4994461815307398
+  ],
+  "plane_fit_residual_mm": [
+   0.5819150540951341,
+   0.8629051037389672
+  ]
+ },
+ "structure_asymmetry_mm": {
+  "base": {
+   "manual_mm": [
+    2411,
+    7500
+   ],
+   "model_tallest_part_centroid_mm": [
+    2390,
+    7518
+   ]
+  },
+  "outpost": {
+   "manual_mm": [
+    10976,
+    3600
+   ],
+   "model_tallest_part_centroid_mm": [
+    10964,
+    3567
+   ]
+  }
+ },
+ "tunnels": {
+  "road_tunnel_inside_west": {
+   "roofed_cells": 720,
+   "zone_cells": 1107,
+   "clearance_mm_median": 305.0,
+   "clearance_mm_min": 260.0
+  },
+  "far_tunnel_inside_west": {
+   "roofed_cells": 595,
+   "zone_cells": 595,
+   "clearance_mm_median": 250.0,
+   "clearance_mm_min": 249.0
+  },
+  "near_tunnel_inside_west": {
+   "roofed_cells": 595,
+   "zone_cells": 630,
+   "clearance_mm_median": 250.0,
+   "clearance_mm_min": 249.0
+  }
+ },
+ "checks": [
+  {
+   "what": "field length",
+   "source": "§4.1, figure 4-5",
+   "manual": 28000,
+   "model": 28000.0
+  },
+  {
+   "what": "floor tilt, degrees (both halves)",
+   "source": "figure 4-6: 1°~2°",
+   "manual": "1..2",
+   "model": [
+    1.4997,
+    1.4994
+   ]
+  },
+  {
+   "what": "red fortress centre x",
+   "source": "figure 4-5 (6571)",
+   "manual": 6571,
+   "model": 6570
+  },
+  {
+   "what": "base axis (x, y)",
+   "source": "figure 4-5 (25589 mirrored, 7500)",
+   "manual": [
+    2411,
+    7500
+   ],
+   "model": [
+    2390,
+    7518
+   ]
+  },
+  {
+   "what": "outpost axis (x, y)",
+   "source": "figure 4-5 (17024 mirrored, 3600)",
+   "manual": [
+    10976,
+    3600
+   ],
+   "model": [
+    10964,
+    3567
+   ]
+  },
+  {
+   "what": "trapezoid highland height",
+   "source": "§4.3.1 (200)",
+   "manual": 200,
+   "model": 199.7
+  },
+  {
+   "what": "central highland levels",
+   "source": "figure 4-27 section A-A (200, 300, 350, 360, 400)",
+   "manual": [
+    200,
+    300,
+    350,
+    360,
+    400
+   ],
+   "model": [
+    300,
+    200,
+    400,
+    350,
+    360,
+    405
+   ]
+  },
+  {
+   "what": "central highland extent along y",
+   "source": "figure 4-27 (10820)",
+   "manual": 10820,
+   "model": 10820.0
+  },
+  {
+   "what": "central highland width incl. two 150 mm edges",
+   "source": "figure 4-27 (7740 + 2 x 150)",
+   "manual": 8040,
+   "model": 8040
+  },
+  {
+   "what": "steps from trapezoid highland to high point",
+   "source": "§4.2.4: three steps",
+   "manual": "three steps",
+   "model": [
+    200,
+    400,
+    600,
+    800
+   ]
+  },
+  {
+   "what": "undulating road: bump height above the 200 mm road",
+   "source": "figure 4-36/4-37 (no number readable)",
+   "manual": null,
+   "model": 69.0
+  },
+  {
+   "what": "high point deck height",
+   "source": "model only",
+   "manual": null,
+   "model": 799.9
+  },
+  {
+   "what": "tunnel clearances",
+   "source": "figure 4-35 (road tunnel 200/260), figure 4-38",
+   "manual": "200..260",
+   "model": {
+    "road_tunnel_inside_west": 305.0,
+    "far_tunnel_inside_west": 250.0,
+    "near_tunnel_inside_west": 250.0
+   }
+  }
+ ]
+}

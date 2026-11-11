@@ -298,3 +298,27 @@ Local C++ engine plus Python loopback bridge and browser Canvas interface. This 
   on Windows with `py -3` or `python` and UTF-8 mode. `package_release.py` builds a static
   `windows-x86_64` zip and smoke-tests it through `start.bat`; the release workflow adds a
   `windows-latest` job with MSYS2 UCRT64 GCC.
+
+## 2026-11-11 · Official field replica (field_sim, plan item 1)
+
+- New independent mode `rmuc2027-field-sim-v1` in `field_sim/`: robots drive on a
+  1:1 replica of the RMUC 2027 battlefield. Existing modes, rule modules and their
+  build IDs are unchanged.
+- Field data `field_sim/field/rmuc2027_v1`: a 20 mm layered height field (ground plus
+  the lowest overhang per cell) extracted from the official STEP model
+  `RMUC2027_V1.0.0.stp` (not stored in the repository; URL, size, MD5 and SHA-256 are
+  in `provenance.json`), 38 buff-point zones from manual figure 5-23, base and outpost
+  axes from figure 4-5, and an extraction report comparing the model with the manual's
+  dimensions. `tools/field_extract/` holds the development-time pipeline (OpenCASCADE
+  reader, numpy vertical-ray sampler, zone and report builder).
+- Native 100 Hz engine: cylinder body on the height field with wall, step, slope and
+  low-roof rules, sliding contact, ledge drops and ramp jumps, tunnels that can be
+  driven through or over, holonomic and differential drives, an electrical power model
+  with on-board limiter and optional supercapacitor settled by `limits_v1` (§5.1.4
+  buffer and 5 s cut-off), a stabilised rate- and travel-limited gimbal, robot-robot
+  contact and zone detection. Robot mechanics are engineering assumptions.
+- Local bridge with build-identity check and candidate reset, `/api/field/*` endpoints,
+  and `web/field.html` (height-shaded field, zones, driving, terrain probe).
+- `.gitattributes` keeps `*.bin` byte-exact; the release smoke test covers the new page
+  and engine.
+

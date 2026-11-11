@@ -27,6 +27,7 @@ LAYERED_MAX_BODY = 12 * 1024 * 1024
 COMBAT_MAX_BODY = 12 * 1024 * 1024
 TACTICAL_MAX_BODY = 48 * 1024 * 1024
 ROSTER_MAX_BODY = 96 * 1024 * 1024
+FIELD_MAX_BODY = 256 * 1024
 LOCK = threading.RLock()
 
 ENGINE_TIMEOUT = 'C++ policy timed out; restart the server. This run is invalid, not a game loss.'
@@ -473,6 +474,37 @@ def roster_profiles_get(server, path, query):
     raise ValueError('Unknown sourced profile endpoint.')
 
 
+def field_sim(server):
+    """The official-field session, started on first use."""
+    with LOCK:
+        if not hasattr(server, 'field_sim'):
+            from field_sim.bridge import FieldSim
+            server.field_sim = FieldSim()
+        return server.field_sim
+
+def field_get(server, path):
+    sim = field_sim(server)
+    if path == '/api/field/meta':
+        return sim.meta()
+    if path == '/api/field/state':
+        return sim.state()
+    raise ValueError('Unknown field endpoint.')
+
+def field_post(server, path, data):
+    sim = field_sim(server)
+    if path == '/api/field/reset':
+        return {'state': sim.reset(data), 'session': sim.meta()['session']}
+    if path == '/api/field/step':
+        if set(data) != {'ticks', 'commands'}:
+            raise ValueError('A field step needs exactly ticks and commands.')
+        return {'state': sim.step(data['ticks'], data['commands'])}
+    if path == '/api/field/probe':
+        if set(data) != {'x', 'y'}:
+            raise ValueError('A field probe needs exactly x and y.')
+        return sim.probe(data['x'], data['y'])
+    raise ValueError('Unknown field endpoint.')
+
+
 class Handler(SimpleHTTPRequestHandler):
     # Fixed types for the files in web/: on Windows mimetypes reads the registry, where .js is
     # sometimes text/plain, and nosniff plus the CSP below would then block every script.
@@ -550,6 +582,19 @@ class Handler(SimpleHTTPRequestHandler):
         if path=='/api/lab/example':
             from match_lab import cli as lab
             return self.respond(lab.DEFAULT)
+        if path=='/api/field/terrain':
+            try:
+                from field_sim.bridge import terrain_bytes
+                raw=terrain_bytes()
+            except OSError as exc:return self.respond({'error':str(exc)},500)
+            self.send_response(200); self.send_header('Content-Type','application/octet-stream'); self.send_header('Content-Length',str(len(raw))); self.end_headers(); self.wfile.write(raw)
+            return
+        if path.startswith('/api/field/'):
+            if path not in ('/api/field/meta','/api/field/state'):
+                return self.respond({'error':'Not found'},404)
+            try:return self.respond(field_get(self.server,path))
+            except ValueError as exc:return self.respond({'error':str(exc)},400)
+            except (RuntimeError,OSError) as exc:return self.respond({'error':str(exc)},500)
         if path=='/api/arena/sample':
             try:return self.respond(arena_sample())
             except (ValueError,OSError) as exc:return self.respond({'error':str(exc)},500)
@@ -590,6 +635,7 @@ class Handler(SimpleHTTPRequestHandler):
                    LAYERED_MAX_BODY if self.path.startswith('/api/layered/') else
                    ARENA_MAX_BODY if self.path.startswith('/api/arena/') else
                    LAB_MAX_BODY if self.path.startswith('/api/lab/') else
+                   FIELD_MAX_BODY if self.path.startswith('/api/field/') else
                    4_000_000 if self.path.startswith('/api/objective/') else MAX_BODY)
             if not 0<length<=limit:raise ValueError('Body size is invalid.')
             self.connection.settimeout(10)
@@ -602,6 +648,10 @@ class Handler(SimpleHTTPRequestHandler):
                 if self.path not in ('/api/lab/run','/api/lab/sweep'):
                     return self.respond({'error':'Not found'},404)
                 return self.respond(lab_post(self.path,data))
+            if self.path.startswith('/api/field/'):
+                if self.path not in ('/api/field/reset','/api/field/step','/api/field/probe'):
+                    return self.respond({'error':'Not found'},404)
+                return self.respond(field_post(self.server,self.path,data))
             if self.path.startswith('/api/arena/'):
                 if self.path not in ('/api/arena/validate','/api/arena/query'):
                     return self.respond({'error':'Not found'},404)
@@ -679,4 +729,5 @@ def main():
         if hasattr(server,'combat_engine'):server.combat_engine.close()
         if hasattr(server,'tactical_engine'):server.tactical_engine.close()
         if hasattr(server,'roster_engine'):server.roster_engine.close()
+        if hasattr(server,'field_sim'):server.field_sim.close()
 if __name__=='__main__':main()

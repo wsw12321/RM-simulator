@@ -2,8 +2,9 @@
 # MANIFEST.sha256 hash raw file bytes, so CRLF conversion would break them.
 * text=auto eol=lf
 
-# Binary reference documents are stored byte-exact.
+# Binary reference documents and field height data are stored byte-exact.
 *.pdf binary
+*.bin binary
 
 # Windows batch files must keep CRLF: cmd.exe mis-handles labels in LF-only files.
 *.bat text eol=crlf

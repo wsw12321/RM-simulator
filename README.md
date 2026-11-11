@@ -49,6 +49,21 @@ Linux 与 Windows 下静态链接，生成可复现的 `dist/*.tar.gz`（Windows
 在 Linux、macOS 与 Windows 上执行同一脚本（以 Python 3.10 运行冒烟测试）并发布 GitHub Release。
 也可以在 GitHub 网页的 Releases → Draft a new release 里新建 `v*` 标签并发布，工作流会把三个包附加到这个 Release 上。
 
+## 新增：官方场地 1:1 复刻仿真
+
+打开 `http://127.0.0.1:8765/field.html`。独立模式 `rmuc2027-field-sim-v1`（[`field_sim/`](field_sim/README.md)）让机器人在
+**与官方场地同尺寸、同高度、同结构**的战场上行驶：
+
+- 场地由官方开源 STEP 模型 `RMUC2027_V1.0.0.stp` 提取成 20 mm 网格的分层高度场（28 m × 15 m，含 1.5° 地面倾斜、
+  梯形高地、中央高地、公路与起伏路段、三条隧道、三级台阶、堡垒、基地 / 前哨站 / 能量机关等道具占位），
+  并与规则手册第 4 章的标注尺寸逐项核对；38 个增益点区域取自手册图 5-23。来源、校验值和核对结果随数据一起保存。
+- 机器人沿高度场行驶：坡道可爬，超过越障高度的台阶是墙，可从台地边缘驶下或飞坡落地，
+  隧道按车高判断能否穿过，也可以从上面跨过；视线和弹道遮挡使用同一份地形。
+- 底盘加速度、功率与缓冲能量（接入 `limits_v1` 的断电规则）、自稳云台是明确标注的 2.5 维工程模型，不是官方数据。
+
+这是[开发计划](docs/PLAN.md)的第 1 项；车辆配置与车库、对外感知 / 控制接口随后加入同一模式。
+提取工具在 [`tools/field_extract/`](tools/field_extract/)，只在重新生成场地数据时需要。
+
 ## 新增：2027 规则全流程实验对局与 9 个规则模块
 
 规则手册原件放在 [`docs/rules/`](docs/rules/README.md)（SHA-256 与各模块 `provenance.json` 记录一致）。
@@ -188,6 +203,7 @@ python3 server.py                            # 浏览器打开 http://127.0.0.1:
 - `combat_mode/`：独立过滤观测的双机策略 SDK、原生包装器和隔离接口；`web/combat.html` 是对应界面。
 - `src/cli.cpp`：本地行协议适配器。
 - `src/wasm.cpp`, `tools/build_wasm.sh`：实验性 Emscripten C ABI 构建入口。**未编译 WASM、未接入浏览器传输、未做跨目标一致性测试。**
+- `field_sim/`：官方场地仿真——场地数据、C++ 引擎与本机桥接；`web/field.html` 是对应界面；`tools/field_extract/` 是场地提取工具。
 - `server.py`：仅本机 HTTP 服务、严格输入验证、候选引擎事务式回放导入。
 - `web/`：中文 Canvas 2D 界面，不计算官方规则或权威伤害。
 - `tests/`：原生核心、HTTP、桥接单元、DOM 控制逻辑和真实浏览器测试脚本。
