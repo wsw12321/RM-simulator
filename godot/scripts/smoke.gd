@@ -18,13 +18,13 @@ func _run() -> void:
     assert(scene.robots.size() == 2, "two robots must spawn")
     var robots: Array = scene.get("robots")
     var red: Node = robots[0]
+    scene.set("running", false)
     var start: Vector3 = red.get("global_position")
     red.call("set_command", Vector2.RIGHT, Vector3(4, 0, 0), false)
     await physics_frame
     await physics_frame
     assert(Vector3(red.get("global_position")).distance_to(start) > 0.001, "CharacterBody3D should move smoothly")
     scene.call("spawn_projectile", red, Vector3(robots[1].get("global_position")))
-    scene.set("running", false)
     var projectiles: Array = scene.get("projectiles")
     assert(projectiles.size() == 1, "projectile should spawn")
     print("GODOT_SMOKE_OK robots=%d zones=%d native_collision=true orbit_camera=true" % [robots.size(), arena.get("zones").size()])
