@@ -1,6 +1,4 @@
 extends Area3D
-class_name RMProjectile
-
 var velocity := Vector3.ZERO
 var owner_team := 0
 var damage := 28

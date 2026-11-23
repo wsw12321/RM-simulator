@@ -1,7 +1,5 @@
 extends CanvasLayer
-class_name RMHud
-
-var game: RMGame
+var game: Node3D
 var title_label: Label
 var timer_label: Label
 var score_label: Label
@@ -13,7 +11,7 @@ var root: Control
 func _ready() -> void:
     _build_ui()
 
-func bind_game(owner: RMGame) -> void:
+func bind_game(owner: Node3D) -> void:
     game = owner
     refresh()
 
@@ -105,15 +103,18 @@ func _reset() -> void:
 func refresh() -> void:
     if game == null or not is_instance_valid(game):
         return
-    var mins := int(game.elapsed) / 60
-    var secs := int(game.elapsed) % 60
+    var mins: int = int(float(game.get("elapsed"))) / 60
+    var secs: int = int(float(game.get("elapsed"))) % 60
     timer_label.text = "%02d:%02d" % [mins, secs]
-    score_label.text = "RED %d   ·   BLUE %d" % [game.score[0], game.score[1]]
-    if game.robots.size() >= 2:
-        var red: RMRobotActor = game.robots[0]
-        var blue: RMRobotActor = game.robots[1]
-        status_label.text = "RED %03d HP   ·   BLUE %03d HP   ·   %s" % [red.hp, blue.hp, "LIVE" if game.running else "PAUSED"]
+    var score: Array = game.get("score")
+    score_label.text = "RED %d   ·   BLUE %d" % [score[0], score[1]]
+    var robots: Array = game.get("robots")
+    if robots.size() >= 2:
+        var red: Node = robots[0]
+        var blue: Node = robots[1]
+        status_label.text = "RED %03d HP   ·   BLUE %03d HP   ·   %s" % [int(red.get("hp")), int(blue.get("hp")), "LIVE" if bool(game.get("running")) else "PAUSED"]
     var lines: Array[String] = []
-    for event in game.events:
+    var events: Array = game.get("events")
+    for event in events:
         lines.append("[color=#80aabb]›[/color] " + event)
     event_label.text = "\n".join(lines)
