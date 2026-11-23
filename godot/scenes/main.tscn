@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/rm_game.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/arena_world.gd" id="2_arena"]
+[ext_resource type="Script" path="res://scripts/arena_camera.gd" id="3_camera"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.018, 0.028, 0.047, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.31, 0.42, 0.57, 1)
+ambient_light_energy = 0.68
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.7
+fog_enabled = true
+fog_light_color = Color(0.09, 0.14, 0.22, 1)
+fog_density = 0.008
+fog_height = 2.0
+fog_height_density = 0.1
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.055, 0.1, 0.14, 1)
+metallic = 0.58
+roughness = 0.34
+
+[node name="RMGame" type="Node3D"]
+script = ExtResource("1_game")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -32, 0)
+light_color = Color(0.73, 0.86, 1, 1)
+light_energy = 1.15
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
+
+[node name="RimLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-30, 145, 0)
+light_color = Color(0.2, 0.52, 0.92, 1)
+light_energy = 0.55
+shadow_enabled = true
+
+[node name="Arena" type="Node3D" parent="."]
+script = ExtResource("2_arena")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 52.0
+near = 0.1
+far = 250.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
