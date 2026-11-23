@@ -168,20 +168,25 @@ jobs:
             -storepass android -alias androiddebugkey -keypass android -keyalg RSA \
             -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      - name: Run Godot headless smoke
+      - name: Run Godot headless smoke and migration probes
         shell: bash
+        env:
+          RM_HEADLESS_SMOKE: "1"
         run: |
           set -euo pipefail
+          common=(--headless --path godot --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility)
           if [[ -f godot/scripts/smoke.gd ]]; then
-            "$GODOT_BIN" --headless --path godot --script scripts/smoke.gd \
-              --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+            timeout 30s "$GODOT_BIN" "${common[@]}" --script scripts/smoke.gd
           elif [[ -f godot/smoke.gd ]]; then
-            "$GODOT_BIN" --headless --path godot --script smoke.gd \
-              --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+            timeout 30s "$GODOT_BIN" "${common[@]}" --script smoke.gd
           else
-            "$GODOT_BIN" --headless --path godot --editor --quit \
-              --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+            timeout 30s "$GODOT_BIN" "${common[@]}" --editor --quit
           fi
+          timeout 30s "$GODOT_BIN" "${common[@]}" --script qa_smoke.gd
+          timeout 30s "$GODOT_BIN" "${common[@]}" --script rm_sim_bridge_probe.gd
+          timeout 30s "$GODOT_BIN" "${common[@]}" --script http_bridge_probe.gd
+          timeout 30s "$GODOT_BIN" "${common[@]}" --script tests/smoke.gd
+          timeout 30s "$GODOT_BIN" "${common[@]}" --script tests/qa_adapter.gd
 
       - name: Export and validate Godot packages
         shell: bash
