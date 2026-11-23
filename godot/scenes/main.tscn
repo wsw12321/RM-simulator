@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/rm_game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/arena_world.gd" id="2_arena"]
 [ext_resource type="Script" path="res://scripts/arena_camera.gd" id="3_camera"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/visual_bootstrap.gd" id="5_visual"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -58,3 +59,6 @@ far = 250.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("4_hud")
+
+[node name="VisualPresentation" type="Node3D" parent="."]
+script = ExtResource("5_visual")

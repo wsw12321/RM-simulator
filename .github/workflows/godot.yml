@@ -146,6 +146,8 @@ jobs:
 
       - name: Run headless Godot smoke
         shell: bash
+        env:
+          RM_HEADLESS_SMOKE: "1"
         run: |
           set -euo pipefail
           if [[ -f godot/scripts/smoke.gd ]]; then
@@ -158,6 +160,15 @@ jobs:
             "$GODOT_BIN" --headless --path godot --editor --quit \
               --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
           fi
+
+      - name: Smoke visual showcase scene
+        shell: bash
+        env:
+          RM_HEADLESS_SMOKE: "1"
+        run: |
+          set -euo pipefail
+          timeout 20s "$GODOT_BIN" --headless --path godot --scene scenes/rmuc_visual_showcase.tscn --quit-after 1 \
+            --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
 
       - name: Export desktop and Android packages
         shell: bash
