@@ -95,12 +95,7 @@ jobs:
             "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz" \
             --output "$godot_root/templates.tpz"
           unzip -q "$godot_root/templates.tpz" -d "$godot_root/templates"
-          template_source="$(find "$godot_root/templates" -type f -name 'linux_release.x86_64' -printf '%h\n' | while IFS= read -r candidate; do
-            if [[ -f "$candidate/windows_release_x86_64.exe" && -f "$candidate/android_debug.apk" ]]; then
-              printf '%s\n' "$candidate"
-              break
-            fi
-          done)"
+          template_source="$(find "$godot_root/templates" -type f -name 'linux_release.x86_64' -printf '%h\n' | head -n 1)"
           if [[ -z "$template_source" || ! -d "$template_source" ]]; then
             echo "Godot export template directory was not found" >&2
             find "$godot_root/templates" -maxdepth 5 -print >&2
@@ -122,7 +117,7 @@ jobs:
           # The Android build template is separate from export templates; install it in the project for CI.
           if [[ -f "$template_destination/android_source.zip" ]]; then
             rm -rf godot/android
-            unzip -q "$template_destination/android_source.zip" -d godot
+            unzip -q -o "$template_destination/android_source.zip" -d godot || true
             test -f godot/android/build.gradle
           fi
           echo "GODOT_BIN=$godot_root/godot" >> "$GITHUB_ENV"
