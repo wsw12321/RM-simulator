@@ -138,6 +138,12 @@ jobs:
               -dname "CN=Android Debug,O=Android,C=US"
           fi
 
+      - name: Import Godot project and build script class cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --path godot --editor --quit             --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+
       - name: Run headless Godot smoke
         shell: bash
         run: |
@@ -157,22 +163,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p dist/godot
+          export_root="$GITHUB_WORKSPACE/dist/godot"
+          mkdir -p "$export_root"
           export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
           export GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey
           export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
           "$GODOT_BIN" --headless --path godot --export-release "Linux" \
-            dist/godot/rmuc-tactics-lab-godot-linux-x86_64
+            "$export_root/rmuc-tactics-lab-godot-linux-x86_64"
           "$GODOT_BIN" --headless --path godot --export-release "Windows" \
-            dist/godot/rmuc-tactics-lab-godot-windows-x86_64.exe
+            "$export_root/rmuc-tactics-lab-godot-windows-x86_64.exe"
           "$GODOT_BIN" --headless --path godot --export-debug "Android" \
-            dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
-          test -s dist/godot/rmuc-tactics-lab-godot-linux-x86_64
-          test -s dist/godot/rmuc-tactics-lab-godot-windows-x86_64.exe
-          test -s dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
-          unzip -tq dist/godot/rmuc-tactics-lab-godot-android-arm64.apk >/dev/null
-          test "$(stat -c %s dist/godot/rmuc-tactics-lab-godot-android-arm64.apk)" -le 104857600
-          chmod +x dist/godot/rmuc-tactics-lab-godot-linux-x86_64
+            "$export_root/rmuc-tactics-lab-godot-android-arm64.apk"
+          test -s "$export_root/rmuc-tactics-lab-godot-linux-x86_64"
+          test -s "$export_root/rmuc-tactics-lab-godot-windows-x86_64.exe"
+          test -s "$export_root/rmuc-tactics-lab-godot-android-arm64.apk"
+          unzip -tq "$export_root/rmuc-tactics-lab-godot-android-arm64.apk" >/dev/null
+          test "$(stat -c %s "$export_root/rmuc-tactics-lab-godot-android-arm64.apk")" -le 104857600
+          chmod +x "$export_root/rmuc-tactics-lab-godot-linux-x86_64"
 
       - name: Package and checksum exports
         shell: bash
