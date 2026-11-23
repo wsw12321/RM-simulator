@@ -245,7 +245,7 @@ jobs:
           test -s dist/godot/rmuc-tactics-lab-godot-windows-x86_64.zip
           test -s dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
           test -s dist/godot/SHA256SUMS.txt
-          sha256sum --check dist/godot/SHA256SUMS.txt
+          (cd dist/godot && sha256sum --check SHA256SUMS.txt)
       - name: Attach assets to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
