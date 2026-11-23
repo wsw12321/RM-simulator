@@ -157,16 +157,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p dist/godot
+          output_dir="$GITHUB_WORKSPACE/dist/godot"
+          mkdir -p "$output_dir"
           export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
           export GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey
           export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
           "$GODOT_BIN" --headless --path godot --export-release "Linux" \
-            dist/godot/rmuc-tactics-lab-godot-linux-x86_64
+            "$output_dir/rmuc-tactics-lab-godot-linux-x86_64"
           "$GODOT_BIN" --headless --path godot --export-release "Windows" \
-            dist/godot/rmuc-tactics-lab-godot-windows-x86_64.exe
+            "$output_dir/rmuc-tactics-lab-godot-windows-x86_64.exe"
           "$GODOT_BIN" --headless --path godot --export-debug "Android" \
-            dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
+            "$output_dir/rmuc-tactics-lab-godot-android-arm64.apk"
           test -s dist/godot/rmuc-tactics-lab-godot-linux-x86_64
           test -s dist/godot/rmuc-tactics-lab-godot-windows-x86_64.exe
           test -s dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
