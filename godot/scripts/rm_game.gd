@@ -71,8 +71,8 @@ func _aim_point() -> Vector3:
 
 func spawn_projectile(shooter: Node, target: Vector3) -> void:
     var projectile: Node = ProjectileScene.new()
-    projectile.call("configure", shooter.get("global_position"), target, shooter.get("team"), shooter)
     arena.add_child(projectile)
+    projectile.call("configure", shooter.get("global_position"), target, shooter.get("team"), shooter)
     projectiles.append(projectile)
 
 func _update_objectives(delta: float) -> void:
