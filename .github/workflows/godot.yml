@@ -1,4 +1,5 @@
 name: Godot desktop and Android
+# Checksum verification runs from dist/godot so artifact-relative entries resolve correctly.
 
 on:
   push:
