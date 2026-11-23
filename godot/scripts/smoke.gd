@@ -17,7 +17,7 @@ func _run() -> void:
     assert(hud.get_child_count() > 0, "HUD must build controls")
     assert(scene.robots.size() == 2, "two robots must spawn")
     var red = scene.robots[0]
-    var start := red.global_position
+    var start: Vector3 = red.global_position
     red.set_command(Vector2.RIGHT, Vector3(4, 0, 0), false)
     await physics_frame
     await physics_frame
