@@ -15,6 +15,8 @@ var simulation_root: Node
 var visual_robots: Array[Node3D] = []
 
 func _ready() -> void:
+	if OS.get_environment("RM_HEADLESS_SMOKE") == "1" or OS.has_feature("headless"):
+		return
 	var stage := StageScript.new()
 	stage.name = "RMUCStage"
 	add_child(stage)
