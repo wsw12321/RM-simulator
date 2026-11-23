@@ -170,6 +170,19 @@ jobs:
           timeout 20s "$GODOT_BIN" --headless --path godot --scene scenes/rmuc_visual_showcase.tscn --quit-after 1 \
             --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
 
+      - name: Run migration probes
+        shell: bash
+        env:
+          RM_HEADLESS_SMOKE: "1"
+        run: |
+          set -euo pipefail
+          common=(--headless --path godot --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility)
+          "$GODOT_BIN" "${common[@]}" --script qa_smoke.gd
+          "$GODOT_BIN" "${common[@]}" --script rm_sim_bridge_probe.gd
+          "$GODOT_BIN" "${common[@]}" --script http_bridge_probe.gd
+          "$GODOT_BIN" "${common[@]}" --script tests/smoke.gd
+          "$GODOT_BIN" "${common[@]}" --script tests/qa_adapter.gd
+
       - name: Export desktop and Android packages
         shell: bash
         run: |
