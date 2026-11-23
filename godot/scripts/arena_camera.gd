@@ -1,6 +1,4 @@
 extends Node3D
-class_name ArenaCamera
-
 @export var target_path: NodePath
 @export var distance := 19.0
 @export var min_distance := 10.0

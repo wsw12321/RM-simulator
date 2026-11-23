@@ -1,6 +1,4 @@
 extends CharacterBody3D
-class_name RMRobotActor
-
 signal hp_changed(actor)
 signal disabled(actor)
 signal fired(actor)
@@ -21,8 +19,7 @@ var game: Node
 var body_mesh: MeshInstance3D
 var turret_mesh: MeshInstance3D
 var base_material: StandardMaterial3D
-var target_marker: MeshInstance3D
-var disabled_state := false
+var disabled_state: bool = false
 
 func configure(id: int, faction: int, label: String, owner: Node) -> void:
     robot_id = id
@@ -103,7 +100,7 @@ func _physics_process(delta: float) -> void:
     var desired := Vector3(move_input.x, 0.0, move_input.y) * speed
     velocity = velocity.move_toward(desired, acceleration * delta)
     move_and_slide()
-    var half := ArenaWorld.FIELD_SIZE * 0.5 - Vector2(1.0, 1.0)
+    var half: Vector2 = Vector2(22.0, 14.0) * 0.5 - Vector2(1.0, 1.0)
     global_position.x = clampf(global_position.x, -half.x, half.x)
     global_position.z = clampf(global_position.z, -half.y, half.y)
     if desired.length_squared() > 0.02:

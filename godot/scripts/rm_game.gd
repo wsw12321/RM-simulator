@@ -1,36 +1,34 @@
 extends Node3D
-class_name RMGame
-
 const RobotActorScene := preload("res://scripts/robot_actor.gd")
 const ProjectileScene := preload("res://scripts/projectile.gd")
 
-@onready var arena: ArenaWorld = $Arena
-@onready var camera_rig: ArenaCamera = $CameraRig
-@onready var hud: RMHud = $HUD
+@onready var arena: Node3D = $Arena
+@onready var camera_rig: Node3D = $CameraRig
+@onready var hud: CanvasLayer = $HUD
 
-var robots: Array[RMRobotActor] = []
-var projectiles: Array[RMProjectile] = []
-var elapsed := 0.0
+var robots: Array[Node] = []
+var projectiles: Array[Node] = []
+var elapsed: float = 0.0
 var running := true
 var score := [0, 0]
 var events: Array[String] = []
-var rng := RandomNumberGenerator.new()
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _ready() -> void:
     rng.seed = 2027
     _spawn_robot(0, 0, "RED-01", Vector3(-6.5, 0.0, 0.0))
     _spawn_robot(1, 1, "BLUE-01", Vector3(6.5, 0.0, 0.0))
-    camera_rig.focus(Vector3.ZERO)
-    hud.bind_game(self)
+    camera_rig.call("focus", Vector3.ZERO)
+    hud.call("bind_game", self)
     _log_event("RM Tactics Lab · native Godot 3D simulation online")
 
 func _spawn_robot(id: int, team: int, label: String, spawn_position: Vector3) -> void:
-    var robot: RMRobotActor = RobotActorScene.new()
-    robot.configure(id, team, label, self)
+    var robot: Node = RobotActorScene.new()
+    robot.call("configure", id, team, label, self)
     robot.position = spawn_position
     arena.add_child(robot)
-    robot.hp_changed.connect(_on_robot_hp_changed)
-    robot.disabled.connect(_on_robot_disabled)
+    robot.connect("hp_changed", Callable(self, "_on_robot_hp_changed"))
+    robot.connect("disabled", Callable(self, "_on_robot_disabled"))
     robots.append(robot)
 
 func _physics_process(delta: float) -> void:
@@ -42,45 +40,47 @@ func _physics_process(delta: float) -> void:
     if elapsed > 420.0:
         running = false
         _log_event("420s match limit reached")
-    hud.refresh()
+    hud.call("refresh")
 
 func _update_commands() -> void:
     if robots.is_empty():
         return
-    var red := robots[0]
-    var move := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+    var red: Node = robots[0]
+    var move: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
     var aim := _aim_point()
-    red.set_command(move, aim, Input.is_action_pressed("fire"))
+    red.call("set_command", move, aim, Input.is_action_pressed("fire"))
     if robots.size() > 1:
-        var blue := robots[1]
-        var to_red := red.global_position - blue.global_position
+        var blue: Node = robots[1]
+        var red_position: Vector3 = red.get("global_position")
+        var blue_position: Vector3 = blue.get("global_position")
+        var to_red: Vector3 = red_position - blue_position
         var ai_move := Vector2(to_red.x, to_red.z).normalized()
         var should_fire := to_red.length() < 10.0
-        blue.set_command(ai_move, red.global_position, should_fire)
+        blue.call("set_command", ai_move, red_position, should_fire)
 
 func _aim_point() -> Vector3:
-    var camera := get_viewport().get_camera_3d()
+    var camera: Camera3D = get_viewport().get_camera_3d()
     if camera == null:
         return Vector3.ZERO
-    var mouse := get_viewport().get_mouse_position()
-    var origin := camera.project_ray_origin(mouse)
-    var direction := camera.project_ray_normal(mouse)
-    var plane := Plane(Vector3.UP, 0.0)
-    var hit := plane.intersects_ray(origin, direction)
+    var mouse: Vector2 = get_viewport().get_mouse_position()
+    var origin: Vector3 = camera.project_ray_origin(mouse)
+    var direction: Vector3 = camera.project_ray_normal(mouse)
+    var plane: Plane = Plane(Vector3.UP, 0.0)
+    var hit: Variant = plane.intersects_ray(origin, direction)
     return hit if hit != null else Vector3.ZERO
 
-func spawn_projectile(shooter: RMRobotActor, target: Vector3) -> void:
-    var projectile: RMProjectile = ProjectileScene.new()
-    projectile.configure(shooter.global_position, target, shooter.team, shooter)
+func spawn_projectile(shooter: Node, target: Vector3) -> void:
+    var projectile: Node = ProjectileScene.new()
     arena.add_child(projectile)
+    projectile.call("configure", shooter.get("global_position"), target, shooter.get("team"), shooter)
     projectiles.append(projectile)
 
 func _update_objectives(delta: float) -> void:
     for team in range(2):
-        var actor := robots[team]
-        if actor.disabled_state:
+        var actor: Node = robots[team]
+        if bool(actor.get("disabled_state")):
             continue
-        if arena.is_inside_zone(actor.global_position, team):
+        if bool(arena.call("is_inside_zone", actor.get("global_position"), team)):
             score[team] += int(delta * 10.0)
 
 func set_running(value: bool) -> void:
@@ -100,11 +100,11 @@ func reset_match() -> void:
     running = true
     _ready()
 
-func _on_robot_hp_changed(actor: RMRobotActor) -> void:
-    _log_event(actor.display_name + " HP " + str(actor.hp))
+func _on_robot_hp_changed(actor: Node) -> void:
+    _log_event(str(actor.get("display_name")) + " HP " + str(actor.get("hp")))
 
-func _on_robot_disabled(actor: RMRobotActor) -> void:
-    _log_event(actor.display_name + " disabled")
+func _on_robot_disabled(actor: Node) -> void:
+    _log_event(str(actor.get("display_name")) + " disabled")
 
 func _log_event(message: String) -> void:
     events.push_front(message)

@@ -1,6 +1,4 @@
 extends Node3D
-class_name ArenaWorld
-
 const FIELD_SIZE := Vector2(22.0, 14.0)
 const FLOOR_Y := 0.0
 const ZONE_RADIUS := 2.25
