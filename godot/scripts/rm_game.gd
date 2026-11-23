@@ -66,8 +66,10 @@ func _aim_point() -> Vector3:
     var origin := camera.project_ray_origin(mouse)
     var direction := camera.project_ray_normal(mouse)
     var plane := Plane(Vector3.UP, 0.0)
-    var hit := plane.intersects_ray(origin, direction)
-    return hit if hit != null else Vector3.ZERO
+    var hit: Variant = plane.intersects_ray(origin, direction)
+    if hit == null:
+        return Vector3.ZERO
+    return Vector3(hit)
 
 func spawn_projectile(shooter: RMRobotActor, target: Vector3) -> void:
     var projectile: RMProjectile = ProjectileScene.new()
