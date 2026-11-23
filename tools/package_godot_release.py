@@ -98,8 +98,7 @@ def main() -> int:
 
     # Import every resource and run the project's optional deterministic probe.
     run([args.godot, "--headless", "--path", str(root), "--editor", "--quit", "--display-driver", "headless", "--audio-driver", "Dummy"], cwd=repo)
-    for probe in (root / "scripts").glob("*smoke*.gd"):
-        run([args.godot, "--headless", "--path", str(root), "--script", str(probe.relative_to(root)), "--display-driver", "headless", "--audio-driver", "Dummy"], cwd=repo)
+    probes = sorted(root.glob("*smoke*.gd")) + sorted((root / "scripts").glob("*smoke*.gd")) + sorted((root / "tests").glob("*smoke*.gd"))\n    for probe in probes:\n        run([args.godot, "--headless", "--path", str(root), "--script", str(probe.relative_to(root)), "--display-driver", "headless", "--audio-driver", "Dummy"], cwd=repo)
 
     linux = build / "rm-simulator-linux-x86_64"
     windows = build / "rm-simulator-windows-x86_64.exe"
