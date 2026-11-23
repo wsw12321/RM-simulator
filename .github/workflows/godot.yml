@@ -119,6 +119,13 @@ jobs:
           test -f "$template_destination/linux_release.x86_64"
           test -f "$template_destination/windows_release_x86_64.exe"
           test -f "$template_destination/android_debug.apk"
+          # Godot treats the Android build template (android_source.zip) as a project-local template.
+          # Install it in the checkout so CI exports do not fail with a generic configuration error.
+          if [[ -f "$template_destination/android_source.zip" ]]; then
+            rm -rf godot/android
+            unzip -q "$template_destination/android_source.zip" -d godot
+            test -f godot/android/build.gradle
+          fi
           echo "GODOT_BIN=$godot_root/godot" >> "$GITHUB_ENV"
 
       - name: Generate standard debug keystore
