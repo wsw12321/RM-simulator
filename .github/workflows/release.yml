@@ -67,9 +67,162 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  godot_detect:
+    name: Detect Godot project
+    runs-on: ubuntu-22.04
+    outputs:
+      has_project: ${{ steps.probe.outputs.has_project }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: probe
+        shell: bash
+        run: |
+          if [[ -f godot/project.godot ]]; then
+            echo "has_project=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_project=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  godot:
+    name: Godot desktop and Android exports
+    needs: godot_detect
+    if: needs.godot_detect.outputs.has_project == 'true'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: ''
+
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "cmake;3.10.2.4988404" "ndk;23.2.8568313"
+          yes | sdkmanager --licenses >/dev/null || true
+          for required_path in \
+            "cmdline-tools" \
+            "platform-tools" \
+            "platforms/android-34" \
+            "build-tools/34.0.0" \
+            "cmake/3.10.2.4988404" \
+            "ndk/23.2.8568313"; do
+            test -d "$ANDROID_SDK_ROOT/$required_path"
+          done
+
+      - name: Install Godot editor and export templates
+        shell: bash
+        env:
+          GODOT_VERSION: 4.3
+          GODOT_RELEASE: 4.3-stable
+        run: |
+          set -euo pipefail
+          godot_root="$RUNNER_TEMP/godot"
+          template_root="$HOME/.local/share/godot/export_templates"
+          mkdir -p "$godot_root" "$template_root"
+          curl --fail --retry 3 --location \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip" \
+            --output "$godot_root/editor.zip"
+          unzip -q "$godot_root/editor.zip" -d "$godot_root/editor"
+          mv "$godot_root/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64" "$godot_root/godot"
+          chmod +x "$godot_root/godot"
+          curl --fail --retry 3 --location \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz" \
+            --output "$godot_root/templates.tpz"
+          unzip -q "$godot_root/templates.tpz" -d "$godot_root/templates"
+          template_source="$(find "$godot_root/templates" -type f -name 'linux_release.x86_64' -printf '%h\n' | while IFS= read -r candidate; do
+            if [[ -f "$candidate/windows_release_x86_64.exe" && -f "$candidate/android_debug.apk" ]]; then
+              printf '%s\n' "$candidate"
+              break
+            fi
+          done)"
+          test -n "$template_source"
+          template_version="${GODOT_VERSION}.stable"
+          if [[ -f "$template_source/version.txt" ]]; then
+            version_from_file="$(tr -d '\r\n' < "$template_source/version.txt")"
+            if [[ "$version_from_file" =~ ^[0-9]+\.[0-9]+\.stable$ ]]; then
+              template_version="$version_from_file"
+            fi
+          fi
+          template_destination="$template_root/$template_version"
+          mkdir -p "$template_destination"
+          cp -R "$template_source/." "$template_destination/"
+          test -f "$template_destination/linux_release.x86_64"
+          test -f "$template_destination/windows_release_x86_64.exe"
+          test -f "$template_destination/android_debug.apk"
+          echo "GODOT_BIN=$godot_root/godot" >> "$GITHUB_ENV"
+
+      - name: Generate standard debug keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" \
+            -storepass android -alias androiddebugkey -keypass android -keyalg RSA \
+            -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Run Godot headless smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f godot/scripts/smoke.gd ]]; then
+            "$GODOT_BIN" --headless --path godot --script scripts/smoke.gd \
+              --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+          elif [[ -f godot/smoke.gd ]]; then
+            "$GODOT_BIN" --headless --path godot --script smoke.gd \
+              --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+          else
+            "$GODOT_BIN" --headless --path godot --editor --quit \
+              --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+          fi
+
+      - name: Export and validate Godot packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/godot
+          export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
+          export GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey
+          export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
+          "$GODOT_BIN" --headless --path godot --export-release "Linux" \
+            dist/godot/rmuc-tactics-lab-godot-linux-x86_64
+          "$GODOT_BIN" --headless --path godot --export-release "Windows" \
+            dist/godot/rmuc-tactics-lab-godot-windows-x86_64.exe
+          "$GODOT_BIN" --headless --path godot --export-debug "Android" \
+            dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
+          test -s dist/godot/rmuc-tactics-lab-godot-linux-x86_64
+          test -s dist/godot/rmuc-tactics-lab-godot-windows-x86_64.exe
+          test -s dist/godot/rmuc-tactics-lab-godot-android-arm64.apk
+          unzip -tq dist/godot/rmuc-tactics-lab-godot-android-arm64.apk >/dev/null
+          chmod +x dist/godot/rmuc-tactics-lab-godot-linux-x86_64
+          cd dist/godot
+          zip -q rmuc-tactics-lab-godot-windows-x86_64.zip rmuc-tactics-lab-godot-windows-x86_64.exe
+          tar -czf rmuc-tactics-lab-godot-linux-x86_64.tar.gz rmuc-tactics-lab-godot-linux-x86_64
+          sha256sum rmuc-tactics-lab-godot-* > SHA256SUMS.txt
+          grep -Fq "rmuc-tactics-lab-godot-windows-x86_64.zip" SHA256SUMS.txt
+          grep -Fq "rmuc-tactics-lab-godot-linux-x86_64.tar.gz" SHA256SUMS.txt
+          grep -Fq "rmuc-tactics-lab-godot-android-arm64.apk" SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: godot
+          path: dist/godot/*
+          if-no-files-found: error
+
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: package
+    if: >-
+      always() && startsWith(github.ref, 'refs/tags/v') &&
+      needs.package.result == 'success' &&
+      needs.godot_detect.result == 'success' &&
+      (needs.godot.result == 'success' || needs.godot.result == 'skipped')
+    needs: [package, godot_detect, godot]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
