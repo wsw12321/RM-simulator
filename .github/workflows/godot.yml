@@ -138,6 +138,12 @@ jobs:
               -dname "CN=Android Debug,O=Android,C=US"
           fi
 
+      - name: Import Godot project and build script class cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --path godot --editor --quit             --display-driver headless --audio-driver Dummy --rendering-method gl_compatibility
+
       - name: Run headless Godot smoke
         shell: bash
         run: |
